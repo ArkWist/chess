@@ -6,27 +6,27 @@ require "chess"
 
 describe Chess do
   let(:c) { Chess.new }
-  let(:b) { Board.new }
-  let(:pw) { Chess::PLAYERS.first }
-  let(:pb) { Chess::PLAYERS.last }
+  let(:b) { c.board }
+  let(:white) { Chess::WHITE }
+  let(:black) { Chess::BLACK }
 
   describe "Chess.new" do
+    it "sets player to #{Chess::WHITE}" do
+      expect(c.player).to eq(white)
+    end
     it "creates a new game board" do
       expect(c.board).to be_instance_of(Board)
-    end
-    it "sets player to #{Chess::PLAYERS.first}" do
-      expect(c.player).to eq(pw)
     end
   end
   
   describe "Chess.next_player" do
-    it "changes from #{Chess::PLAYERS.first} player to #{Chess::PLAYERS.last} player" do
+    it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
       c.next_player
-      expect(c.player).to eq(pb)
+      expect(c.player).to eq(black)
     end
-    it "changes from #{Chess::PLAYERS.last} player to #{Chess::PLAYERS.first} player" do
+    it "changes from #{Chess::BLACK} player to #{Chess::WHITE} player" do
       2.times { c.next_player }
-      expect(c.player).to eq(pw)
+      expect(c.player).to eq(white)
     end
   end
   
@@ -76,13 +76,6 @@ end
 # Make board
 
 ## check_mate check would check beginning of the turn, if there are any legal moves which allow escape from check? So if check, then checks?
-
-
-
-
-
-
-
 
 
 

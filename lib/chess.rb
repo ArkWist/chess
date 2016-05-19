@@ -7,7 +7,7 @@ class Chess
 
   def initialize
     @player = WHITE
-    @board = Board.new
+    @board = Board.new(WHITE, BLACK)
     #play
   end
 
@@ -48,15 +48,32 @@ end
 
 class Board
 
-  def initialize
+  def initialize(white, black)
     @width, @height = 8, 8
-    @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
+    @squares = Array.new(@width){ Array.new(@height) }
     @last_player = nil
     @last_move = nil
-    set_board
+    set_board(white, black)
   end
 
-  def set_board
+  def set_board(white, black)
+    @squares.each { |col| col[1] = Pawn.new(white) }
+    @squares[0][0] = Rook.new(white)
+    @squares[1][0] = Knight.new(white)
+    @squares[2][0] = Bishop.new(white)
+    @squares[3][0] = King.new(white)
+    @squares[4][0] = Queen.new(white)
+    @squares[5][0] = Bishop.new(white)
+    @squares[6][0] = Knight.new(white)
+    @squares[7][0] = Rook.new(white)
+    @squares.each { |col| col[6] = Pawn.new(black) }
+    @squares[1][6] = Knight.new(black)
+    @squares[2][6] = Bishop.new(black)
+    @squares[3][6] = King.new(black)
+    @squares[4][6] = Queen.new(black)
+    @squares[5][6] = Bishop.new(black)
+    @squares[6][6] = Knight.new(black)
+    @squares[7][6] = Rook.new(black)
   end
 
   def display

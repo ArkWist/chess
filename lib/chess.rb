@@ -79,12 +79,18 @@ class Board
   end
 
   def display
+    puts ascii_col_labels
+    puts ascii_separator
+    7.downto(0) do |row|
+      puts ascii_row(row)
+      puts ascii_separator
+    end
+    puts ascii_col_labels
   end
 
   def ascii_separator
     line = "   --- --- --- --- --- --- --- ---   "
   end
-
   def ascii_row(row)
     line = "#{row_to_notation(row)} "
     @squares.each do |col|
@@ -92,7 +98,10 @@ class Board
     end
     line << " #{row_to_notation(row)}"
   end
-  
+  def ascii_col_labels
+    labels = ("a".."h").to_a
+    line = "    " + labels.join("   ") + "    "
+  end
   
   
   def to_notation(i_col, i_row)
@@ -131,14 +140,21 @@ class Piece
     @owner = owner
     @moved = false
   end
-  def valid_move?
+  def icon
+    @owner == :White ? @@icon.first : @@icon.last
+  end
+  def valid_move?()
   end
   def valid_moves
   end
 end
 
 class Pawn < Piece
+  @@icon = ["♙", "♟"]
   def valid_moves
+  end
+  def icon
+    
   end
 end
 class Rook < Piece

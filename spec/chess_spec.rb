@@ -76,8 +76,8 @@ describe Chess do
   end
   
   
-  describe "Piece.icon" do
-    it "gets the owner-colored symbol for a given Piece" do
+  describe "Pawn.icon" do
+    it "gets the owner-colored symbol for a Pawns" do
       c.set_board(white, black)
       expect(b.squares[0][1].icon).to eq("♙")
       expect(b.squares[0][6].icon).to eq("♟")
@@ -142,7 +142,20 @@ describe Chess do
   end
   
   
-
+  describe "Pawn.valid_moves(position)" do
+    it "says one position forward is a valid move" do
+    end
+    it "says one taken position forward isn't a valid move" do
+    end
+    it "says two positions forward is a valid first move" do
+    end
+    it "says two positions forward isn't a valid move post-first move" do
+    end
+    it "says one enemy taken position diagonally is a valid attack" do
+    end
+    it "recognizes en passant as a valid attack" do
+    end
+  end
   
   
   

@@ -42,25 +42,13 @@ describe Chess do
       c.set_board(white, black)
       expect(b.squares[0][1]).to be_instance_of(Pawn)
       expect(b.squares[0][1].owner).to eq(white)
-      expect(b.squares[1][1]).to be_instance_of(Pawn)
-      expect(b.squares[1][1].owner).to eq(white)
-      expect(b.squares[2][1]).to be_instance_of(Pawn)
-      expect(b.squares[2][1].owner).to eq(white)
-      expect(b.squares[3][1]).to be_instance_of(Pawn)
-      expect(b.squares[3][1].owner).to eq(white)
-      expect(b.squares[4][1]).to be_instance_of(Pawn)
-      expect(b.squares[4][1].owner).to eq(white)
-      expect(b.squares[5][1]).to be_instance_of(Pawn)
-      expect(b.squares[5][1].owner).to eq(white)
-      expect(b.squares[6][1]).to be_instance_of(Pawn)
-      expect(b.squares[6][1].owner).to eq(white)
       expect(b.squares[7][1]).to be_instance_of(Pawn)
       expect(b.squares[7][1].owner).to eq(white)
     end
     it "puts #{Chess::WHITE} major pieces in their starting positions" do
       c.set_board(white, black)
-      expect(b.squares[1][0]).to be_instance_of(Knight)
-      expect(b.squares[1][0].owner).to eq(white)
+      expect(b.squares[0][0]).to be_instance_of(Rook)
+      expect(b.squares[0][0].owner).to eq(white)
       expect(b.squares[6][0]).to be_instance_of(Knight)
       expect(b.squares[6][0].owner).to eq(white)
     end
@@ -75,22 +63,10 @@ describe Chess do
     end
     it "puts #{Chess::BLACK} major pieces in their starting positions" do
       c.set_board(white, black)
-      expect(b.squares[0][7]).to be_instance_of(Rook)
-      expect(b.squares[0][7].owner).to eq(black)
       expect(b.squares[1][7]).to be_instance_of(Knight)
       expect(b.squares[1][7].owner).to eq(black)
-      expect(b.squares[2][7]).to be_instance_of(Bishop)
-      expect(b.squares[2][7].owner).to eq(black)
-      expect(b.squares[3][7]).to be_instance_of(Queen)
-      expect(b.squares[3][7].owner).to eq(black)
-      expect(b.squares[4][7]).to be_instance_of(King)
-      expect(b.squares[4][7].owner).to eq(black)
       expect(b.squares[5][7]).to be_instance_of(Bishop)
       expect(b.squares[5][7].owner).to eq(black)
-      expect(b.squares[6][7]).to be_instance_of(Knight)
-      expect(b.squares[6][7].owner).to eq(black)
-      expect(b.squares[7][7]).to be_instance_of(Rook)
-      expect(b.squares[7][7].owner).to eq(black)
     end
   end
   
@@ -125,6 +101,48 @@ describe Chess do
     it "draws the board" do
     end
   end
+
+  
+  
+  describe "Board.row_to_notation" do
+    it "converts a row array index to notation" do
+      expect(b.row_to_notation(3)).to eq(4)
+    end
+  end
+  
+  describe "Board.row_to_index" do
+    it "converts row notation to an array index" do
+      expect(b.row_to_notation(3)).to eq(2)
+    end
+  end
+  
+  describe "Board.col_to_notation" do
+    it "converts a column array index to notation" do
+      expect(b.col_to_notation(6)).to eq("g")
+    end
+  end
+  
+  describe "Board.col_to_index" do
+    it "converts column notation to an array index" do
+      expect(b.col_to_index("e")).to eq(4)
+    end
+  end
+
+  describe "Board.to_notation" do
+    it "converts a square array index to notation" do
+      expect(b.to_notation([2, 3])).to eq("c4")
+    end
+  end
+  
+  describe "Board.to_index" do
+    it "converts Chess notation to array indices" do
+      expect(b.to_index("h7")).to eq([7, 6])
+    end
+  end
+  
+  
+  
+
   
   # Converts chess notation back and forth
   
@@ -182,6 +200,4 @@ end
 # Make board
 
 ## check_mate check would check beginning of the turn, if there are any legal moves which allow escape from check? So if check, then checks?
-
-
 

@@ -3,6 +3,7 @@
 class Chess
   WHITE = :White
   BLACK = :Black
+  EMPTY = :Empty
   attr_reader :player, :board
 
   def initialize
@@ -79,6 +80,47 @@ class Board
 
   def display
   end
+
+  def ascii_separator
+    line = "   --- --- --- --- --- --- --- ---   "
+  end
+
+  def ascii_row(row)
+    line = "#{row_to_notation(row)} "
+    @squares.each do |col|
+      col[row] != EMPTY ? line << " #{col[row].icon} |" : line << "   |"
+    end
+    line << " #{row_to_notation(row)}"
+  end
+  
+  
+  
+  def to_notation(i_col, i_row)
+    n_col = col_to_notation(i_col).to_s
+    n_row = row_to_notation(i_row).to_s
+    notation = "#{n_col}#{n_row}"
+  end
+  def to_index(n_col, n_row)
+    i_col = col_to_index(n_col).to_i
+    i_row = row_to_index(n_row).to_i
+    index = [i_col, i_row]
+  end
+  
+  def col_to_notation(index)
+    alphabet = ("a".."h").to_a
+    alphabet[index]
+  end
+  def col_to_index(notation)
+    alphabet = ("a".."h").to_a
+    alphabet.index(notation)
+  end
+  def row_to_notation(index)
+    index += 1
+  end
+  def row_to_index(notation)
+    notation -= 1
+  end
+
 
 end
 

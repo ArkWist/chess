@@ -5,11 +5,13 @@ require "chess"
 
 
 describe Chess do
+
   let(:c) { Chess.new }
   let(:b) { c.board }
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
 
+  
   describe "Chess.new" do
     it "sets player to #{Chess::WHITE}" do
       expect(c.player).to eq(white)
@@ -18,6 +20,7 @@ describe Chess do
       expect(c.board).to be_instance_of(Board)
     end
   end
+  
   
   describe "Chess.next_player" do
     it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
@@ -30,12 +33,14 @@ describe Chess do
     end
   end
   
+  
   describe "Board.new" do
     it "creates an 8 x 8 square array" do
       expect(b.squares.length).to eq(8)
       expect(b.squares[0].length).to eq(8)
     end
   end
+  
   
   describe "Board.set_board" do
     it "puts #{Chess::WHITE} pawns in their starting positions" do
@@ -70,70 +75,66 @@ describe Chess do
     end
   end
   
+  
+  describe "Piece.icon" do
+    it "gets the owner-colored symbol for a given Piece" do
+      c.set_board(white, black)
+      expect(b.squares[0][1].icon).to eq("♙")
+      expect(b.squares[0][6].icon).to eq("♟")
+    end
+  end
+  
+  
   describe "Board.ascii_separator" do
     it "writes a horizontal row separating line" do
       expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
     end
   end
-  
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
       b.set_board(white, black)
       expect(b.ascii_row[5]).to eq("6 |   |   |   |   |   |   |   |   | 6")
     end
   end
-  
   describe "Board.ascii_row" do
     it "writes a horizontal row with pieces" do
       b.set_board(white, black)
       expect(b.ascii_row[7]).to eq("8 | ♜ | ♞ | ♝ | ♛ | ♚ | ♝ | ♞ | ♜ | 8")
     end
   end
-  
-  describe "Board.ascii_col_label" do
+  describe "Board.ascii_col_labels" do
     it "writes a horizontal listing of alphabetical column labels" do
       b.set_board(white, black)
       expect(b.ascii_col_label).to eq("    a   b   c   d   e   f   g   h    ")
     end
   end
-  
-  describe "Board.display" do
-    it "draws the board" do
-    end
-  end
 
-  
-  
+
   describe "Board.row_to_notation" do
     it "converts a row array index to notation" do
       expect(b.row_to_notation(3)).to eq(4)
     end
   end
-  
   describe "Board.row_to_index" do
     it "converts row notation to an array index" do
       expect(b.row_to_notation(3)).to eq(2)
     end
   end
-  
   describe "Board.col_to_notation" do
     it "converts a column array index to notation" do
       expect(b.col_to_notation(6)).to eq("g")
     end
   end
-  
   describe "Board.col_to_index" do
     it "converts column notation to an array index" do
       expect(b.col_to_index("e")).to eq(4)
     end
   end
-
   describe "Board.to_notation" do
     it "converts a square array index to notation" do
       expect(b.to_notation([2, 3])).to eq("c4")
     end
   end
-  
   describe "Board.to_index" do
     it "converts Chess notation to array indices" do
       expect(b.to_index("h7")).to eq([7, 6])
@@ -141,13 +142,20 @@ describe Chess do
   end
   
   
+
+  
+  
   
 
   
-  # Converts chess notation back and forth
-  
+
   # How determine check mate
   # Just check every single possible next move?
+  
+  # isInCheck [is King's underAttack?] // isUnderAttack
+  # underAttackBy(given)
+  # underAttack
+  # canAttack(given)
   
   # Generate list of possible moves (ignore if puts that side in check)
   # For each move, check it doesn't leave the side in check

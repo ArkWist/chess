@@ -1,5 +1,8 @@
 # Chess
 
+require "pieces"
+
+
 class Chess
   WHITE = :White
   BLACK = :Black
@@ -59,6 +62,7 @@ class Board
   end
 
   def set_board(white, black)
+    wipe_board
     @squares.each { |col| col[1] = Pawn.new(white) }
     @squares[0][0] = Rook.new(white)
     @squares[1][0] = Knight.new(white)
@@ -69,15 +73,21 @@ class Board
     @squares[6][0] = Knight.new(white)
     @squares[7][0] = Rook.new(white)
     @squares.each { |col| col[6] = Pawn.new(black) }
-    @squares[1][6] = Knight.new(black)
-    @squares[2][6] = Bishop.new(black)
-    @squares[3][6] = Queen.new(black)
-    @squares[4][6] = King.new(black)
-    @squares[5][6] = Bishop.new(black)
-    @squares[6][6] = Knight.new(black)
-    @squares[7][6] = Rook.new(black)
+    @squares[1][7] = Knight.new(black)
+    @squares[2][7] = Bishop.new(black)
+    @squares[3][7] = Queen.new(black)
+    @squares[4][7] = King.new(black)
+    @squares[5][7] = Bishop.new(black)
+    @squares[6][7] = Knight.new(black)
+    @squares[7][7] = Rook.new(black)
+  end
+  
+  def wipe_board
+#    @squares.each { |col| col.each { |row| row = Chess::EMPTY } }
   end
 
+  
+  
   def display
     puts ascii_col_labels
     puts ascii_separator
@@ -91,13 +101,16 @@ class Board
   def ascii_separator
     line = "   --- --- --- --- --- --- --- ---   "
   end
+  
   def ascii_row(row)
     line = "#{row_to_notation(row)} "
     @squares.each do |col|
-      col[row] != EMPTY ? line << " #{col[row].icon} |" : line << "   |"
+#      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
+#      col[row].nil? ? line << "   |" : line << " #{col[row].icon} |"
     end
     line << " #{row_to_notation(row)}"
   end
+  
   def ascii_col_labels
     labels = ("a".."h").to_a
     line = "    " + labels.join("   ") + "    "
@@ -130,43 +143,11 @@ class Board
     notation -= 1
   end
 
-
 end
 
 
-class Piece
-  attr_accessor :moved
-  def initialize(owner)
-    @owner = owner
-    @moved = false
-  end
-  def icon
-    @owner == :White ? @@icon.first : @@icon.last
-  end
-  def valid_move?()
-  end
-  def valid_moves
-  end
-end
 
-class Pawn < Piece
-  @@icon = ["♙", "♟"]
-  def valid_moves
-  end
-  def icon
-    
-  end
-end
-class Rook < Piece
-end
-class Knight < Piece
-end
-class Bishop < Piece
-end
-class Queen < Piece
-end
-class King < Piece
-end
+
 
 # Replay should be outside of Chess class
 # So no need for reset?

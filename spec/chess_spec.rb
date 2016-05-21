@@ -133,9 +133,11 @@ describe Chess do
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
       b.set_board(white, black)
-#      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
+      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
     end
   end
+  
+  #This is the next thing to test
   describe "Board.ascii_row" do
     it "writes a horizontal row with pieces" do
       b.set_board(white, black)

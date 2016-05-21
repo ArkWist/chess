@@ -50,6 +50,10 @@ class Chess
 end
 
 
+
+
+
+
 class Board
   attr_reader :squares
 
@@ -83,7 +87,7 @@ class Board
   end
   
   def wipe_board
-#    @squares.each { |col| col.each { |row| row = Chess::EMPTY } }
+    @squares.map! { |col| col.map! { |row| row = Chess::EMPTY } }
   end
 
   
@@ -103,10 +107,9 @@ class Board
   end
   
   def ascii_row(row)
-    line = "#{row_to_notation(row)} "
+    line = "#{row_to_notation(row)} |"
     @squares.each do |col|
-#      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
-#      col[row].nil? ? line << "   |" : line << " #{col[row].icon} |"
+      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
     end
     line << " #{row_to_notation(row)}"
   end

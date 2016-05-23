@@ -99,27 +99,27 @@ describe Chess do
   end
   describe "Board.row_to_index" do
     it "converts row notation to an array index" do
-#      expect(b.row_to_notation(3)).to eq(2)
+      expect(b.row_to_index(3)).to eq(2)
     end
   end
   describe "Board.col_to_notation" do
     it "converts a column array index to notation" do
-#      expect(b.col_to_notation(6)).to eq("g")
+      expect(b.col_to_notation(6)).to eq("g")
     end
   end
   describe "Board.col_to_index" do
     it "converts column notation to an array index" do
-#      expect(b.col_to_index("e")).to eq(4)
+      expect(b.col_to_index("e")).to eq(4)
     end
   end
   describe "Board.to_notation" do
     it "converts a square array index to notation" do
-#      expect(b.to_notation([2, 3])).to eq("c4")
+      expect(b.to_notation([2, 3])).to eq("c4")
     end
   end
   describe "Board.to_index" do
     it "converts Chess notation to array indices" do
-#      expect(b.to_index("h7")).to eq([7, 6])
+      expect(b.to_index("h7")).to eq([7, 6])
     end
   end
   
@@ -127,27 +127,31 @@ describe Chess do
   
   describe "Board.ascii_separator" do
     it "writes a horizontal row separating line" do
-      expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
+      expect(b.ascii_separator).to eq("   ---- ---- ---- ---- ---- ---- ---- ----   ")
     end
   end
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
       b.set_board(white, black)
-      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
+      expect(b.ascii_row(5)).to eq("6 |    |    |    |    |    |    |    |    | 6")
     end
   end
-  
-  #This is the next thing to test
+
   describe "Board.ascii_row" do
+    it "writes a horizontal row with a piece" do
+      b.set_board(white, black)
+      b.squares[3][3] = Pawn.new(white)
+      expect(b.ascii_row(3)).to eq("4 |    |    |    | ♙ |    |    |    |    | 4")
+    end
     it "writes a horizontal row with pieces" do
       b.set_board(white, black)
-#      expect(b.ascii_row[7]).to eq("8 | ♜ | ♞ | ♝ | ♛ | ♚ | ♝ | ♞ | ♜ | 8")
+      expect(b.ascii_row(7)).to eq("8 | ♜ | ♞ | ♝ | ♛ | ♚ | ♝ | ♞ | ♜ | 8")
     end
   end
   describe "Board.ascii_col_labels" do
     it "writes a horizontal listing of alphabetical column labels" do
       b.set_board(white, black)
-#      expect(b.ascii_col_label).to eq("    a   b   c   d   e   f   g   h    ")
+      expect(b.ascii_col_labels).to eq("    a    b    c    d    e    f    g    h    ")
     end
   end
   

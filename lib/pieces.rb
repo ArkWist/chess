@@ -1,25 +1,3 @@
-# Piece ought to be a module
-# Undefined Pieces serve no use
-# Store moves in Move to facilitate passing move data around
-# Perhaps Pieces ought to know their location though
-# So that they can report legal moves?
-# Actually, that should be the board's responsibility
-# -- to sort out legal and illegal moves
-# En passant stored separately by Board
-
-=begin
-class Piece
-  attr_accessor :owner, :moved
-  
-  def initialize(owner)
-    @owner = owner
-    @moved = false
-  end
-  
-  def valid_move?()
-  end
-end
-=end
 
 
 class Move
@@ -28,10 +6,10 @@ end
 #end
 
 
-module Piece
+class Piece
   attr_accessor :owner, :moved, :position
   
-  def initialize(owner, position)
+  def initialize(owner)
     @owner = owner
     @moved = false
     @position = position
@@ -43,24 +21,24 @@ module Piece
 end
 
 
-class Pawn# < Piece
-  include Piece
+class Pawn < Piece
   attr_accessor :icon
   
-  def initialize(owner, position)
-    super(owner, position)
+  def initialize(owner)
+    super(owner)
     @icon = "♙" if owner == Chess::WHITE
     @icon = "♟" if owner == Chess::BLACK
     @icon ||= "P"
   end
   
-  def possible_moves(@position)
-    moves = nil
-    moves << #one ahead
+=begin
+  def possible_valid_moves(@position)
+    valid_moves = nil
+    valid_moves << #one ahead
              [@position.first, @position.last + 1]
-    moves << [@position.first, @position.last + 2] if !@moved
+    valid_moves << [@position.first, @position.last + 2] if !@moved
     
-    #But how does it know attack moves?
+    #But how does it know attack valid_moves?
     #How to relay this information between Pawn and Board?
     #Pawn must be able to see Board
     #And Pawn must be able to decide what is valid
@@ -71,17 +49,18 @@ class Pawn# < Piece
     # position would only be indeces
     # so no need for conversion
     # just math
-    #moves << position.to_index.
+    #valid_moves << position.to_index.
     
     # Where should to index and to notation rules be stored?
     # Maybe in positions themselves? With col and row data?
     
   end
+=end
+  
 end
 
 
-class Rook# < Piece
-  include Piece
+class Rook < Piece
   attr_accessor :icon
   
   def initialize(owner)
@@ -91,13 +70,12 @@ class Rook# < Piece
     @icon ||= "R"
   end
   
-  def moves
+  def valid_moves(position, board)
   end
 end
 
 
-class Knight# < Piece
-  include Piece
+class Knight < Piece
   attr_accessor :icon
   
   def initialize(owner)
@@ -107,13 +85,12 @@ class Knight# < Piece
     @icon ||= "N"
   end
   
-  def moves
+  def valid_moves
   end
 end
 
 
-class Bishop# < Piece
-  include Piece
+class Bishop < Piece
   attr_accessor :icon
   
   def initialize(owner)
@@ -123,13 +100,12 @@ class Bishop# < Piece
     @icon ||= "B"
   end
   
-  def moves
+  def valid_moves
   end
 end
 
 
-class Queen# < Piece
-  include Piece
+class Queen < Piece
   attr_accessor :icon
   
   def initialize(owner)
@@ -139,13 +115,12 @@ class Queen# < Piece
     @icon ||= "Q"
   end
   
-  def moves
+  def valid_moves
   end
 end
 
 
-class King# < Piece
-  include Piece
+class King < Piece
   attr_accessor :icon
   
   def initialize(owner)
@@ -155,7 +130,7 @@ class King# < Piece
     @icon ||= "K"
   end
   
-  def moves
+  def valid_moves
   end
 end
 

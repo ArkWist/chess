@@ -23,24 +23,43 @@ class Chess
     @board.display
     until check?
       next_player unless @board.empty?
-      move
+      take_turn
       @board.display
     end
     check_mate
   end
 
-  def move
+  def take_turn
+    print "Player #{@player}'s move: "
+    choice = gets.chomp
+    if valid_move?(choice)
+      @board.make_move(@player, choice)
+    else
+      puts "Invalid move. Try again."
+      take_turn
+    end
   end
 
-  def valid_move?()
+  def valid_move?(choice)
+    valid = true
+    choice = sanitize(choice)
+    position = choice[0..1]
+    target = choice[2..-1]
+    valid = false if !@board.extant_position?(position)
+    valid = false if !@board.extant_position?(target)
+    # then check if own something in that position
+    # then check if valid moves for that unit match
   end
+
+  def sanizite(choice)
+    choice.gsub!(/[, ]+/, "")
+  end
+
 
   def make_move
   end
-
   def check?
   end
-
   def check_mate
   end
 
@@ -80,6 +99,7 @@ module Positions
 end
 
 
+
 class Board
   WIDTH = 8
   HEIGHT = 8
@@ -104,6 +124,7 @@ class Board
     @squares[6][0] = Knight.new(white)
     @squares[7][0] = Rook.new(white)
     @squares.each { |col| col[6] = Pawn.new(black) }
+    @squares[0][7] = Rook.new(black)
     @squares[1][7] = Knight.new(black)
     @squares[2][7] = Bishop.new(black)
     @squares[3][7] = Queen.new(black)
@@ -130,31 +151,33 @@ class Board
   end
 
   def ascii_separator
-    line = "   --- --- --- --- --- --- --- ---   "
+    line = "   ---- ---- ---- ---- ---- ---- ---- ----   "
   end
   
   def ascii_row(row)
     line = "#{row_to_notation(row)} |"
     @squares.each do |col|
-      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
+      col[row] == Chess::EMPTY ? line << "    |" : line << " #{col[row].icon} |"
     end
     line << " #{row_to_notation(row)}"
   end
   
   def ascii_col_labels
     labels = ("a".."h").to_a
-    line = "    " + labels.join("   ") + "    "
+    line = "    " << labels.join("    ") << "    "
   end
   
   
-  def to_notation(i_col, i_row)
-    n_col = col_to_notation(i_col).to_s
-    n_row = row_to_notation(i_row).to_s
+
+  
+  def to_notation(index)
+    n_col = col_to_notation(index[0])
+    n_row = row_to_notation(index[1])
     notation = "#{n_col}#{n_row}"
   end
-  def to_index(n_col, n_row)
-    i_col = col_to_index(n_col).to_i
-    i_row = row_to_index(n_row).to_i
+  def to_index(notation)
+    i_col = col_to_index(notation[0])
+    i_row = row_to_index(notation[1].to_i)
     index = [i_col, i_row]
   end
   
@@ -172,6 +195,25 @@ class Board
   def row_to_index(notation)
     notation -= 1
   end
+  
+  
+  def extant_position?(position)
+    exists = true
+    exists = false if !col_exists(position[0])
+    exists = false if !is_integer?(position[1]) || !row_exists?(position[1])
+    exists
+  end
+  def col_exists?(col)
+    cols = ("a".."h").to_a
+    cols.include?(char.to_s)
+  end
+  def is_integer?(char)
+    char.to_i == 0 && char != "0" ? false : true
+  end
+  def row_exists?(row)
+    row.between?(0, WIDTH)
+  end
+
 
 end
 

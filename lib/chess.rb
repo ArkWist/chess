@@ -51,15 +51,42 @@ end
 
 
 
-
+module Positions
+  def to_notation(i_col, i_row)
+    n_col = col_to_notation(i_col).to_s
+    n_row = row_to_notation(i_row).to_s
+    notation = "#{n_col}#{n_row}"
+  end
+  def to_index(n_col, n_row)
+    i_col = col_to_index(n_col).to_i
+    i_row = row_to_index(n_row).to_i
+    index = [i_col, i_row]
+  end
+  
+  def col_to_notation(index)
+    alphabet = ("a".."h").to_a
+    alphabet[index]
+  end
+  def col_to_index(notation)
+    alphabet = ("a".."h").to_a
+    alphabet.index(notation)
+  end
+  def row_to_notation(index)
+    index += 1
+  end
+  def row_to_index(notation)
+    notation -= 1
+  end
+end
 
 
 class Board
-  attr_reader :squares
+  WIDTH = 8
+  HEIGHT = 8
+  attr_reader :width, :height, :squares
 
   def initialize(white, black)
-    @width, @height = 8, 8
-    @squares = Array.new(@width){ Array.new(@height) }
+    @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
     @last_player = nil
     @last_move = nil
     set_board(white, black)
@@ -148,8 +175,14 @@ class Board
 
 end
 
-
-
+# Really ought to check if Position is index or Notation too
+# Create a Position for each square and use the method there?
+# Position.col_to_index(col, row)?
+# Yeah, could call Position::row_to_index(row)
+# And method could be def row_to_index(row = @row)
+# Or maybe there's a module!
+# Module is used for position calculations
+# That makes much more sense.
 
 
 # Replay should be outside of Chess class

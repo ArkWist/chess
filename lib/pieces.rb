@@ -17,7 +17,52 @@ class Piece
   
   def valid_move?()
   end
+end
+
+
+class Position
+  attr_accessor :col, :row
   
+  def initialize(col, row)
+    @col = col
+    @row = row
+  end
+
+  def to_notation(index)
+    col = col_to_notation(index[0])
+    row = row_to_notation(index[1])
+    notation = "#{col}#{row}"
+  end
+  def to_index(notation)
+    col = col_to_index(notation[0].to_i)
+    row = row_to_index(notation[1].to_i)
+    index = [col, row]
+  end
+  
+  def col_to_notation(index)
+    alphabet = ("a".."h").to_a
+    alphabet[index]
+  end
+  def col_to_index(notation)
+    alpha = Board.col_range
+    alpha.index(notation)
+  end
+  def row_to_notation(index)
+    index += 1
+  end
+  def row_to_index(notation)
+    notation -= 1
+  end
+  
+  
+end
+
+class Move
+  attr_accessor :from, :to
+  def initialize(from, to)
+    @from = from
+    @to = to
+  end
 end
 
 

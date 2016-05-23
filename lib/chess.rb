@@ -11,7 +11,8 @@ class Chess
 
   def initialize
     @player = WHITE
-    @board = Board.new(WHITE, BLACK)
+    @board = Board.new
+    @board.set_board(WHITE, BLACK)
     #play
   end
 
@@ -22,11 +23,11 @@ class Chess
   def play
     @board.display
     until check?
-      next_player unless @board.empty?
+      next_player unless @board.raw?
       take_turn
       @board.display
     end
-    check_mate
+    game_set
   end
 
   def take_turn
@@ -103,13 +104,13 @@ end
 class Board
   WIDTH = 8
   HEIGHT = 8
-  attr_reader :width, :height, :squares
+  attr_reader :width, :height, :squares, :raw
 
-  def initialize(white, black)
+  def initialize
     @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
     @last_player = nil
     @last_move = nil
-    set_board(white, black)
+    @raw = true
   end
 
   def set_board(white, black)
@@ -136,14 +137,21 @@ class Board
   
   def wipe_board
     @squares.map! { |col| col.map! { |row| row = Chess::EMPTY } }
+    @raw = true
   end
 
+  
+  def col_range
+    range = ["a"]
+    (WIDTH - 1).times { range << range[-1].next }
+    range
+  end
   
   
   def display
     puts ascii_col_labels
     puts ascii_separator
-    7.downto(0) do |row|
+    (WIDTH - 1).downto(0) do |row|
       puts ascii_row(row)
       puts ascii_separator
     end
@@ -151,20 +159,21 @@ class Board
   end
 
   def ascii_separator
-    line = "   ---- ---- ---- ---- ---- ---- ---- ----   "
+    line = "   --- --- --- --- --- --- --- ---   "
   end
   
   def ascii_row(row)
     line = "#{row_to_notation(row)} |"
     @squares.each do |col|
-      col[row] == Chess::EMPTY ? line << "    |" : line << " #{col[row].icon} |"
+      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
     end
     line << " #{row_to_notation(row)}"
   end
   
   def ascii_col_labels
-    labels = ("a".."h").to_a
-    line = "    " << labels.join("    ") << "    "
+    #labels = ("a".."h").to_a
+    #line = "    " << labels.join("   ") << "    "
+    line = "    " << col_range.join("   ") << "    "
   end
   
   
@@ -197,6 +206,7 @@ class Board
   end
   
   
+  
   def extant_position?(position)
     exists = true
     exists = false if !col_exists(position[0])
@@ -204,8 +214,9 @@ class Board
     exists
   end
   def col_exists?(col)
-    cols = ("a".."h").to_a
-    cols.include?(char.to_s)
+    #cols = ("a".."h").to_a
+    #cols.include?(char.to_s)
+    col_range.include?(char.to_s)
   end
   def is_integer?(char)
     char.to_i == 0 && char != "0" ? false : true

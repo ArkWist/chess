@@ -42,7 +42,7 @@ class Chess
   end
 
   def standardize_move(move)
-    move.gsub!(/[, ]+/, "").downcase!
+    move.downcase!.gsub!(/[, ]+/, "")
   end
   
   def break_move(move)

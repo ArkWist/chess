@@ -1,11 +1,4 @@
 
-
-class Move
-end
-#class Position
-#end
-
-
 class Piece
   attr_accessor :owner, :moved, :position
   
@@ -53,12 +46,12 @@ class Position
   def row_to_index(notation)
     notation -= 1
   end
-  
-  
 end
+
 
 class Move
   attr_accessor :from, :to
+  
   def initialize(from, to)
     @from = from
     @to = to

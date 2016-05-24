@@ -32,73 +32,50 @@ class Chess
 
   def take_turn
     print "Player #{@player}'s move: "
-    choice = gets.chomp
-    if valid_move?(choice)
-      @board.make_move(@player, choice)
+    move = standardize_move(gets.chomp)
+    if valid_move?(move)
+      @board.make_move(@player, move)
     else
       puts "Invalid move. Try again."
       take_turn
     end
   end
 
-  def valid_move?(choice)
-    valid = true
-    choice = sanitize(choice)
-    position = choice[0..1]
-    target = choice[2..-1]
-    valid = false if !@board.extant_position?(position)
-    valid = false if !@board.extant_position?(target)
-    # then check if own something in that position
-    # then check if valid moves for that unit match
+  def standardize_move(move)
+    move.gsub!(/[, ]+/, "").downcase!
   end
-
-  def sanizite(choice)
-    choice.gsub!(/[, ]+/, "")
+  
+  def break_move(move)
+    current = move[0..1]
+    target = move[2..-1]
+    move = [position, target]
   end
+  
+  def valid_move?(move)
+    current, target = break_move(move)
+    
+    @board.real_position?(current)
+    @board.real_position?(target)
+    
+    @board.player_position?(@player, current)
+    
+    @board.valid_move?(current, target)
 
+  end
 
   def make_move
   end
+  def game_set?
+  end
   def check?
   end
-  def check_mate
+  def draw?
   end
-
-  #def 
-  #end
-
-end
-
-
-
-module Positions
-  def to_notation(i_col, i_row)
-    n_col = col_to_notation(i_col).to_s
-    n_row = row_to_notation(i_row).to_s
-    notation = "#{n_col}#{n_row}"
+  def stalemate?
   end
-  def to_index(n_col, n_row)
-    i_col = col_to_index(n_col).to_i
-    i_row = row_to_index(n_row).to_i
-    index = [i_col, i_row]
-  end
-  
-  def col_to_notation(index)
-    alphabet = ("a".."h").to_a
-    alphabet[index]
-  end
-  def col_to_index(notation)
-    alphabet = ("a".."h").to_a
-    alphabet.index(notation)
-  end
-  def row_to_notation(index)
-    index += 1
-  end
-  def row_to_index(notation)
-    notation -= 1
+  def game_set
   end
 end
-
 
 
 class Board
@@ -171,39 +148,18 @@ class Board
   end
   
   def ascii_col_labels
-    #labels = ("a".."h").to_a
-    #line = "    " << labels.join("   ") << "    "
     line = "    " << col_range.join("   ") << "    "
   end
   
   
-
-  
-  def to_notation(index)
-    n_col = col_to_notation(index[0])
-    n_row = row_to_notation(index[1])
-    notation = "#{n_col}#{n_row}"
-  end
-  def to_index(notation)
-    i_col = col_to_index(notation[0])
-    i_row = row_to_index(notation[1].to_i)
-    index = [i_col, i_row]
+  def real_position?(position)
+    position
   end
   
-  def col_to_notation(index)
-    alphabet = ("a".."h").to_a
-    alphabet[index]
-  end
-  def col_to_index(notation)
-    alphabet = ("a".."h").to_a
-    alphabet.index(notation)
-  end
-  def row_to_notation(index)
-    index += 1
-  end
-  def row_to_index(notation)
-    notation -= 1
-  end
+#  @board.real_position?(current)
+#  @board.real_position?(target)
+#  @board.player_position?(@player, current)
+#  @board.valid_move?(current, target)
   
   
   
@@ -214,8 +170,6 @@ class Board
     exists
   end
   def col_exists?(col)
-    #cols = ("a".."h").to_a
-    #cols.include?(char.to_s)
     col_range.include?(char.to_s)
   end
   def is_integer?(char)

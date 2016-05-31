@@ -1,6 +1,42 @@
 # Change to symbols and upper/lower for white/black
 
 
+=begin
+
+Makes Chess
+Makes Board
+Makes Player white
+Makes Player black
+
+Can change player
+
+Sets Board dimensions
+Puts Pieces on Board
+
+Can write Separators
+Can write Pieces
+Can write blank squares
+Can write column labels
+
+Convert Notation to Index
+Convert Index to Notation
+-- row, column, both, or x 2 (move) [just do the math, regardless of validity]
+
+Movement;
+
+# How to see moves, vs attack moves, vs special moves?
+validate both positions, then--
+ask: valid_move? (must pass board so can see pieces in the way)
+ask: valid_attack? (often the same as valid_move?)
+-- then check special? en passant, castle, etc
+-- check if promotion
+-- check if put king in check
+
+
+
+=end
+
+
 # spec/chess_spec.rb
 
 require "chess"

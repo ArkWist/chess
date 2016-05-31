@@ -7,6 +7,8 @@ describe Chess do
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
 
+  # Sets up Chess object
+  
   describe "Chess.new" do
     it "sets player to #{Chess::WHITE}" do
       expect(c.player).to eq(white)
@@ -16,6 +18,8 @@ describe Chess do
     end
   end
 
+  # Sets up Board object
+  
   describe "Board.new" do
     it "creates an 8 x 8 square array" do
       expect(b.squares.length).to eq(8)
@@ -23,101 +27,40 @@ describe Chess do
     end
   end
   
-    describe "Board.set_board" do
+  describe "Board.set_board" do
     it "puts #{Chess::WHITE} pawns in their starting positions" do
       b.reset_board
       expect(b.squares[0][1]).to be_instance_of(Pawn)
-      expect(b.squares[0][1].owner).to eq(white)
+      expect(b.squares[0][1].player).to eq(white)
       expect(b.squares[7][1]).to be_instance_of(Pawn)
-      expect(b.squares[7][1].owner).to eq(white)
+      expect(b.squares[7][1].player).to eq(white)
     end
     it "puts #{Chess::WHITE} major pieces in their starting positions" do
       b.reset_board
       expect(b.squares[0][0]).to be_instance_of(Rook)
-      expect(b.squares[0][0].owner).to eq(white)
+      expect(b.squares[0][0].player).to eq(white)
       expect(b.squares[6][0]).to be_instance_of(Knight)
-      expect(b.squares[6][0].owner).to eq(white)
+      expect(b.squares[6][0].player).to eq(white)
     end
   end
   describe "Board.set_board" do
     it "puts #{Chess::BLACK} pawns in their starting positions" do
       b.reset_board
       expect(b.squares[0][6]).to be_instance_of(Pawn)
-      expect(b.squares[0][6].owner).to eq(black)
+      expect(b.squares[0][6].player).to eq(black)
       expect(b.squares[7][6]).to be_instance_of(Pawn)
-      expect(b.squares[7][6].owner).to eq(black)
+      expect(b.squares[7][6].player).to eq(black)
     end
     it "puts #{Chess::BLACK} major pieces in their starting positions" do
       b.reset_board
       expect(b.squares[1][7]).to be_instance_of(Knight)
-      expect(b.squares[1][7].owner).to eq(black)
+      expect(b.squares[1][7].player).to eq(black)
       expect(b.squares[5][7]).to be_instance_of(Bishop)
-      expect(b.squares[5][7].owner).to eq(black)
+      expect(b.squares[5][7].player).to eq(black)
     end
   end
   
-  
-end
-
-=begin
-
-# Change to symbols and upper/lower for white/black
-
-Makes Chess
-Makes Board
-Makes Player white
-Makes Player black
-
-Can change player
-
-Sets Board dimensions
-Puts Pieces on Board
-
-Can write Separators
-Can write Pieces
-Can write blank squares
-Can write column labels
-
-Convert Notation to Index
-Convert Index to Notation
--- row, column, both, or x 2 (move) [just do the math, regardless of validity]
-
-Movement;
-
-# How to see moves, vs attack moves, vs special moves?
-validate both positions, then--
-ask: valid_move? (must pass board so can see pieces in the way)
-ask: valid_attack? (often the same as valid_move?)
--- then check special? en passant, castle, etc
--- check if promotion
--- check if put king in check
-
-
-
-=end
-
-=begin
-# spec/chess_spec.rb
-
-require "chess"
-
-
-describe Chess do
-
-  let(:c) { Chess.new }
-  let(:b) { c.board }
-  let(:white) { Chess::WHITE }
-  let(:black) { Chess::BLACK }
-
-  describe "Chess.new" do
-    it "sets player to #{Chess::WHITE}" do
-      expect(c.player).to eq(white)
-    end
-    it "creates a new game board" do
-      expect(c.board).to be_instance_of(Board)
-    end
-  end
-  
+  # Game management procedures
   
   describe "Chess.next_player" do
     it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
@@ -130,62 +73,51 @@ describe Chess do
     end
   end
   
-  
-  describe "Board.new" do
-    it "creates an 8 x 8 square array" do
-      expect(b.squares.length).to eq(8)
-      expect(b.squares[0].length).to eq(8)
-    end
-  end
 
   
-  describe "Board.set_board" do
-    it "puts #{Chess::WHITE} pawns in their starting positions" do
-      b.set_board(white, black)
-      expect(b.squares[0][1]).to be_instance_of(Pawn)
-      expect(b.squares[0][1].owner).to eq(white)
-      expect(b.squares[7][1]).to be_instance_of(Pawn)
-      expect(b.squares[7][1].owner).to eq(white)
+  # Position interpretation
+  describe "Position.valid?" do
+    it "validates legal board positions" do
+      expect(Position::valid?("a3")).to eq(true)
     end
-    it "puts #{Chess::WHITE} major pieces in their starting positions" do
-      b.set_board(white, black)
-      expect(b.squares[0][0]).to be_instance_of(Rook)
-      expect(b.squares[0][0].owner).to eq(white)
-      expect(b.squares[6][0]).to be_instance_of(Knight)
-      expect(b.squares[6][0].owner).to eq(white)
+    it "invalidates illegal board positions" do
+      expect(Position::valid?("p3")).to eq(false)
     end
-  end
-  describe "Board.set_board" do
-    it "puts #{Chess::BLACK} pawns in their starting positions" do
-      b.set_board(white, black)
-      expect(b.squares[0][6]).to be_instance_of(Pawn)
-      expect(b.squares[0][6].owner).to eq(black)
-      expect(b.squares[7][6]).to be_instance_of(Pawn)
-      expect(b.squares[7][6].owner).to eq(black)
-    end
-    it "puts #{Chess::BLACK} major pieces in their starting positions" do
-      b.set_board(white, black)
-      expect(b.squares[1][7]).to be_instance_of(Knight)
-      expect(b.squares[1][7].owner).to eq(black)
-      expect(b.squares[5][7]).to be_instance_of(Bishop)
-      expect(b.squares[5][7].owner).to eq(black)
+    it "invalidates nonconforming board positions" do
+      expect(Position::valid?("ap")).to eq(false)
     end
   end
   
-  
-  
-  describe "Pawn.icon" do
-    it "gets the owner-colored symbol for #{Chess::WHITE} Pawns" do
-      b.set_board(white, black)
-      expect(b.squares[0][1].icon).to eq("♙")
+  # This is what splits data into Positions
+  describe "Move.valid?" do
+    it "validates A#A# formatting" do
+      move = Move.new()
+      expect(Move.valid?("e4g5")).to eq(true)
     end
-    it "gets the owner-colored symbol for #{Chess::BLACK} Pawns" do
-      b.set_board(white, black)
-      expect(b.squares[0][6].icon).to eq("♟")
+    it "validates A# A# formatting" do
+      move = Move.new()
+      expect(Move.valid?("e4 g5")).to eq(true)
+    end
+    it "validates A#,A# formatting" do
+      move = Move.new()
+      expect(Move.valid?("e4,g5")).to eq(true)
+      expect(Move.valid?("e4, g5")).to eq(true)
     end
   end
   
+
   
+  # Pass Positions back and forth? -------------
+  
+  # Move = gets.chomp
+  # Check formatting (letter, number, letter, number)
+  # >> Comment that it isn't flexible but could be with (letters, numbers...)
+  # Start = Move.start
+  # Target = Move.target
+  # Convert both to index
+  # Check if they are valid
+  
+  # Board interpretation procedures
   
   describe "Board.row_to_notation" do
     it "converts a row array index to notation" do
@@ -217,7 +149,50 @@ describe Chess do
       expect(b.to_index("h7")).to eq([7, 6])
     end
   end
+  # Move to Positions
   
+  
+end
+
+=begin
+# Change to symbols and upper/lower for white/black
+Makes Chess
+Makes Board
+Makes Player white
+Makes Player black
+Can change player
+Sets Board dimensions
+Puts Pieces on Board
+Can write Separators
+Can write Pieces
+Can write blank squares
+Can write column labels
+Convert Notation to Index
+Convert Index to Notation
+-- row, column, both, or x 2 (move) [just do the math, regardless of validity]
+Movement;
+# How to see moves, vs attack moves, vs special moves?
+validate both positions, then--
+ask: valid_move? (must pass board so can see pieces in the way)
+ask: valid_attack? (often the same as valid_move?)
+-- then check special? en passant, castle, etc
+-- check if promotion
+-- check if put king in check
+=end
+
+
+
+=begin
+  describe "Pawn.icon" do
+    it "gets the owner-colored symbol for #{Chess::WHITE} Pawns" do
+      b.set_board(white, black)
+      expect(b.squares[0][1].icon).to eq("♙")
+    end
+    it "gets the owner-colored symbol for #{Chess::BLACK} Pawns" do
+      b.set_board(white, black)
+      expect(b.squares[0][6].icon).to eq("♟")
+    end
+  end
   
   
   describe "Board.ascii_separator" do
@@ -231,7 +206,6 @@ describe Chess do
       expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
     end
   end
-
   describe "Board.ascii_row" do
     it "writes a horizontal row with a piece" do
       b.set_board(white, black)
@@ -253,8 +227,6 @@ describe Chess do
     end
   end
   
-
-
   describe "Pawn.valid_moves(position)" do
     it "says one position forward is a valid move" do
     end
@@ -271,7 +243,6 @@ describe Chess do
   end
   
   
-
   # How determine check mate
   # Just check every single possible next move?
   
@@ -303,7 +274,6 @@ describe Chess do
   end
   
 end
-
 # class Chess
 # class Board
 # class Piece
@@ -316,11 +286,6 @@ end
 # -- Bishop
 # -- Queen
 # -- King
-
-
-
-
-
 # Match
 # Board --positions
 # ~Players
@@ -329,16 +294,12 @@ end
   # Type --rules
   # Special Data (pawn first move?)
 # Make board
-
 ## check_mate check would check beginning of the turn, if there are any legal moves which allow escape from check? So if check, then checks?
-
-
   
   
   
   
 =end
-  
   
   
   

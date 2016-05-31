@@ -1,4 +1,11 @@
 
+
+
+
+
+
+
+=begin
 class Piece
   attr_accessor :owner, :moved, :position
   
@@ -95,6 +102,9 @@ class Pawn < Piece
   end
 =end
   
+  
+  
+=begin
 end
 
 
@@ -172,6 +182,6 @@ class King < Piece
   end
 end
 
-
+=end
 
 

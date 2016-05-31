@@ -1,7 +1,26 @@
-# Change to symbols and upper/lower for white/black
+# spec/chess_spec.rb
+require "chess"
 
+describe Chess do
+  let(:c) { Chess.new }
+  let(:b) { c.board }
+  let(:white) { Chess::WHITE }
+  let(:black) { Chess::BLACK }
+
+  describe "Chess.new" do
+    it "sets player to #{Chess::WHITE}" do
+      expect(c.player).to eq(white)
+    end
+    it "creates a new game board" do
+      expect(c.board).to be_instance_of(Board)
+    end
+  end
+
+end
 
 =begin
+
+# Change to symbols and upper/lower for white/black
 
 Makes Chess
 Makes Board
@@ -36,7 +55,7 @@ ask: valid_attack? (often the same as valid_move?)
 
 =end
 
-
+=begin
 # spec/chess_spec.rb
 
 require "chess"
@@ -277,7 +296,7 @@ end
   
   
   
-  
+=end
   
   
   

@@ -1,3 +1,21 @@
+# Chess
+require "board"
+require "pieces"
+
+class Chess
+  WHITE = :White
+  BLACK = :Black
+  EMPTY = :Empty
+  attr_reader :player, :board
+
+  def initialize
+    @player = WHITE
+    @board = Board.new
+    #play
+  end
+end
+
+
 
 
 =begin

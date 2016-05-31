@@ -16,6 +16,47 @@ describe Chess do
     end
   end
 
+  describe "Board.new" do
+    it "creates an 8 x 8 square array" do
+      expect(b.squares.length).to eq(8)
+      expect(b.squares[0].length).to eq(8)
+    end
+  end
+  
+    describe "Board.set_board" do
+    it "puts #{Chess::WHITE} pawns in their starting positions" do
+      b.reset_board
+      expect(b.squares[0][1]).to be_instance_of(Pawn)
+      expect(b.squares[0][1].owner).to eq(white)
+      expect(b.squares[7][1]).to be_instance_of(Pawn)
+      expect(b.squares[7][1].owner).to eq(white)
+    end
+    it "puts #{Chess::WHITE} major pieces in their starting positions" do
+      b.reset_board
+      expect(b.squares[0][0]).to be_instance_of(Rook)
+      expect(b.squares[0][0].owner).to eq(white)
+      expect(b.squares[6][0]).to be_instance_of(Knight)
+      expect(b.squares[6][0].owner).to eq(white)
+    end
+  end
+  describe "Board.set_board" do
+    it "puts #{Chess::BLACK} pawns in their starting positions" do
+      b.reset_board
+      expect(b.squares[0][6]).to be_instance_of(Pawn)
+      expect(b.squares[0][6].owner).to eq(black)
+      expect(b.squares[7][6]).to be_instance_of(Pawn)
+      expect(b.squares[7][6].owner).to eq(black)
+    end
+    it "puts #{Chess::BLACK} major pieces in their starting positions" do
+      b.reset_board
+      expect(b.squares[1][7]).to be_instance_of(Knight)
+      expect(b.squares[1][7].owner).to eq(black)
+      expect(b.squares[5][7]).to be_instance_of(Bishop)
+      expect(b.squares[5][7].owner).to eq(black)
+    end
+  end
+  
+  
 end
 
 =begin

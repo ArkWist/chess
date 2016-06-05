@@ -103,13 +103,13 @@ describe Chess do
   # Move interpretation
   
   describe "Move.start" do
-    it "returns a move's start position" do
+    it "gets a move's start position" do
       move = Move.new("e4, g5")
       expect(move.start).to eq("e4")
     end
   end
   describe "Move.target" do
-    it "returns a move's end position" do
+    it "gets a move's end position" do
       move = Move.new("e4, g5")
       expect(move.target).to eq("g5")
     end
@@ -157,6 +157,75 @@ describe Chess do
     end
   end
   
+  # Piece representation
+  
+  describe "Pawn.icon" do
+    it "gets the symbol for #{Chess::WHITE} Pawns" do
+      b.set_board(white, black)
+      expect(b.squares[0][1].icon).to eq("P")
+    end
+    it "gets the symbol for #{Chess::BLACK} Pawns" do
+      b.set_board(white, black)
+      expect(b.squares[0][6].icon).to eq("p")
+    end
+  end
+  
+  # Board representation
+  
+  describe "Board.ascii_separator" do
+    it "writes a horizontal row separating line" do
+      expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
+    end
+  end
+  describe "Board.ascii_row" do
+    it "writes a horizontal row without pieces" do
+      b.set_board(white, black)
+      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
+    end
+  end
+  describe "Board.ascii_row" do
+    it "writes a horizontal row with a piece" do
+      b.set_board(white, black)
+      b.squares[3][3] = Pawn.new(white)
+      expect(b.ascii_row(3)).to eq("4 |   |   |   | P |   |   |   |   | 4")
+    end
+    it "writes a horizontal row with pieces" do
+      b.set_board(white, black)
+      expect(b.ascii_row(7)).to eq("8 | r | n | b | k | q | b | n | r | 8")
+      puts b.ascii_separator
+      puts b.ascii_row(7)
+      puts b.ascii_col_labels
+    end
+  end
+  describe "Board.ascii_col_labels" do
+    it "writes a horizontal listing of alphabetical column labels" do
+      b.set_board(white, black)
+      expect(b.ascii_col_labels).to eq("    a   b   c   d   e   f   g   h    ")
+    end
+  end
+  
+  # Piece move checking
+  
+  describe "Pawn.valid_moves(position)" do
+    it "says one position forward is a valid move" do
+      start = Position.new("d3")
+      target = Position.new("d4")
+      pawn = Pawn.new(white)
+      valid_moves = pawn.valid_moves(b, start)  # Pawn must take board and position
+      expect(valid_moves.include?(target)).to eq(true)
+    end
+    it "says one taken position forward isn't a valid move" do
+    end
+    it "says two positions forward is a valid first move" do
+      ### IF is currently placed in starting row, so no need for first move flag
+    end
+    it "says two positions forward isn't a valid move post-first move" do
+    end
+    it "says one enemy taken position diagonally is a valid attack" do
+    end
+    it "recognizes en passant as a valid attack" do
+    end
+  end
   
 =begin
   Put in "e4g5"
@@ -181,41 +250,6 @@ describe Chess do
   # Check if they are valid
   
   # Board interpretation procedures
-  
-  # Notation translation
-  
-  describe "Board.row_to_notation" do
-    it "converts a row array index to notation" do
-      expect(b.row_to_notation(3)).to eq(4)
-    end
-  end
-  describe "Board.row_to_index" do
-    it "converts row notation to an array index" do
-      expect(b.row_to_index(3)).to eq(2)
-    end
-  end
-  describe "Board.col_to_notation" do
-    it "converts a column array index to notation" do
-      expect(b.col_to_notation(6)).to eq("g")
-    end
-  end
-  describe "Board.col_to_index" do
-    it "converts column notation to an array index" do
-      expect(b.col_to_index("e")).to eq(4)
-    end
-  end
-  describe "Board.to_notation" do
-    it "converts a square array index to notation" do
-      expect(b.to_notation([2, 3])).to eq("c4")
-    end
-  end
-  describe "Board.to_index" do
-    it "converts Chess notation to array indices" do
-      expect(b.to_index("h7")).to eq([7, 6])
-    end
-  end
-  # Move to Positions
-  
   
 end
 
@@ -248,48 +282,7 @@ ask: valid_attack? (often the same as valid_move?)
 
 
 =begin
-  describe "Pawn.icon" do
-    it "gets the owner-colored symbol for #{Chess::WHITE} Pawns" do
-      b.set_board(white, black)
-      expect(b.squares[0][1].icon).to eq("♙")
-    end
-    it "gets the owner-colored symbol for #{Chess::BLACK} Pawns" do
-      b.set_board(white, black)
-      expect(b.squares[0][6].icon).to eq("♟")
-    end
-  end
-  
-  
-  describe "Board.ascii_separator" do
-    it "writes a horizontal row separating line" do
-      expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
-    end
-  end
-  describe "Board.ascii_row" do
-    it "writes a horizontal row without pieces" do
-      b.set_board(white, black)
-      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
-    end
-  end
-  describe "Board.ascii_row" do
-    it "writes a horizontal row with a piece" do
-      b.set_board(white, black)
-      b.squares[3][3] = Pawn.new(white)
-      expect(b.ascii_row(3)).to eq("4 |   |   |   | P |   |   |   |   | 4")
-    end
-    it "writes a horizontal row with pieces" do
-      b.set_board(white, black)
-      expect(b.ascii_row(7)).to eq("8 | r | n | b | k | q | b | n | r | 8")
-      puts b.ascii_separator
-      puts b.ascii_row(7)
-      puts b.ascii_col_labels
-    end
-  end
-  describe "Board.ascii_col_labels" do
-    it "writes a horizontal listing of alphabetical column labels" do
-      b.set_board(white, black)
-      expect(b.ascii_col_labels).to eq("    a   b   c   d   e   f   g   h    ")
-    end
+
   end
   
   describe "Pawn.valid_moves(position)" do

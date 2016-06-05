@@ -105,23 +105,69 @@ describe Chess do
   describe "Move.start" do
     it "returns a move's start position" do
       move = Move.new("e4, g5")
-      expect(move.start).to eq(Position.new("e4"))
+      expect(move.start).to eq("e4")
     end
   end
   describe "Move.target" do
     it "returns a move's end position" do
       move = Move.new("e4, g5")
-      expect(move.target).to eq(Position.new("g5"))
+      expect(move.target).to eq("g5")
     end
   end
+  
+  # Notation translation
+  
+  describe "Position::row_to_notation" do
+    it "converts a row array index to notation" do
+      expect(Position::row_to_notation(3)).to eq("4")
+    end
+  end
+  describe "Position::row_to_index" do
+    it "converts row notation to an array index" do
+      expect(Position::row_to_index(3)).to eq(2)
+    end
+  end
+  describe "Position::col_to_notation" do
+    it "converts a column array index to notation" do
+      expect(Position::col_to_notation(6)).to eq("g")
+    end
+  end
+  describe "Position::col_to_index" do
+    it "converts column notation to an array index" do
+      expect(Position::col_to_index("e")).to eq(4)
+    end
+  end
+  describe "Position::to_notation" do
+    it "converts a square array index to notation" do
+      expect(Position::to_notation([2, 3])).to eq("c4")
+    end
+  end
+  describe "Position::to_index" do
+    it "converts Chess notation to array indices" do
+      expect(Position::to_index("h7")).to eq([7, 6])
+    end
+  end
+  
+  describe "Position.new" do
+    it "creates an index position from notation input" do
+      pos = Position.new("e4")
+      expect(pos.col).to eq(4)
+      expect(pos.row).to eq(3)
+      expect(pos.index).to eq([4, 3])
+    end
+  end
+  
   
 =begin
   Put in "e4g5"
   Says start is "e4"
-  Says target is "g5"
-  Checks ownership of "e4" >> Board.checkPiece (converts to index there)
-  Checks moves for "e4" >> Board.piece (converts to index there)
-  Sees if movelist includes "g5" (converts "g5" to index then validates)
+  Says target is "g5" >> target = Position.new(move.target) (so is Position)
+  Checks ownership of Position >> Board.checkPiece
+  Checks moves for Position >> Board.piece
+  Sees if movelist includes Position (all done in index)
+  
+  "e4" and "g5" are strings as that's easier to deal with
+  Positions are with indexes
 =end
   
   # Pass Positions back and forth? -------------

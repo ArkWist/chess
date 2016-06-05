@@ -7,7 +7,7 @@ describe Chess do
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
 
-  # Sets up Chess object
+  # Chess object setup
   
   describe "Chess.new" do
     it "sets player to #{Chess::WHITE}" do
@@ -18,7 +18,7 @@ describe Chess do
     end
   end
 
-  # Sets up Board object
+  # Board object setup
   
   describe "Board.new" do
     it "creates an 8 x 8 square array" do
@@ -60,7 +60,7 @@ describe Chess do
     end
   end
   
-  # Game management procedures
+  # Overhead game management
   
   describe "Chess.next_player" do
     it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
@@ -72,10 +72,9 @@ describe Chess do
       expect(c.player).to eq(white)
     end
   end
-  
 
+  # Move interpretation
   
-  # Position interpretation
   describe "Position.valid?" do
     it "validates legal board positions" do
       expect(Position::valid?("a3")).to eq(true)
@@ -87,25 +86,43 @@ describe Chess do
       expect(Position::valid?("ap")).to eq(false)
     end
   end
-  
-  # This is what splits data into Positions
+
   describe "Move.valid?" do
     it "validates A#A# formatting" do
-      move = Move.new()
-      expect(Move.valid?("e4g5")).to eq(true)
+      expect(Move::valid?("e4g5")).to eq(true)
     end
     it "validates A# A# formatting" do
-      move = Move.new()
-      expect(Move.valid?("e4 g5")).to eq(true)
+      expect(Move::valid?("e4 g5")).to eq(true)
     end
     it "validates A#,A# formatting" do
-      move = Move.new()
-      expect(Move.valid?("e4,g5")).to eq(true)
-      expect(Move.valid?("e4, g5")).to eq(true)
+      expect(Move::valid?("e4,g5")).to eq(true)
+      expect(Move::valid?("e4, g5")).to eq(true)
     end
   end
   
-
+  # Move interpretation
+  
+  describe "Move.start" do
+    it "returns a move's start position" do
+      move = Move.new("e4, g5")
+      expect(move.start).to eq(Position.new("e4"))
+    end
+  end
+  describe "Move.target" do
+    it "returns a move's end position" do
+      move = Move.new("e4, g5")
+      expect(move.target).to eq(Position.new("g5"))
+    end
+  end
+  
+=begin
+  Put in "e4g5"
+  Says start is "e4"
+  Says target is "g5"
+  Checks ownership of "e4" >> Board.checkPiece (converts to index there)
+  Checks moves for "e4" >> Board.piece (converts to index there)
+  Sees if movelist includes "g5" (converts "g5" to index then validates)
+=end
   
   # Pass Positions back and forth? -------------
   
@@ -118,6 +135,8 @@ describe Chess do
   # Check if they are valid
   
   # Board interpretation procedures
+  
+  # Notation translation
   
   describe "Board.row_to_notation" do
     it "converts a row array index to notation" do

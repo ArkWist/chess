@@ -215,6 +215,13 @@ describe Chess do
       expect(valid_moves.include?(target)).to eq(true)
     end
     it "says one taken position forward isn't a valid move" do
+      start = Position("d3")
+      target = Position.new("d4")
+      pawn = Pawn.new(white)
+      col, row = Position::to_index(target)
+      b.squares[col, row] = Pawn.new(black)
+      valid_moves = pawn.valid_moves(b, start)
+      expect(valid_moves.include?(target)).to eq(false)
     end
     it "says two positions forward is a valid first move" do
       ### IF is currently placed in starting row, so no need for first move flag

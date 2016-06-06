@@ -161,11 +161,9 @@ describe Chess do
   
   describe "Pawn.icon" do
     it "gets the symbol for #{Chess::WHITE} Pawns" do
-      b.set_board(white, black)
       expect(b.squares[0][1].icon).to eq("P")
     end
     it "gets the symbol for #{Chess::BLACK} Pawns" do
-      b.set_board(white, black)
       expect(b.squares[0][6].icon).to eq("p")
     end
   end
@@ -179,18 +177,15 @@ describe Chess do
   end
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
-      b.set_board(white, black)
       expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
     end
   end
   describe "Board.ascii_row" do
     it "writes a horizontal row with a piece" do
-      b.set_board(white, black)
       b.squares[3][3] = Pawn.new(white)
       expect(b.ascii_row(3)).to eq("4 |   |   |   | P |   |   |   |   | 4")
     end
     it "writes a horizontal row with pieces" do
-      b.set_board(white, black)
       expect(b.ascii_row(7)).to eq("8 | r | n | b | k | q | b | n | r | 8")
       puts b.ascii_separator
       puts b.ascii_row(7)
@@ -199,12 +194,11 @@ describe Chess do
   end
   describe "Board.ascii_col_labels" do
     it "writes a horizontal listing of alphabetical column labels" do
-      b.set_board(white, black)
       expect(b.ascii_col_labels).to eq("    a   b   c   d   e   f   g   h    ")
     end
   end
   
-  # Piece move checking
+  # Pawn move checking
   
   describe "Pawn.valid_moves(position)" do
     it "says one position forward is a valid move" do
@@ -214,8 +208,15 @@ describe Chess do
       valid_moves = pawn.valid_moves(b, start)  # Pawn must take board and position
       expect(valid_moves.include?(target)).to eq(true)
     end
-    it "says one taken position forward isn't a valid move" do
-      start = Position("d3")
+    it "says two positions forward is a valid first move" do
+      start = Position.new("d2")
+      target = Position.new("d4")
+      pawn = Pawn.new(white)
+      valid_moves = pawn.valid_moves(b, start)
+      expect(valid_moves.include?(target)).to eq(true)
+    end
+    it "says taken positions aren't valid moves" do
+      start = Position.new("d3")
       target = Position.new("d4")
       pawn = Pawn.new(white)
       col, row = Position::to_index(target)
@@ -223,16 +224,40 @@ describe Chess do
       valid_moves = pawn.valid_moves(b, start)
       expect(valid_moves.include?(target)).to eq(false)
     end
-    it "says two positions forward is a valid first move" do
-      ### IF is currently placed in starting row, so no need for first move flag
-    end
-    it "says two positions forward isn't a valid move post-first move" do
-    end
-    it "says one enemy taken position diagonally is a valid attack" do
-    end
-    it "recognizes en passant as a valid attack" do
+  end
+  
+  # Pawn attack checking
+  
+  describe "Pawn.valid_attacks(position)" do
+    it "says diagonal enemies can be attacked" do
+      start = Position.new("f4")
+      target = Position.new("g5")
+      pawn = Pawn.new(white)
+      col, row = Position::to_index(target)
+      b.squares[col, row] = Pawn.new(black)
+      valid_attacks = pawn.valid_attacks(b, start)
+      expect(valid_attacks.include?(target)).to eq(true)
     end
   end
+  describe "Pawn.valid_specials(position)" do
+    it "recognizes en passant attacks" do
+      start = Position.new("f5")
+      target = Position.new("e6")
+      pawn = Pawn.new(white)
+      col, row = Position::to_index(target)
+      b.squares[col, row - 1] = Pawn.new(black)
+      valid_specials = pawn.valid_specials(b, start)
+      expect(special_attacks.include?(target)).to eq(true)
+    end
+  end
+  
+  # Pawn movement
+  
+  
+  # Pawn attacking
+  
+  
+  # Pawn en passant
   
 =begin
   Put in "e4g5"

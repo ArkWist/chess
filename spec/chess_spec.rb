@@ -5,29 +5,69 @@ describe Chess do
   let(:c) { Chess.new }
   let(:b) { c.board }
   let(:s) { c.board.squares }
+  let(:p) { c.player }
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
   let(:empty) { Chess::EMPTY }
 
-  # Chess object setup
+  # Chess setup
   
   describe "Chess.new" do
     it "sets player to #{Chess::WHITE}" do
-      expect(c.player).to eq(white)
+      expect(p).to eq(white)
     end
     it "creates a new game board" do
       expect(c.board).to be_instance_of(Board)
     end
   end
 
-  # Board object setup
+  # Board setup
   
   describe "Board.new" do
-    it "creates an 8 x 8 square array" do
-      expect(b.squares.length).to eq(8)
-      expect(b.squares[0].length).to eq(8)
+    it "creates an 8 x 8 array of squares" do
+      expect(s.length).to eq(8)
+      expect(s[0].length).to eq(8)
     end
   end
+  
+    # Board notation
+    
+    describe "Position.new" do
+      it "creates a notation position"
+        expect(Position::get_index("b5")).to eq([1, 4])
+      end
+    end
+    
+    # Basic piece management
+    
+    describe "Board.make_piece" do
+      it "creates a Piece on the board" do
+        b.make_piece("a1", Pawn.new)
+        expect(b.get_piece("a1")).to be_instance_of(Pawn)
+      end
+    end
+    
+    describe "Board.kill_piece" do
+      it "removes a Piece from the board" do
+        b.make_piece("c4", Pawn.new(white))
+        b.kill_piece("c4")
+        expect(b.get_piece("c4")).to eq(empty)
+      end
+    end
+    
+    describe "Board.move_piece"
+      it "moves a Piece from one square to another" do
+        b.make_piece("c4", Pawn.new(white))
+        b.move_piece("c4", "c5")
+        expect(b.get_piece("c5")).to be_instance_of(pawn)
+      end
+    end
+  
+  ###########
+  
+  describe "Board.set_board" do
+    it "puts #{Chess::WHITE} pawns in their starting positions" do
+  
   
   describe "Board.set_board" do
     it "puts #{Chess::WHITE} pawns in their starting positions" do

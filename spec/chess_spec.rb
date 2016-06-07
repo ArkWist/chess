@@ -161,14 +161,14 @@ describe Chess do
   end
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
-      expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
+      expect(b.ascii_row(5)).to eq("5 |   |   |   |   |   |   |   |   | 5")
     end
     it "writes a horizontal row with a piece" do
       b.make_piece("d4", Pawn.new(white))
-      expect(b.ascii_row(3)).to eq("4 |   |   |   | P |   |   |   |   | 4")
+      expect(b.ascii_row(4)).to eq("4 |   |   |   | P |   |   |   |   | 4")
     end
     it "writes a horizontal row with pieces" do
-      expect(b.ascii_row(7)).to eq("8 | r | n | b | k | q | b | n | r | 8")
+      expect(b.ascii_row(8)).to eq("8 | r | n | b | k | q | b | n | r | 8")
     end
   end
   describe "Board.ascii_col_labels" do
@@ -177,23 +177,39 @@ describe Chess do
     end
   end
   
+  ######### Pawn should know where it is ###########
+  
   # Pawn move checking
   
-  describe "Pawn.valid_moves(position)" do
-    it "says one position forward is a valid move" do
-      start = Position.new("d3")
-      target = Position.new("d4")
-      pawn = Pawn.new(white)
-      valid_moves = pawn.valid_moves(b, start)  # Pawn must take board and position
-      expect(valid_moves.include?(target)).to eq(true)
+  describe "Pawn.get_moves" do
+    it "puts one move forward in the move list" do
+      start, target = "d3", "d4"
+      b.make_piece(start, Pawn.new(white))
+      piece = b.get_piece(start)
+      moves = piece.get_moves(b)
+      expect(moves.include?(target)).to eq(true)
     end
-    it "says two positions forward is a valid first move" do
-      start = Position.new("d2")
-      target = Position.new("d4")
-      pawn = Pawn.new(white)
-      valid_moves = pawn.valid_moves(b, start)
-      expect(valid_moves.include?(target)).to eq(true)
+    it "doesn't put blocked moves in the move list" do
+      start, target = "d3", "d4"
+      b.make_piece(start, Pawn.new(white))
+      b.make_piece(target, Pawn.new(black))
+      piece = b.get_piece(start)
+      moves = piece.get_moves(b)
+      expect(moves.include?(target)).to eq(false)
     end
+    
+    # Pawn attack checking
+    
+    
+    
+    # SPECIAL
+    #it "says two positions forward is a valid first move" do
+    #  start = Position.new("d2")
+    #  target = Position.new("d4")
+    #  pawn = Pawn.new(white)
+    #  valid_moves = pawn.valid_moves(b, start)
+    #  expect(valid_moves.include?(target)).to eq(true)
+    #end
     it "says taken positions aren't valid moves" do
       start = Position.new("d3")
       target = Position.new("d4")

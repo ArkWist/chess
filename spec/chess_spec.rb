@@ -6,6 +6,7 @@ describe Chess do
   let(:b) { c.board }
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
+  let(:empty) { Chess::EMPTY }
 
   # Chess object setup
   
@@ -253,11 +254,54 @@ describe Chess do
   
   # Pawn movement
   
+  describe "Board.move(move)" do
+    it "moves a Pawn if the move command is valid" do
+      start = Position.new("c4")
+      target = Position.new("c5")
+      pawn = Pawn.new(white)
+      b.move(start, target)
+      expect(b.squares[2][3]).to eq(empty)
+      expect(b.squares[2][4]).to be_instance_of(Pawn)
+    end
+  end
   
-  # Pawn attacking
+  # Pawn attack
   
+  describe "Board.move(attack move)" do
+    it "attacks with a Pawn if legal" do
+      start = Position.new("c4")
+      target = Position.new("b5")
+      pawn = Pawn.new(white)
+      col, row = Position::to_index(target)
+      b.squares[col, row] = Knight.new(black)
+      b.move(start, target)
+      expect(b.squares[2][4]).to be_instance_of(Pawn)
+    end
+  end
   
   # Pawn en passant
+  
+  describe "Board.special(en passant move)" do
+    it "completes en passant moves" do
+      start = Position.new("c5")
+      target = Position.new("b6")
+      pawn = Pawn.new(white)
+      col, row = Position::to_index(target)
+      b.squares[col, row - 1] = Pawn.new(black)
+      b.set_en_passant = Position.new("b6")
+      b.en_passant_move(start, target)
+      expect(b.squares[1][5]).to eq(pawn)
+      expect(b.squares[2][4]).to eq(empty)
+    end
+  end
+  
+  # Pawn promotion
+  
+  
+  # Really need an easier way to reference notation
+  # Should always pass notation as a letter and a number
+  
+  
   
 =begin
   Put in "e4g5"

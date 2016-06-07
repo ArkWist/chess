@@ -4,6 +4,7 @@ require "chess"
 describe Chess do
   let(:c) { Chess.new }
   let(:b) { c.board }
+  let(:s) { c.board.squares }
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
   let(:empty) { Chess::EMPTY }
@@ -296,6 +297,12 @@ describe Chess do
   end
   
   # Pawn promotion
+  
+  # Board square information
+  # b.get_square
+  # b.get_owner
+  # b.get_type
+  # b.get_icon
   
   
   # Really need an easier way to reference notation

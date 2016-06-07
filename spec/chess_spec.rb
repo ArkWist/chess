@@ -10,7 +10,7 @@ describe Chess do
   let(:black) { Chess::BLACK }
   let(:empty) { Chess::EMPTY }
 
-  # Chess setup
+  # Chess creation
   
   describe "Chess.new" do
     it "sets player to #{Chess::WHITE}" do
@@ -21,7 +21,7 @@ describe Chess do
     end
   end
 
-  # Board setup
+  # Board creation
   
   describe "Board.new" do
     it "creates an 8 x 8 array of squares" do
@@ -30,79 +30,57 @@ describe Chess do
     end
   end
   
-    # Board notation
-    
-    describe "Position.new" do
-      it "creates a notation position"
-        expect(Position::get_index("b5")).to eq([1, 4])
-      end
-    end
-    
-    # Basic piece management
-    
-    describe "Board.make_piece" do
-      it "creates a Piece on the board" do
-        b.make_piece("a1", Pawn.new)
-        expect(b.get_piece("a1")).to be_instance_of(Pawn)
-      end
-    end
-    
-    describe "Board.kill_piece" do
-      it "removes a Piece from the board" do
-        b.make_piece("c4", Pawn.new(white))
-        b.kill_piece("c4")
-        expect(b.get_piece("c4")).to eq(empty)
-      end
-    end
-    
-    describe "Board.move_piece"
-      it "moves a Piece from one square to another" do
-        b.make_piece("c4", Pawn.new(white))
-        b.move_piece("c4", "c5")
-        expect(b.get_piece("c5")).to be_instance_of(pawn)
-      end
-    end
+  # Board notation
   
-  ###########
-  
-  describe "Board.set_board" do
-    it "puts #{Chess::WHITE} pawns in their starting positions" do
-  
-  
-  describe "Board.set_board" do
-    it "puts #{Chess::WHITE} pawns in their starting positions" do
-      b.reset_board
-      expect(b.squares[0][1]).to be_instance_of(Pawn)
-      expect(b.squares[0][1].player).to eq(white)
-      expect(b.squares[7][1]).to be_instance_of(Pawn)
-      expect(b.squares[7][1].player).to eq(white)
-    end
-    it "puts #{Chess::WHITE} major pieces in their starting positions" do
-      b.reset_board
-      expect(b.squares[0][0]).to be_instance_of(Rook)
-      expect(b.squares[0][0].player).to eq(white)
-      expect(b.squares[6][0]).to be_instance_of(Knight)
-      expect(b.squares[6][0].player).to eq(white)
-    end
-  end
-  describe "Board.set_board" do
-    it "puts #{Chess::BLACK} pawns in their starting positions" do
-      b.reset_board
-      expect(b.squares[0][6]).to be_instance_of(Pawn)
-      expect(b.squares[0][6].player).to eq(black)
-      expect(b.squares[7][6]).to be_instance_of(Pawn)
-      expect(b.squares[7][6].player).to eq(black)
-    end
-    it "puts #{Chess::BLACK} major pieces in their starting positions" do
-      b.reset_board
-      expect(b.squares[1][7]).to be_instance_of(Knight)
-      expect(b.squares[1][7].player).to eq(black)
-      expect(b.squares[5][7]).to be_instance_of(Bishop)
-      expect(b.squares[5][7].player).to eq(black)
+  describe "Position.new" do
+    it "converts notation to index"
+      expect(Position::to_index("b5")).to eq([1, 4])
     end
   end
   
-  # Overhead game management
+  # Piece manipulation
+  
+  describe "Board.make_piece" do
+    it "creates a Piece on the board" do
+      b.make_piece("a1", Pawn.new)
+      expect(b.get_piece("a1")).to be_instance_of(Pawn)
+    end
+  end
+  
+  describe "Board.kill_piece" do
+    it "removes a Piece from the board" do
+      b.make_piece("c4", Pawn.new(white))
+      b.kill_piece("c4")
+      expect(b.get_piece("c4")).to eq(empty)
+    end
+  end
+  
+  describe "Board.move_piece"
+    it "moves a Piece from one square to another" do
+      b.make_piece("c4", Pawn.new(white))
+      b.move_piece("c4", "c5")
+      expect(b.get_piece("c5")).to be_instance_of(pawn)
+    end
+  end
+  
+  # Board setup
+  
+  describe "Board.set_board" do
+    it "puts #{Chess::WHITE} Pawns in their starting positions" do
+      b.set_board
+      expect(b.get_piece("e2")).to be_instance_of(Pawn)
+    end
+    it "puts #{Chess::WHITE} Pieces in their starting positions" do
+      b.set_board
+      expect(b.get_piece("b1")).to be_instance_of(Knight)
+    end
+    it "puts #{Chess::BLACK} Pieces in their starting positions" do
+      b.set_board
+      expect(b.get_piece("c8")).to be_instance_of(Bishop)
+    end
+  end
+  
+  # Player switching
   
   describe "Chess.next_player" do
     it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
@@ -116,6 +94,7 @@ describe Chess do
   end
 
   # Move interpretation
+  #######################
   
   describe "Position.valid?" do
     it "validates legal board positions" do

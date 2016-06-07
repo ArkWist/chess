@@ -92,21 +92,23 @@ describe Chess do
       expect(c.player).to eq(white)
     end
   end
-
-  # Move interpretation
-  #######################
   
-  describe "Position.valid?" do
-    it "validates legal board positions" do
+  # Position validation
+  
+  describe "Position::valid?" do
+    it "validates a legal position" do
       expect(Position::valid?("a3")).to eq(true)
     end
-    it "invalidates illegal board positions" do
+    it "invalidates illegal positions" do
       expect(Position::valid?("p3")).to eq(false)
     end
-    it "invalidates nonconforming board positions" do
-      expect(Position::valid?("ap")).to eq(false)
+    it "invalidates nonconforming positions" do
+      expect(Position::valid?("a3g")).to eq(false)
     end
   end
+  
+  # Move interpretation
+  #####################
 
   describe "Move.valid?" do
     it "validates A#A# formatting" do

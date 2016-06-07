@@ -42,7 +42,7 @@ describe Chess do
   
   describe "Board.make_piece" do
     it "creates a Piece on the board" do
-      b.make_piece("a1", Pawn.new)
+      b.make_piece("a1", Pawn.new(white))
       expect(b.get_piece("a1")).to be_instance_of(Pawn)
     end
   end
@@ -108,9 +108,8 @@ describe Chess do
   end
   
   # Move interpretation
-  #####################
 
-  describe "Move.valid?" do
+  describe "Move::valid?" do
     it "validates A#A# formatting" do
       expect(Move::valid?("e4g5")).to eq(true)
     end
@@ -123,71 +122,33 @@ describe Chess do
     end
   end
   
-  # Move interpretation
-  
-  describe "Move.start" do
-    it "gets a move's start position" do
-      move = Move.new("e4, g5")
-      expect(move.start).to eq("e4")
+  describe "Move::normalize" do
+    it "converts moves to a standard format" do
+      expect(Move::normalize("e4, g4")).to eq("e4g4")
     end
   end
-  describe "Move.target" do
+  
+  # Move decompilation
+  
+  describe "Move::get_start" do
+    it "gets a move's start position" d
+      expect(Move::get_start("e4g5")).to eq("e4")
+    end
+  end
+  describe "Move::get_target" do
     it "gets a move's end position" do
-      move = Move.new("e4, g5")
-      expect(move.target).to eq("g5")
-    end
-  end
-  
-  # Notation translation
-  
-  describe "Position::row_to_notation" do
-    it "converts a row array index to notation" do
-      expect(Position::row_to_notation(3)).to eq("4")
-    end
-  end
-  describe "Position::row_to_index" do
-    it "converts row notation to an array index" do
-      expect(Position::row_to_index(3)).to eq(2)
-    end
-  end
-  describe "Position::col_to_notation" do
-    it "converts a column array index to notation" do
-      expect(Position::col_to_notation(6)).to eq("g")
-    end
-  end
-  describe "Position::col_to_index" do
-    it "converts column notation to an array index" do
-      expect(Position::col_to_index("e")).to eq(4)
-    end
-  end
-  describe "Position::to_notation" do
-    it "converts a square array index to notation" do
-      expect(Position::to_notation([2, 3])).to eq("c4")
-    end
-  end
-  describe "Position::to_index" do
-    it "converts Chess notation to array indices" do
-      expect(Position::to_index("h7")).to eq([7, 6])
-    end
-  end
-  
-  describe "Position.new" do
-    it "creates an index position from notation input" do
-      pos = Position.new("e4")
-      expect(pos.col).to eq(4)
-      expect(pos.row).to eq(3)
-      expect(pos.index).to eq([4, 3])
+      expect(Move::get_target("e4g5")).to eq("g5")
     end
   end
   
   # Piece representation
   
-  describe "Pawn.icon" do
+  describe "Piece.symbol" do
     it "gets the symbol for #{Chess::WHITE} Pawns" do
-      expect(b.squares[0][1].icon).to eq("P")
+      expect(b.get_piece("a2").icon).to eq("P")
     end
-    it "gets the symbol for #{Chess::BLACK} Pawns" do
-      expect(b.squares[0][6].icon).to eq("p")
+    it "gets the symbol for #{Chess::BLACK} Knights" do
+      expect(b.get_piece("b8").icon).to eq("k")
     end
   end
   
@@ -202,17 +163,12 @@ describe Chess do
     it "writes a horizontal row without pieces" do
       expect(b.ascii_row(5)).to eq("6 |   |   |   |   |   |   |   |   | 6")
     end
-  end
-  describe "Board.ascii_row" do
     it "writes a horizontal row with a piece" do
-      b.squares[3][3] = Pawn.new(white)
+      b.make_piece("d4", Pawn.new(white))
       expect(b.ascii_row(3)).to eq("4 |   |   |   | P |   |   |   |   | 4")
     end
     it "writes a horizontal row with pieces" do
       expect(b.ascii_row(7)).to eq("8 | r | n | b | k | q | b | n | r | 8")
-      puts b.ascii_separator
-      puts b.ascii_row(7)
-      puts b.ascii_col_labels
     end
   end
   describe "Board.ascii_col_labels" do

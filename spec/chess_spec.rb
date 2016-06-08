@@ -197,9 +197,16 @@ describe Chess do
       moves = piece.get_moves(b)
       expect(moves.include?(target)).to eq(false)
     end
+  end
     
-    # Pawn attack checking
-    
+  # Pawn attack checking
+  
+  describe "Pawn.get_attacks" do
+    it "puts diagonal attacks in the attack list" do
+      
+    end
+  end
+  
     
     
     # SPECIAL

@@ -199,15 +199,55 @@ describe Chess do
     end
   end
     
-  # Pawn attack checking
+  # Pawn capture checking
   
-  describe "Pawn.get_attacks" do
+  describe "Pawn.get_captures" do
     it "puts diagonal attacks in the attack list" do
-      
+      start, target = "d3", "e4"
+      b.make_piece(start, Pawn.new(white))
+      b.make_piece(target, Pawn.new(black))
+      piece = b.get_piece(start)
+      moves = piece.get_captures(start)
+      expect(moves.include?(target)).to eq(true)
     end
   end
   
-    
+  # Pawn two square move checking
+  
+  describe "Pawn.get_double_step_move" do
+    context "Pawn is on its second rank" do
+      it "checks if a two step move is valid" do
+        start, target = "d2", "d4"
+        b.make_piece(start, Pawn.new(white))
+        piece = b.get_piece(start)
+        move = piece.get_double_step_move(start)
+        expect(move.include?(target)).to eq(true)
+      end
+    end
+  end
+  
+  ###### If en passant capture matches candidate for target #########
+  ###### So this is called from Board, not from Pawn get_moves
+  ###### Board would check captures, then check moves, then compare to special
+  
+  # Pawn en passant capture checking
+  
+  describe "Pawn.get_en_passant_capture" do
+    context "Pawn is on its fifth rank" do
+      it "checks if en passant capture is possible" do
+        start, target, e_p = "b5", "c6", "c5"
+        b.make_piece(start, Pawn.new(white))
+        piece = b.get_piece(start)
+        move = piece.get_en_passant_capture(target)
+        expect(move.include?(e_p)).to eq(true)
+      end
+    end
+  end
+  
+
+  
+  # Board records en_passant_candidate
+  # En passant check might be target and en_passant spot?
     
     # SPECIAL
     #it "says two positions forward is a valid first move" do

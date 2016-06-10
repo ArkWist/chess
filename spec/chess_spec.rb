@@ -243,98 +243,35 @@ describe Chess do
       end
     end
   end
-  
 
+  ####### Handled as a special case by Board after moving if Pawn #######
   
-  # Board records en_passant_candidate
-  # En passant check might be target and en_passant spot?
-    
-    # SPECIAL
-    #it "says two positions forward is a valid first move" do
-    #  start = Position.new("d2")
-    #  target = Position.new("d4")
-    #  pawn = Pawn.new(white)
-    #  valid_moves = pawn.valid_moves(b, start)
-    #  expect(valid_moves.include?(target)).to eq(true)
-    #end
-    it "says taken positions aren't valid moves" do
-      start = Position.new("d3")
-      target = Position.new("d4")
-      pawn = Pawn.new(white)
-      col, row = Position::to_index(target)
-      b.squares[col, row] = Pawn.new(black)
-      valid_moves = pawn.valid_moves(b, start)
-      expect(valid_moves.include?(target)).to eq(false)
+  # Pawn promotion checking
+  
+  describe "Pawn.promote?" do
+    it "checks if Pawn is eligible for promotion" do
+      pos = "e8"
+      b.make_piece(pos, Pawn.new(white))
+      piece = b.get_piece(pos)
+      expect(piece.promote?).to eq(true)
     end
   end
+
+  # Piece capture
   
-  # Pawn attack checking
   
-  describe "Pawn.valid_attacks(position)" do
-    it "says diagonal enemies can be attacked" do
-      start = Position.new("f4")
-      target = Position.new("g5")
-      pawn = Pawn.new(white)
-      col, row = Position::to_index(target)
-      b.squares[col, row] = Pawn.new(black)
-      valid_attacks = pawn.valid_attacks(b, start)
-      expect(valid_attacks.include?(target)).to eq(true)
-    end
-  end
-  describe "Pawn.valid_specials(position)" do
-    it "recognizes en passant attacks" do
-      start = Position.new("f5")
-      target = Position.new("e6")
-      pawn = Pawn.new(white)
-      col, row = Position::to_index(target)
-      b.squares[col, row - 1] = Pawn.new(black)
-      valid_specials = pawn.valid_specials(b, start)
-      expect(special_attacks.include?(target)).to eq(true)
-    end
-  end
+  # Piece removal
   
-  # Pawn movement
   
-  describe "Board.move(move)" do
-    it "moves a Pawn if the move command is valid" do
-      start = Position.new("c4")
-      target = Position.new("c5")
-      pawn = Pawn.new(white)
-      b.move(start, target)
-      expect(b.squares[2][3]).to eq(empty)
-      expect(b.squares[2][4]).to be_instance_of(Pawn)
-    end
-  end
+  # Piece movement
   
-  # Pawn attack
   
-  describe "Board.move(attack move)" do
-    it "attacks with a Pawn if legal" do
-      start = Position.new("c4")
-      target = Position.new("b5")
-      pawn = Pawn.new(white)
-      col, row = Position::to_index(target)
-      b.squares[col, row] = Knight.new(black)
-      b.move(start, target)
-      expect(b.squares[2][4]).to be_instance_of(Pawn)
-    end
-  end
   
-  # Pawn en passant
+  # En passant capture
   
-  describe "Board.special(en passant move)" do
-    it "completes en passant moves" do
-      start = Position.new("c5")
-      target = Position.new("b6")
-      pawn = Pawn.new(white)
-      col, row = Position::to_index(target)
-      b.squares[col, row - 1] = Pawn.new(black)
-      b.set_en_passant = Position.new("b6")
-      b.en_passant_move(start, target)
-      expect(b.squares[1][5]).to eq(pawn)
-      expect(b.squares[2][4]).to eq(empty)
-    end
-  end
+  
+  # Castling
+  
   
   # Pawn promotion
   
@@ -344,11 +281,11 @@ describe Chess do
   # b.get_type
   # b.get_icon
   
-  
+end
+
+
   # Really need an easier way to reference notation
   # Should always pass notation as a letter and a number
-  
-  
   
 =begin
   Put in "e4g5"
@@ -374,7 +311,6 @@ describe Chess do
   
   # Board interpretation procedures
   
-end
 
 =begin
 # Change to symbols and upper/lower for white/black
@@ -401,7 +337,6 @@ ask: valid_attack? (often the same as valid_move?)
 -- check if promotion
 -- check if put king in check
 =end
-
 
 
 =begin
@@ -476,12 +411,7 @@ end
   # Special Data (pawn first move?)
 # Make board
 ## check_mate check would check beginning of the turn, if there are any legal moves which allow escape from check? So if check, then checks?
-  
-  
-  
-  
+
+
 =end
-  
-  
-  
   

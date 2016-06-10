@@ -46,6 +46,14 @@ describe Chess do
       expect(b.get_piece("a1")).to be_instance_of(Pawn)
     end
   end
+
+  describe "Board.remove_piece" do
+    it "removes a Piece from the board" do
+      b.make_piece("c4", Pawn.new(white))
+      b.remove_piece("c4")
+      expect(b.get_piece("c4")).to eq(empty)
+    end
+  end
   
   describe "Board.kill_piece" do
     it "removes a Piece from the board" do
@@ -60,6 +68,17 @@ describe Chess do
       b.make_piece("c4", Pawn.new(white))
       b.move_piece("c4", "c5")
       expect(b.get_piece("c5")).to be_instance_of(pawn)
+    end
+  end
+  
+  # Piece interpretation
+  
+  describe "Piece.get_owner" do
+    it "says who owns a Piece" do
+      pos = "f5"
+      b.make_piece(pos, Pawn.new(black))
+      piece = b.get_piece(pos)
+      expect(piece.get_owner).to eq(black)
     end
   end
   
@@ -177,7 +196,8 @@ describe Chess do
     end
   end
   
-  ######### Pawn should know where it is ###########
+  ######### Pawn should know where it is??? ###########
+  ######### Should know so don't have to pass it all the time ####
   
   # Pawn move checking
   
@@ -253,165 +273,40 @@ describe Chess do
       pos = "e8"
       b.make_piece(pos, Pawn.new(white))
       piece = b.get_piece(pos)
-      expect(piece.promote?).to eq(true)
+      expect(piece.promote?(pos)).to eq(true)
     end
   end
+  
+  # En passant capture // just through normal move mechanics and a special check
+  
+  # Check // Would Be Check // Hold King reference specially
+  
+  describe "King.under_attack?" do
+    it "checks if a player is in Check" do
+      b.remove_piece("e1")
+      pos = "e6"
+      b.make_piece(pos, King.new(white))
+      king = b.get_piece(pos)
+      expect(king.under_attack?(b)).to eq(true)
+    end
+  end
+  
+  # Castling // Should have a variable for if castling could be legal
+  
+  describe "Board.can_castle?" do
+    it "checks if the King and Rook have ever moved" do
+      start, target = "e1", "a1"
+      b.left_castle # column is a
+      b.right_castle # column is h
+    end
+    it "checks if something is in the way of the King and Rook" do
+      # checks necessary squares are :empty
+    end
+    it "checks if any relevant intermediary square is in Check" do
+      # does under_attack? on necessary squares
+    end
+  end
+  
+  # Checkmate // This is just Check if in Check, with all possible moves
 
-  # Piece capture
-  
-  
-  # Piece removal
-  
-  
-  # Piece movement
-  
-  
-  
-  # En passant capture
-  
-  
-  # Castling
-  
-  
-  # Pawn promotion
-  
-  # Board square information
-  # b.get_square
-  # b.get_owner
-  # b.get_type
-  # b.get_icon
-  
 end
-
-
-  # Really need an easier way to reference notation
-  # Should always pass notation as a letter and a number
-  
-=begin
-  Put in "e4g5"
-  Says start is "e4"
-  Says target is "g5" >> target = Position.new(move.target) (so is Position)
-  Checks ownership of Position >> Board.checkPiece
-  Checks moves for Position >> Board.piece
-  Sees if movelist includes Position (all done in index)
-  
-  "e4" and "g5" are strings as that's easier to deal with
-  Positions are with indexes
-=end
-  
-  # Pass Positions back and forth? -------------
-  
-  # Move = gets.chomp
-  # Check formatting (letter, number, letter, number)
-  # >> Comment that it isn't flexible but could be with (letters, numbers...)
-  # Start = Move.start
-  # Target = Move.target
-  # Convert both to index
-  # Check if they are valid
-  
-  # Board interpretation procedures
-  
-
-=begin
-# Change to symbols and upper/lower for white/black
-Makes Chess
-Makes Board
-Makes Player white
-Makes Player black
-Can change player
-Sets Board dimensions
-Puts Pieces on Board
-Can write Separators
-Can write Pieces
-Can write blank squares
-Can write column labels
-Convert Notation to Index
-Convert Index to Notation
--- row, column, both, or x 2 (move) [just do the math, regardless of validity]
-Movement;
-# How to see moves, vs attack moves, vs special moves?
-validate both positions, then--
-ask: valid_move? (must pass board so can see pieces in the way)
-ask: valid_attack? (often the same as valid_move?)
--- then check special? en passant, castle, etc
--- check if promotion
--- check if put king in check
-=end
-
-
-=begin
-
-  end
-  
-  describe "Pawn.valid_moves(position)" do
-    it "says one position forward is a valid move" do
-    end
-    it "says one taken position forward isn't a valid move" do
-    end
-    it "says two positions forward is a valid first move" do
-    end
-    it "says two positions forward isn't a valid move post-first move" do
-    end
-    it "says one enemy taken position diagonally is a valid attack" do
-    end
-    it "recognizes en passant as a valid attack" do
-    end
-  end
-  
-  
-  # How determine check mate
-  # Just check every single possible next move?
-  
-  # isInCheck [is King's underAttack?] // isUnderAttack
-  # underAttackBy(given)
-  # underAttack
-  # canAttack(given)
-  
-  # Generate list of possible moves (ignore if puts that side in check)
-  # For each move, check it doesn't leave the side in check
-  # If every move leaves King in check, then mated or stalemated
-  # Mate if side to move is in check. Otherwise, stalemate
-  
-  # Symbols can be handled by Board when printing, ONLY
-  
-  # Board has cells with pieces in them.
-  # Easily see if piece in a spot, and who owns it, when moving.
-  # And see if it's a King
-  
-  # Ought to convert chess notation to array indexes
-  
-  describe "Pawn.valid_move?" do
-    # first move
-    # non-first move
-    # piece in way
-    # attackable enemy
-    # ally in that spot
-    # top of board?
-  end
-  
-end
-# class Chess
-# class Board
-# class Piece
-# -- Pawn
-#      Owner
-#      Rules
-#      > Has moved? (Pawn, Rook, King)
-# -- Rook
-# -- Knight
-# -- Bishop
-# -- Queen
-# -- King
-# Match
-# Board --positions
-# ~Players
-# Pieces
-  # Owner
-  # Type --rules
-  # Special Data (pawn first move?)
-# Make board
-## check_mate check would check beginning of the turn, if there are any legal moves which allow escape from check? So if check, then checks?
-
-
-=end
-  

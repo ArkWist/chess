@@ -73,7 +73,7 @@ describe Chess do
       expect(b.get_piece("c5")).to be_instance_of(Pawn)
     end
   end
-=begin
+
   # Piece interpretation
   
   describe "Piece.get_owner" do
@@ -84,7 +84,7 @@ describe Chess do
       expect(piece.get_owner).to eq(black)
     end
   end
-  
+=begin
   # Board setup
   
   describe "Board.set_board" do

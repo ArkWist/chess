@@ -5,9 +5,19 @@ class Piece
   def initialize(player)
     @player = player
   end
+  
   def set_position(pos)
     @pos = pos
   end
+  
+  def get_position
+    @pos
+  end
+  
+  def get_owner
+    @player
+  end
+  
 end
 
 

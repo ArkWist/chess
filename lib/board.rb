@@ -49,14 +49,12 @@ class Position
     @pos = pos
   end
   
-  def to_index(pos = @pos)
-    return [1, 4]
-    col, row = pos[0], pos[1]
-    columns = ("a".."h").to_a #col_list
+  def to_index
+    col, row = @pos[0], @pos[1]
+    columns = col_list
     col = columns.index(col)
     row = row.to_i - 1
     index = [col, row]
-    end
   end
   
   def col_list

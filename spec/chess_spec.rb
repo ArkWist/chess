@@ -31,12 +31,11 @@ describe Chess do
   end
 
   # Board notation
-  
-  describe "Position::to_index" do
-    it "converts notation to index"
-      #expect(Position::to_index("b5")).to eq([1, 4])
+  ######## Should create Positions before translating them ###########
+  describe "Position.to_index" do
+    it "converts notation to index" do
       pos = Position.new("b5")
-      expect(pos.to_index("b5")).to eq([1, 4])
+      expect(pos.to_index).to eq([1, 4])
     end
   end
 =begin  

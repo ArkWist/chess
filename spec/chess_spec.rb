@@ -41,9 +41,9 @@ describe Chess do
  
   # Piece manipulation
   
-  describe "Board.make_piece" do
+  describe "Board.place_piece" do
     it "creates a piece on the board" do
-      b.make_piece("a1", Pawn.new(white))
+      b.place_piece("a1", Pawn.new(white))
       piece = b.get_piece("a1")
       expect(piece).to be_instance_of(Pawn)
       expect(piece.pos.to_notation).to eq("a1")
@@ -52,7 +52,7 @@ describe Chess do
 
   describe "Board.remove_piece" do
     it "removes a Piece from the board" do
-      b.make_piece("c4", Pawn.new(white))
+      b.place_piece("c4", Pawn.new(white))
       b.remove_piece("c4")
       expect(b.get_piece("c4")).to eq(empty)
     end
@@ -60,26 +60,26 @@ describe Chess do
 
   describe "Board.kill_piece" do
     it "removes a Piece from the board" do
-      b.make_piece("c4", Pawn.new(white))
+      b.place_piece("c4", Pawn.new(white))
       b.kill_piece("c4")
       expect(b.get_piece("c4")).to eq(empty)
     end
   end
-=begin
-  describe "Board.move_piece"
+
+  describe "Board.move_piece" do
     it "moves a Piece from one square to another" do
-      b.make_piece("c4", Pawn.new(white))
+      b.place_piece("c4", Pawn.new(white))
       b.move_piece("c4", "c5")
-      expect(b.get_piece("c5")).to be_instance_of(pawn)
+      expect(b.get_piece("c5")).to be_instance_of(Pawn)
     end
   end
-  
+=begin
   # Piece interpretation
   
   describe "Piece.get_owner" do
     it "says who owns a Piece" do
       pos = "f5"
-      b.make_piece(pos, Pawn.new(black))
+      b.place_piece(pos, Pawn.new(black))
       piece = b.get_piece(pos)
       expect(piece.get_owner).to eq(black)
     end
@@ -186,7 +186,7 @@ describe Chess do
       expect(b.ascii_row(5)).to eq("5 |   |   |   |   |   |   |   |   | 5")
     end
     it "writes a horizontal row with a piece" do
-      b.make_piece("d4", Pawn.new(white))
+      b.place_piece("d4", Pawn.new(white))
       expect(b.ascii_row(4)).to eq("4 |   |   |   | P |   |   |   |   | 4")
     end
     it "writes a horizontal row with pieces" do
@@ -207,15 +207,15 @@ describe Chess do
   describe "Pawn.get_moves" do
     it "puts one move forward in the move list" do
       start, target = "d3", "d4"
-      b.make_piece(start, Pawn.new(white))
+      b.place_piece(start, Pawn.new(white))
       piece = b.get_piece(start)
       moves = piece.get_moves(b)
       expect(moves.include?(target)).to eq(true)
     end
     it "doesn't put blocked moves in the move list" do
       start, target = "d3", "d4"
-      b.make_piece(start, Pawn.new(white))
-      b.make_piece(target, Pawn.new(black))
+      b.place_piece(start, Pawn.new(white))
+      b.place_piece(target, Pawn.new(black))
       piece = b.get_piece(start)
       moves = piece.get_moves(b)
       expect(moves.include?(target)).to eq(false)
@@ -227,8 +227,8 @@ describe Chess do
   describe "Pawn.get_captures" do
     it "puts diagonal attacks in the attack list" do
       start, target = "d3", "e4"
-      b.make_piece(start, Pawn.new(white))
-      b.make_piece(target, Pawn.new(black))
+      b.place_piece(start, Pawn.new(white))
+      b.place_piece(target, Pawn.new(black))
       piece = b.get_piece(start)
       moves = piece.get_captures(start)
       expect(moves.include?(target)).to eq(true)
@@ -241,7 +241,7 @@ describe Chess do
     context "Pawn is on its second rank" do
       it "checks if a two step move is valid" do
         start, target = "d2", "d4"
-        b.make_piece(start, Pawn.new(white))
+        b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
         move = piece.get_double_step_move(start)
         expect(move.include?(target)).to eq(true)
@@ -259,7 +259,7 @@ describe Chess do
     context "Pawn is on its fifth rank" do
       it "checks if en passant capture is possible" do
         start, target, e_p = "b5", "c6", "c5"
-        b.make_piece(start, Pawn.new(white))
+        b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
         move = piece.get_en_passant_capture(target)
         expect(move.include?(e_p)).to eq(true)
@@ -274,7 +274,7 @@ describe Chess do
   describe "Pawn.promote?" do
     it "checks if Pawn is eligible for promotion" do
       pos = "e8"
-      b.make_piece(pos, Pawn.new(white))
+      b.place_piece(pos, Pawn.new(white))
       piece = b.get_piece(pos)
       expect(piece.promote?(pos)).to eq(true)
     end
@@ -288,7 +288,7 @@ describe Chess do
     it "checks if a player is in Check" do
       b.remove_piece("e1")
       pos = "e6"
-      b.make_piece(pos, King.new(white))
+      b.place_piece(pos, King.new(white))
       king = b.get_piece(pos)
       expect(king.under_attack?(b)).to eq(true)
     end

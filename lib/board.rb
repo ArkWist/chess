@@ -16,32 +16,32 @@ class Board
   def reset_board(white, black)
     wipe_board
 #    positions = COLUMNS.map { |col| col + "1" }
-#    positions.each { |pos| make_piece(pos, Pawn.new(white)) }
-#    make_piece("a2", Rook.new(white))
-#    make_piece("b2", Knight.new(white))
-#    make_piece("c2", Bishop.new(white))
-#    make_piece("d2", Queen.new(white))
-#    make_piece("e2", King.new(white))
-#    make_piece("f2", Bishop.new(white))
-#    make_piece("g2", Knight.new(white))
-#    make_piece("h2", Rook.new(white))
+#    positions.each { |pos| place_piece(pos, Pawn.new(white)) }
+#    place_piece("a2", Rook.new(white))
+#    place_piece("b2", Knight.new(white))
+#    place_piece("c2", Bishop.new(white))
+#    place_piece("d2", Queen.new(white))
+#    place_piece("e2", King.new(white))
+#    place_piece("f2", Bishop.new(white))
+#    place_piece("g2", Knight.new(white))
+#    place_piece("h2", Rook.new(white))
 #    positions = COLUMNS.map { |col| col + "8" }
-#    positions.each { |pos| make_piece(pos, Pawn.new(black)) }
-#    make_piece("a7", Rook.new(black))
-#    make_piece("b7", Knight.new(black))
-#    make_piece("c7", Bishop.new(black))
-#    make_piece("d7", Queen.new(black))
-#    make_piece("e7", King.new(black))
-#    make_piece("f7", Bishop.new(black))
-#    make_piece("g7", Knight.new(black))
-#    make_piece("h7", Rook.new(black))
+#    positions.each { |pos| place_piece(pos, Pawn.new(black)) }
+#    place_piece("a7", Rook.new(black))
+#    place_piece("b7", Knight.new(black))
+#    place_piece("c7", Bishop.new(black))
+#    place_piece("d7", Queen.new(black))
+#    place_piece("e7", King.new(black))
+#    place_piece("f7", Bishop.new(black))
+#    place_piece("g7", Knight.new(black))
+#    place_piece("h7", Rook.new(black))
   end
   
   def wipe_board
     @squares.map! { |col| col.map! { |row| row = Chess::EMPTY } }
   end
   
-  def make_piece(pos, piece)
+  def place_piece(pos, piece)
     pos = Position.new(pos)
     piece.set_position(pos)
     col, row = pos.to_index
@@ -64,6 +64,12 @@ class Board
   # References in case there's a need to distinguish remove and capture.
   def kill_piece(pos)
     remove_piece(pos)
+  end
+  
+  def move_piece(start, target)
+    kill_piece(target) if get_piece(target) != Chess::EMPTY
+    place_piece(target, get_piece(start))
+    remove_piece(start)
   end
   
 #  def col_list

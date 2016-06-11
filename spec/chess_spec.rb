@@ -29,15 +29,17 @@ describe Chess do
       expect(s[0].length).to eq(8)
     end
   end
-=begin  
+
   # Board notation
   
   describe "Position::to_index" do
     it "converts notation to index"
-      expect(Position::to_index("b5")).to eq([1, 4])
+      #expect(Position::to_index("b5")).to eq([1, 4])
+      pos = Position.new("b5")
+      expect(pos.to_index("b5")).to eq([1, 4])
     end
   end
-  
+=begin  
   # Piece manipulation
   
   describe "Board.make_piece" do

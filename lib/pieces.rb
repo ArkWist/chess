@@ -1,5 +1,7 @@
 
 class Piece
+  attr_accessor :player, :pos
+
   def initialize(player)
     @player = player
   end

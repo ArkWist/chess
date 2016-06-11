@@ -44,8 +44,9 @@ describe Chess do
   describe "Board.make_piece" do
     it "creates a piece on the board" do
       b.make_piece("a1", Pawn.new(white))
-      expect(b.get_piece("a1")).to be_instance_of(Pawn)
-      #expect(b.get_piece("a1").pos).to eq("a1")
+      piece = b.get_piece("a1")
+      expect(piece).to be_instance_of(Pawn)
+      expect(piece.pos).to eq("a1")  #  HERE NEED TO COMPARE POSITION CLASS DATA
     end
   end
 =begin 

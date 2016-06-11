@@ -45,16 +45,13 @@ class Board
     pos = Position.new(pos)
     piece.set_position(pos)
     col, row = pos.to_index
-        puts "COL: #{col};  ROW: #{row}"
     @squares[col][row] = piece
   end
   
   def get_piece(pos)
     pos = Position.new(pos)
     col, row = pos.to_index
-    piece = @squares[col, row]
-    ## WHY IS THIS AN ARRAY?!
-    return piece
+    piece = @squares[col][row]
   end
   
 #  def col_list

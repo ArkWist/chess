@@ -101,7 +101,7 @@ describe Chess do
       expect(b.get_piece("c8")).to be_instance_of(Bishop)
     end
   end
-=begin
+
   # Player switching
   
   describe "Chess.next_player" do
@@ -114,7 +114,7 @@ describe Chess do
       expect(c.player).to eq(white)
     end
   end
-  
+=begin
   # Position validation
   
   describe "Position::valid?" do

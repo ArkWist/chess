@@ -13,6 +13,11 @@ class Chess
     @board = Board.new
     #play
   end
+  
+  def next_player
+    @player == WHITE ? @player = BLACK : @player = WHITE
+  end
+  
 end
 
 
@@ -37,9 +42,7 @@ class Chess
     #play
   end
 
-  def next_player
-    @player == WHITE ? @player = BLACK : @player = WHITE
-  end
+
 
   def play
     @board.display

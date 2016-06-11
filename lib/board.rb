@@ -41,3 +41,27 @@ class Board
   
   
 end
+
+
+class Position
+
+  def initialize(pos)
+    @pos = pos
+  end
+  
+  def to_index(pos = @pos)
+    col, row = pos[0], pos[1]
+    columns = col_list
+    col = columns.index(col)
+    row = row.to_i - 1
+    index = [col, row]
+    end
+  end
+  
+  def col_list
+    columns = []
+    0.upto(Board::WIDTH) { |i| columns.push(("a".ord + i).chr) }
+    columns
+  end
+  
+end

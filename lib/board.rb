@@ -15,26 +15,26 @@ class Board
   
   def reset_board(white, black)
     wipe_board
-    positions = COLUMNS.map { |col| col + "1" }
-    positions.each { |pos| make_piece(pos, Pawn.new(white)) }
-    make_piece("a2", Rook.new(white))
-    make_piece("b2", Knight.new(white))
-    make_piece("c2", Bishop.new(white))
-    make_piece("d2", Queen.new(white))
-    make_piece("e2", King.new(white))
-    make_piece("f2", Bishop.new(white))
-    make_piece("g2", Knight.new(white))
-    make_piece("h2", Rook.new(white))
-    positions = COLUMNS.map { |col| col + "8" }
-    positions.each { |pos| make_piece(pos, Pawn.new(black)) }
-    make_piece("a7", Rook.new(black))
-    make_piece("b7", Knight.new(black))
-    make_piece("c7", Bishop.new(black))
-    make_piece("d7", Queen.new(black))
-    make_piece("e7", King.new(black))
-    make_piece("f7", Bishop.new(black))
-    make_piece("g7", Knight.new(black))
-    make_piece("h7", Rook.new(black))
+#    positions = COLUMNS.map { |col| col + "1" }
+#    positions.each { |pos| make_piece(pos, Pawn.new(white)) }
+#    make_piece("a2", Rook.new(white))
+#    make_piece("b2", Knight.new(white))
+#    make_piece("c2", Bishop.new(white))
+#    make_piece("d2", Queen.new(white))
+#    make_piece("e2", King.new(white))
+#    make_piece("f2", Bishop.new(white))
+#    make_piece("g2", Knight.new(white))
+#    make_piece("h2", Rook.new(white))
+#    positions = COLUMNS.map { |col| col + "8" }
+#    positions.each { |pos| make_piece(pos, Pawn.new(black)) }
+#    make_piece("a7", Rook.new(black))
+#    make_piece("b7", Knight.new(black))
+#    make_piece("c7", Bishop.new(black))
+#    make_piece("d7", Queen.new(black))
+#    make_piece("e7", King.new(black))
+#    make_piece("f7", Bishop.new(black))
+#    make_piece("g7", Knight.new(black))
+#    make_piece("h7", Rook.new(black))
   end
   
   def wipe_board
@@ -45,7 +45,16 @@ class Board
     pos = Position.new(pos)
     piece.set_position(pos)
     col, row = pos.to_index
+        puts "COL: #{col};  ROW: #{row}"
     @squares[col][row] = piece
+  end
+  
+  def get_piece(pos)
+    pos = Position.new(pos)
+    col, row = pos.to_index
+    piece = @squares[col, row]
+    ## WHY IS THIS AN ARRAY?!
+    return piece
   end
   
 #  def col_list

@@ -33,21 +33,22 @@ describe Chess do
   # Board notation
   ######## Should create Positions before translating them ###########
   describe "Position.to_index" do
-    it "converts notation to index" do
+    it "converts stored position notation to array index" do
       pos = Position.new("b5")
       expect(pos.to_index).to eq([1, 4])
     end
   end
-=begin  
+ 
   # Piece manipulation
   
   describe "Board.make_piece" do
-    it "creates a Piece on the board" do
+    it "creates a piece on the board" do
       b.make_piece("a1", Pawn.new(white))
       expect(b.get_piece("a1")).to be_instance_of(Pawn)
+      #expect(b.get_piece("a1").pos).to eq("a1")
     end
   end
-
+=begin 
   describe "Board.remove_piece" do
     it "removes a Piece from the board" do
       b.make_piece("c4", Pawn.new(white))

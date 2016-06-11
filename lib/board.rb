@@ -54,6 +54,12 @@ class Board
     piece = @squares[col][row]
   end
   
+  def remove_piece(pos)
+    pos = Position.new(pos)
+    col, row = pos.to_index
+    @squares[col][row] = Chess::EMPTY
+  end
+  
 #  def col_list
 #    columns = []
 #    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }

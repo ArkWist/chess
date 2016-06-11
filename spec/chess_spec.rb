@@ -49,7 +49,7 @@ describe Chess do
       expect(piece.pos.to_notation).to eq("a1")
     end
   end
-=begin 
+
   describe "Board.remove_piece" do
     it "removes a Piece from the board" do
       b.make_piece("c4", Pawn.new(white))
@@ -57,7 +57,7 @@ describe Chess do
       expect(b.get_piece("c4")).to eq(empty)
     end
   end
-  
+=begin
   describe "Board.kill_piece" do
     it "removes a Piece from the board" do
       b.make_piece("c4", Pawn.new(white))

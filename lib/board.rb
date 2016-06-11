@@ -60,6 +60,12 @@ class Board
     @squares[col][row] = Chess::EMPTY
   end
   
+  # Currently aliases remove_piece.
+  # References in case there's a need to distinguish remove and capture.
+  def kill_piece(pos)
+    remove_piece(pos)
+  end
+  
 #  def col_list
 #    columns = []
 #    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }

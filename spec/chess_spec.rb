@@ -117,15 +117,15 @@ describe Chess do
 =begin
   # Position validation
   
-  describe "Position::valid?" do
+  describe "Board.valid_position?" do
     it "validates a legal position" do
-      expect(Position::valid?("a3")).to eq(true)
+      expect(b.valid_position?("a3")).to eq(true)
     end
     it "invalidates illegal positions" do
-      expect(Position::valid?("p3")).to eq(false)
+      expect(b.valid_position?("p3")).to eq(false)
     end
     it "invalidates nonconforming positions" do
-      expect(Position::valid?("a3g")).to eq(false)
+      expect(b.valid_position?("a3g")).to eq(false)
     end
   end
   

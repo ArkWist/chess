@@ -1,3 +1,4 @@
+# Pieces
 
 class Piece
   attr_accessor :player, :pos

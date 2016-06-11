@@ -10,31 +10,31 @@ class Board
     @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
     @last_player = Chess::EMPTY
     @last_move = 0
-    reset_board(Chess::WHITE, Chess::BLACK)
+    set_board(Chess::WHITE, Chess::BLACK)
   end
   
-  def reset_board(white, black)
+  def set_board(white, black)
     wipe_board
-#    positions = COLUMNS.map { |col| col + "1" }
-#    positions.each { |pos| place_piece(pos, Pawn.new(white)) }
-#    place_piece("a2", Rook.new(white))
-#    place_piece("b2", Knight.new(white))
-#    place_piece("c2", Bishop.new(white))
-#    place_piece("d2", Queen.new(white))
-#    place_piece("e2", King.new(white))
-#    place_piece("f2", Bishop.new(white))
-#    place_piece("g2", Knight.new(white))
-#    place_piece("h2", Rook.new(white))
-#    positions = COLUMNS.map { |col| col + "8" }
-#    positions.each { |pos| place_piece(pos, Pawn.new(black)) }
-#    place_piece("a7", Rook.new(black))
-#    place_piece("b7", Knight.new(black))
-#    place_piece("c7", Bishop.new(black))
-#    place_piece("d7", Queen.new(black))
-#    place_piece("e7", King.new(black))
-#    place_piece("f7", Bishop.new(black))
-#    place_piece("g7", Knight.new(black))
-#    place_piece("h7", Rook.new(black))
+    positions = COLUMNS.map { |col| col + "2" }
+    positions.each { |pos| place_piece(pos, Pawn.new(white)) }
+    place_piece("a1", Rook.new(white))
+    place_piece("b1", Knight.new(white))
+    place_piece("c1", Bishop.new(white))
+    place_piece("d1", Queen.new(white))
+    place_piece("e1", King.new(white))
+    place_piece("f1", Bishop.new(white))
+    place_piece("g1", Knight.new(white))
+    place_piece("h1", Rook.new(white))
+    positions = COLUMNS.map { |col| col + "7" }
+    positions.each { |pos| place_piece(pos, Pawn.new(black)) }
+    place_piece("a8", Rook.new(black))
+    place_piece("b8", Knight.new(black))
+    place_piece("c8", Bishop.new(black))
+    place_piece("d8", Queen.new(black))
+    place_piece("e8", King.new(black))
+    place_piece("f8", Bishop.new(black))
+    place_piece("g8", Knight.new(black))
+    place_piece("h8", Rook.new(black))
   end
   
   def wipe_board
@@ -43,7 +43,7 @@ class Board
   
   def place_piece(pos, piece)
     pos = Position.new(pos)
-    piece.set_position(pos)
+    piece.set_pos(pos)
     col, row = pos.to_index
     @squares[col][row] = piece
   end

@@ -6,11 +6,11 @@ class Piece
     @player = player
   end
   
-  def set_position(pos)
+  def set_pos(pos)
     @pos = pos
   end
   
-  def get_position
+  def get_pos
     @pos
   end
   

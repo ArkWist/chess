@@ -84,24 +84,24 @@ describe Chess do
       expect(piece.get_owner).to eq(black)
     end
   end
-=begin
+
   # Board setup
   
   describe "Board.set_board" do
     it "puts #{Chess::WHITE} Pawns in their starting positions" do
-      b.set_board
+      b.set_board(white, black)
       expect(b.get_piece("e2")).to be_instance_of(Pawn)
     end
-    it "puts #{Chess::WHITE} Pieces in their starting positions" do
-      b.set_board
+    it "puts #{Chess::WHITE} pieces in their starting positions" do
+      b.set_board(white, black)
       expect(b.get_piece("b1")).to be_instance_of(Knight)
     end
-    it "puts #{Chess::BLACK} Pieces in their starting positions" do
-      b.set_board
+    it "puts #{Chess::BLACK} pieces in their starting positions" do
+      b.set_board(white, black)
       expect(b.get_piece("c8")).to be_instance_of(Bishop)
     end
   end
-  
+=begin
   # Player switching
   
   describe "Chess.next_player" do

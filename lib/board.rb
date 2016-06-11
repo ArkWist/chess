@@ -77,5 +77,9 @@ class Position
     index = [col, row]
   end
   
+  def to_notation
+    @pos
+  end
+  
 
 end

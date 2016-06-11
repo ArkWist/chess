@@ -46,7 +46,7 @@ describe Chess do
       b.make_piece("a1", Pawn.new(white))
       piece = b.get_piece("a1")
       expect(piece).to be_instance_of(Pawn)
-      expect(piece.pos).to eq("a1")  #  HERE NEED TO COMPARE POSITION CLASS DATA
+      expect(piece.pos.to_notation).to eq("a1")
     end
   end
 =begin 

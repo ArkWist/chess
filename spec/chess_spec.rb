@@ -114,7 +114,7 @@ describe Chess do
       expect(c.player).to eq(white)
     end
   end
-=begin
+
   # Position validation
   
   describe "Board.valid_position?" do
@@ -128,7 +128,7 @@ describe Chess do
       expect(b.valid_position?("a3g")).to eq(false)
     end
   end
-  
+=begin
   # Move interpretation
 
   describe "Move::valid?" do

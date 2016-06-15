@@ -77,6 +77,7 @@ class Board
     valid = COLUMNS.include?(pos[0].to_s) if valid
     valid = false if pos[1].to_i == 0 && row != "0"
     valid = pos[1].to_i.between?(0, HEIGHT) if valid
+    valid
   end
 
 #  def col_list

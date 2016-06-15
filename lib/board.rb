@@ -74,12 +74,11 @@ class Board
   
   def valid_position?(pos)
     valid = pos.length == 2
-    if valid { valid = COLUMNS.include?(pos[0].to_s) }
+    valid = COLUMNS.include?(pos[0].to_s) if valid
     valid = false if pos[1].to_i == 0 && row != "0"
-    if valid { valid = pos[1].to_i.between?(0, HEIGHT) }
-    valid
+    valid = pos[1].to_i.between?(0, HEIGHT) if valid
   end
-  
+
 #  def col_list
 #    columns = []
 #    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }

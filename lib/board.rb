@@ -79,6 +79,23 @@ class Board
     valid = pos[1].to_i.between?(0, HEIGHT) if valid
     valid
   end
+  
+  # This validates move formatting.
+  # It does NOT check if a move is legal.
+  def valid_move?(move)
+    move = normalize_move(move)
+    valid = move.length == 4
+    if valid
+      start, target = move[0..1], move[2..3]
+      valid = false unless valid_position?(start)
+      valid = false unless valid_position?(target)
+    end
+    valid
+  end
+  
+  def normalize_move(move)
+    move = move.downcase.gsub(/[, ]+/, "")
+  end
 
 #  def col_list
 #    columns = []
@@ -107,5 +124,18 @@ class Position
     @pos
   end
   
-
 end
+
+#class Move
+#
+#  def initialize(move)
+#    @move = move
+#  end
+#  
+#end
+
+
+
+
+
+

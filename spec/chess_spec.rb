@@ -128,28 +128,28 @@ describe Chess do
       expect(b.valid_position?("a3g")).to eq(false)
     end
   end
-=begin
+#####################
   # Move interpretation
 
-  describe "Move::valid?" do
+  describe "Board.normalize_move" do
+    it "converts moves to a standard format" do
+      expect(b.normalize_move("e4, g4")).to eq("e4g4")
+    end
+  end
+  
+  describe "Board.valid_move?" do
     it "validates A#A# formatting" do
-      expect(Move::valid?("e4g5")).to eq(true)
+      expect(b.valid_move?("e4g5")).to eq(true)
     end
     it "validates A# A# formatting" do
-      expect(Move::valid?("e4 g5")).to eq(true)
+      expect(b.valid_move?("e4 g5")).to eq(true)
     end
     it "validates A#,A# formatting" do
-      expect(Move::valid?("e4,g5")).to eq(true)
-      expect(Move::valid?("e4, g5")).to eq(true)
+      expect(b.valid_move?("e4,g5")).to eq(true)
+      expect(b.valid_move?("e4, g5")).to eq(true)
     end
   end
-  
-  describe "Move::normalize" do
-    it "converts moves to a standard format" do
-      expect(Move::normalize("e4, g4")).to eq("e4g4")
-    end
-  end
-  
+=begin
   # Move decompilation
   
   describe "Move::get_start" do

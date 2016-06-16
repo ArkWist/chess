@@ -1,10 +1,13 @@
 # Pieces
 
 class Piece
-  attr_accessor :player, :pos
+  attr_accessor :player, :icon, :pos
 
-  def initialize(player)
+  def initialize(player, icons)
     @player = player
+    @icon = icons[0] if player == Chess::WHITE
+    @icon = icons[1] if player == Chess::BLACK
+    @icon ||= "X"
   end
   
   def set_pos(pos)
@@ -23,30 +26,45 @@ end
 
 
 class Pawn < Piece
-  attr_accessor :icon
-  ICONS = ["P", "p", "X"]
-  
+  ICONS = ["P", "p"]
   def initialize(player)
-    super(player)
-    @icon = ICONS[0] if player == Chess::WHITE
-    @icon = ICONS[1] if player == Chess::BLACK
-    @icon ||= ICONS[2]
+    super(player, ICONS)
   end
 end
 
 class Rook < Piece
+  ICONS = ["R", "r"]
+  def initialize(player)
+    super(player, ICONS)
+  end
 end
 
 class Knight < Piece
+  ICONS = ["N", "n"]
+  def initialize(player)
+    super(player, ICONS)
+  end
 end
 
 class Bishop < Piece
+  ICONS = ["B", "b"]
+  def initialize(player)
+    super(player, ICONS)
+  end
 end
 
 class Queen < Piece
+  ICONS = ["Q", "q"]
+  def initialize(player)
+    super(player, ICONS)
+  end
 end
 
 class King < Piece
+  ICONS = ["K", "k"]
+  def initialize(player)
+    super(player, ICONS)
+  end
 end
 
 

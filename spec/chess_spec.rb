@@ -128,7 +128,7 @@ describe Chess do
       expect(b.valid_position?("a3g")).to eq(false)
     end
   end
-#####################
+
   # Move interpretation
 
   describe "Board.normalize_move" do
@@ -149,20 +149,20 @@ describe Chess do
       expect(b.valid_move?("e4, g5")).to eq(true)
     end
   end
-=begin
+
   # Move decompilation
   
-  describe "Move::get_start" do
-    it "gets a move's start position" d
-      expect(Move::get_start("e4g5")).to eq("e4")
+  describe "Board.get_move_start" do
+    it "gets a move's start position" do
+      expect(b.get_move_start("e4g5")).to eq("e4")
     end
   end
-  describe "Move::get_target" do
+  describe "Board.get_move_target" do
     it "gets a move's end position" do
-      expect(Move::get_target("e4g5")).to eq("g5")
+      expect(b.get_move_target("e4g5")).to eq("g5")
     end
   end
-  
+=begin
   # Piece representation
   
   describe "Piece.symbol" do

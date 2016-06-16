@@ -96,6 +96,14 @@ class Board
   def normalize_move(move)
     move = move.downcase.gsub(/[, ]+/, "")
   end
+  
+  def get_move_start(move)
+    start = move[0..1]
+  end
+  
+  def get_move_target(move)
+    target = move[2..3]
+  end
 
 #  def col_list
 #    columns = []

@@ -23,6 +23,15 @@ end
 
 
 class Pawn < Piece
+  attr_accessor :icon
+  ICONS = ["P", "p", "X"]
+  
+  def initialize(player)
+    super(player)
+    @icon = ICONS[0] if player == Chess::WHITE
+    @icon = ICONS[1] if player == Chess::BLACK
+    @icon ||= ICONS[2]
+  end
 end
 
 class Rook < Piece

@@ -162,18 +162,18 @@ describe Chess do
       expect(b.get_move_target("e4g5")).to eq("g5")
     end
   end
-=begin
+
   # Piece representation
   
   describe "Piece.symbol" do
     it "gets the symbol for #{Chess::WHITE} Pawns" do
       expect(b.get_piece("a2").icon).to eq("P")
     end
-    it "gets the symbol for #{Chess::BLACK} Knights" do
-      expect(b.get_piece("b8").icon).to eq("k")
-    end
+    #it "gets the symbol for #{Chess::BLACK} Knights" do
+    #  expect(b.get_piece("b8").icon).to eq("k")
+    #end
   end
-  
+=begin
   # Board representation
   
   describe "Board.ascii_separator" do

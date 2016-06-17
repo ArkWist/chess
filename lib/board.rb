@@ -20,8 +20,8 @@ class Board
     place_piece("a1", Rook.new(white))
     place_piece("b1", Knight.new(white))
     place_piece("c1", Bishop.new(white))
-    place_piece("d1", Queen.new(white))
-    place_piece("e1", King.new(white))
+    place_piece("d1", King.new(white))
+    place_piece("e1", Queen.new(white))
     place_piece("f1", Bishop.new(white))
     place_piece("g1", Knight.new(white))
     place_piece("h1", Rook.new(white))
@@ -30,8 +30,8 @@ class Board
     place_piece("a8", Rook.new(black))
     place_piece("b8", Knight.new(black))
     place_piece("c8", Bishop.new(black))
-    place_piece("d8", Queen.new(black))
-    place_piece("e8", King.new(black))
+    place_piece("d8", King.new(black))
+    place_piece("e8", Queen.new(black))
     place_piece("f8", Bishop.new(black))
     place_piece("g8", Knight.new(black))
     place_piece("h8", Rook.new(black))
@@ -114,27 +114,32 @@ class Board
   def display
     puts ascii_col_labels
     puts ascii_separator
-    (WIDTH - 1).downto(0) do |row|
-      puts ascii_row(row)
+    (HEIGHT).downto(1) do |row_no|
+      puts ascii_row(line)
       puts ascii_separator
     end
     puts ascii_col_labels
   end
 
   def ascii_separator
-    line = "   --- --- --- --- --- --- --- ---   "
+    line = "   "
+    WIDTH.times { line << "--- " }
+    line << "  "
   end
   
-  def ascii_row(row)
-    line = "#{row_to_notation(row)} |"
+  def ascii_row(row_no)
+    row = row_no - 1
+    line = "#{row_no} |"
     @squares.each do |col|
       col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
     end
-    line << " #{row_to_notation(row)}"
+    line << " #{row_no}"
   end
   
   def ascii_col_labels
-    line = "    " << col_range.join("   ") << "    "
+    line = "    "
+    COLUMNS.each { |col| line << "#{col}   " }
+    line << " "
   end
   
 end

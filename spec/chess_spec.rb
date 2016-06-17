@@ -181,7 +181,7 @@ describe Chess do
       expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
     end
   end
-=begin
+
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
       expect(b.ascii_row(5)).to eq("5 |   |   |   |   |   |   |   |   | 5")
@@ -194,12 +194,13 @@ describe Chess do
       expect(b.ascii_row(8)).to eq("8 | r | n | b | k | q | b | n | r | 8")
     end
   end
+
   describe "Board.ascii_col_labels" do
     it "writes a horizontal listing of alphabetical column labels" do
       expect(b.ascii_col_labels).to eq("    a   b   c   d   e   f   g   h    ")
     end
   end
-  
+=begin
   ######### Pawn should know where it is??? ###########
   ######### Should know so don't have to pass it all the time ####
   

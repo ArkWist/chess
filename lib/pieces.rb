@@ -7,7 +7,7 @@ class Piece
     @player = player
     @icon = icons[0] if player == Chess::WHITE
     @icon = icons[1] if player == Chess::BLACK
-    @icon ||= "X"
+    @icon ||= "*"
   end
   
   def set_pos(pos)

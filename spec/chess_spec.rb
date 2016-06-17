@@ -169,9 +169,9 @@ describe Chess do
     it "gets the symbol for #{Chess::WHITE} Pawns" do
       expect(b.get_piece("a2").icon).to eq("P")
     end
-    #it "gets the symbol for #{Chess::BLACK} Knights" do
-    #  expect(b.get_piece("b8").icon).to eq("k")
-    #end
+    it "gets the symbol for #{Chess::BLACK} Knights" do
+      expect(b.get_piece("b8").icon).to eq("n")
+    end
   end
 =begin
   # Board representation

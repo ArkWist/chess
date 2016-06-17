@@ -110,6 +110,32 @@ class Board
 #    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }
 #    columns
 #  end
+
+  def display
+    puts ascii_col_labels
+    puts ascii_separator
+    (WIDTH - 1).downto(0) do |row|
+      puts ascii_row(row)
+      puts ascii_separator
+    end
+    puts ascii_col_labels
+  end
+
+  def ascii_separator
+    line = "   --- --- --- --- --- --- --- ---   "
+  end
+  
+  def ascii_row(row)
+    line = "#{row_to_notation(row)} |"
+    @squares.each do |col|
+      col[row] == Chess::EMPTY ? line << "   |" : line << " #{col[row].icon} |"
+    end
+    line << " #{row_to_notation(row)}"
+  end
+  
+  def ascii_col_labels
+    line = "    " << col_range.join("   ") << "    "
+  end
   
 end
 

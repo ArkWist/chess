@@ -173,7 +173,7 @@ describe Chess do
       expect(b.get_piece("b8").icon).to eq("n")
     end
   end
-=begin
+
   # Board representation
   
   describe "Board.ascii_separator" do
@@ -181,6 +181,7 @@ describe Chess do
       expect(b.ascii_separator).to eq("   --- --- --- --- --- --- --- ---   ")
     end
   end
+=begin
   describe "Board.ascii_row" do
     it "writes a horizontal row without pieces" do
       expect(b.ascii_row(5)).to eq("5 |   |   |   |   |   |   |   |   | 5")

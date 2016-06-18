@@ -223,20 +223,7 @@ describe Chess do
       expect(moves.include?(target)).to eq(false)
     end
   end
-=begin
-  # Pawn capture checking
-  
-  describe "Pawn.get_captures" do
-    it "puts diagonal attacks in the attack list" do
-      start, target = "d3", "e4"
-      b.place_piece(start, Pawn.new(white))
-      b.place_piece(target, Pawn.new(black))
-      piece = b.get_piece(start)
-      moves = piece.get_captures(start)
-      expect(moves.include?(target)).to eq(true)
-    end
-  end
-  
+
   # Pawn two square move checking
   
   describe "Pawn.get_double_step" do
@@ -248,6 +235,19 @@ describe Chess do
         move = piece.get_double_step(start)
         expect(move.include?(target)).to eq(true)
       end
+    end
+  end
+=begin
+  # Pawn capture checking
+  
+  describe "Pawn.get_captures" do
+    it "puts diagonal attacks in the attack list" do
+      start, target = "d3", "e4"
+      b.place_piece(start, Pawn.new(white))
+      b.place_piece(target, Pawn.new(black))
+      piece = b.get_piece(start)
+      moves = piece.get_captures(start)
+      expect(moves.include?(target)).to eq(true)
     end
   end
   

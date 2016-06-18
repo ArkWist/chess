@@ -42,20 +42,28 @@ class Board
   end
   
   def place_piece(pos, piece)
-    pos = Position.new(pos)
+    pos = Position.new(pos) unless pos.is_a?(Position)
     piece.set_pos(pos)
     col, row = pos.to_index
     @squares[col][row] = piece
   end
   
   def get_piece(pos)
-    pos = Position.new(pos)
+    pos = Position.new(pos) unless pos.is_a?(Position)
     col, row = pos.to_index
     piece = @squares[col][row]
   end
   
+  #########################
+  ## JUST INTRODUCED, USE WHERE APPROPRIATE
+  def is_empty?(pos)
+    pos = Position.new(pos) unless pos.is_a?(Position)
+    col, row = pos.to_index
+    @squares[col][row] == Chess::EMPTY
+  end
+  
   def remove_piece(pos)
-    pos = Position.new(pos)
+    pos = Position.new(pos) unless pos.is_a?(Position)
     col, row = pos.to_index
     @squares[col][row] = Chess::EMPTY
   end
@@ -73,6 +81,7 @@ class Board
   end
   
   def valid_position?(pos)
+    pos = pos.to_notation if pos.is_a?(Position)
     valid = pos.length == 2
     valid = COLUMNS.include?(pos[0].to_s) if valid
     valid = false if pos[1].to_i == 0 && row != "0"
@@ -81,12 +90,13 @@ class Board
   end
   
   def valid_indices?(pos)
+    pos = pos.to_notation if pos.is_a?(Position)
     valid = pos.length == 2
     valid = false unless pos[0].to_i.between?(0, WIDTH)
     valid = false unless pos[1].to_i.between?(0, HEIGHT)
     valid
   end
-  
+
   ###############################
   def empty_up_to?(start, direction, max)
     count = 0
@@ -99,11 +109,25 @@ class Board
     end
     
   end
-  
-  def empty_up_to(start, direction, max = -1)
+
+  def empty_up_to(pos, direction, max = -1)
     count = 0
+    col, row = pos.to_index
+    
+    until !valid_position?(pos)
+      if direction == :n
+        row += 1
+        move = Position.new([col, row])
+        valid_position?(move.to_notation) && is_empty?(move)
+        count += 1 if is_empty(col, row)
+    
+      max.times do |i|
+        #move = Position.new([col, row + 1])
+      end
+    end
+    
   end
-  
+
   # This validates move formatting.
   # It does NOT check if a move is legal.
   def valid_move?(move)

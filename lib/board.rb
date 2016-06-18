@@ -98,7 +98,7 @@ class Board
   end
 
   ###############################
-  def empty_up_to?(start, direction, max)
+  def empty_up_to?(start, direction, limit)
     count = 0
     col, row = start.to_index
     
@@ -110,21 +110,22 @@ class Board
     
   end
 
-  def empty_up_to(pos, direction, max = -1)
+  def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
     count = 0
     col, row = pos.to_index
     
-    until !valid_position?(pos)
+    until !valid_position?(pos) && count < limit
       if direction == :n
         row += 1
         move = Position.new([col, row])
-        valid_position?(move.to_notation) && is_empty?(move)
-        count += 1 if is_empty(col, row)
-    
-      max.times do |i|
-        #move = Position.new([col, row + 1])
+        if valid_position?(move.to_notation) && is_empty?(move)
+          count += 1
+        else
+          limit = count
+        end
       end
     end
+
     
   end
 

@@ -88,7 +88,20 @@ class Board
   end
   
   ###############################
-  def empty_up_to(start, target)
+  def empty_up_to?(start, direction, max)
+    count = 0
+    col, row = start.to_index
+    
+    if direction == :n
+      max.times do |i|
+        #move = Position.new([col, row + 1])
+      end
+    end
+    
+  end
+  
+  def empty_up_to(start, direction, max = -1)
+    count = 0
   end
   
   # This validates move formatting.

@@ -51,6 +51,7 @@ class Pawn < Piece
     if board.valid_indices?(move.pos) #&& board.get_piece()
     
     ## NEED a way to check empty until a certain square
+    #if board.empty_up_to?(@pos, :n, 2) == true
     
     #if @player == Chess::WHITE && row == 1
     

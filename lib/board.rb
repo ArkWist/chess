@@ -87,6 +87,10 @@ class Board
     valid
   end
   
+  ###############################
+  def empty_up_to(start, target)
+  end
+  
   # This validates move formatting.
   # It does NOT check if a move is legal.
   def valid_move?(move)

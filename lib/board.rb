@@ -60,8 +60,8 @@ class Board
     @squares[col][row] = Chess::EMPTY
   end
   
-  # Currently aliases remove_piece.
-  # References in case there's a need to distinguish remove and capture.
+  # Aliases remove_piece.
+  # Referenced in case remove and capture need be distinguished.
   def kill_piece(pos)
     remove_piece(pos)
   end
@@ -77,6 +77,13 @@ class Board
     valid = COLUMNS.include?(pos[0].to_s) if valid
     valid = false if pos[1].to_i == 0 && row != "0"
     valid = pos[1].to_i.between?(0, HEIGHT) if valid
+    valid
+  end
+  
+  def valid_indices?(pos)
+    valid = pos.length == 2
+    valid = false unless pos[0].to_i.between?(0, WIDTH)
+    valid = false unless pos[1].to_i.between?(0, HEIGHT)
     valid
   end
   
@@ -146,6 +153,7 @@ end
 
 
 class Position
+  attr_reader :pos
 
   def initialize(pos)
     @pos = pos
@@ -160,7 +168,9 @@ class Position
   end
   
   def to_notation
-    @pos
+    col = Board::COLUMNS[@pos[0]]
+    row = @pos[1] + 1
+    notation = "#{col}#{row}"
   end
   
 end

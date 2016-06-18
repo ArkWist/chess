@@ -46,7 +46,7 @@ describe Chess do
       b.place_piece("a1", Pawn.new(white))
       piece = b.get_piece("a1")
       expect(piece).to be_instance_of(Pawn)
-      expect(piece.pos.to_notation).to eq("a1")
+      expect(piece.pos.pos).to eq("a1")
     end
   end
 
@@ -200,7 +200,7 @@ describe Chess do
       expect(b.ascii_col_labels).to eq("    a   b   c   d   e   f   g   h    ")
     end
   end
-=begin
+
   ######### Pawn should know where it is??? ###########
   ######### Should know so don't have to pass it all the time ####
   
@@ -214,16 +214,16 @@ describe Chess do
       moves = piece.get_moves(b)
       expect(moves.include?(target)).to eq(true)
     end
-    it "doesn't put blocked moves in the move list" do
-      start, target = "d3", "d4"
-      b.place_piece(start, Pawn.new(white))
-      b.place_piece(target, Pawn.new(black))
-      piece = b.get_piece(start)
-      moves = piece.get_moves(b)
-      expect(moves.include?(target)).to eq(false)
-    end
+    #it "doesn't put blocked moves in the move list" do
+    #  start, target = "d3", "d4"
+    #  b.place_piece(start, Pawn.new(white))
+    #  b.place_piece(target, Pawn.new(black))
+    #  piece = b.get_piece(start)
+    #  moves = piece.get_moves(b)
+    #  expect(moves.include?(target)).to eq(false)
+    #end
   end
-    
+=begin
   # Pawn capture checking
   
   describe "Pawn.get_captures" do
@@ -239,13 +239,13 @@ describe Chess do
   
   # Pawn two square move checking
   
-  describe "Pawn.get_double_step_move" do
+  describe "Pawn.get_double_step" do
     context "Pawn is on its second rank" do
       it "checks if a two step move is valid" do
         start, target = "d2", "d4"
         b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
-        move = piece.get_double_step_move(start)
+        move = piece.get_double_step(start)
         expect(move.include?(target)).to eq(true)
       end
     end

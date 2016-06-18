@@ -27,44 +27,79 @@ end
 
 class Pawn < Piece
   ICONS = ["P", "p"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
+  def get_moves(board)
+    col, row = @pos.to_index
+    moves = []
+    move = Position.new([row + 1, col]) if @player == Chess::WHITE
+    move = Position.new([row - 1, col]) if @player == Chess::BLACK
+    if board.valid_indices?(move.pos) && board.get_piece(move.to_notation) == Chess::EMPTY
+      moves << move.to_notation
+    end
+    moves
+  end
+  
+  def get_double_step(board)
+    row, col = @pos.to_index
+  end
+  
+  def get_captures(board)
+    row, col = @pos.to_index
+  end
+  
+  def get_en_passant_captures(board)
+    row, col = @pos.to_index
+  end
+  
 end
 
 class Rook < Piece
   ICONS = ["R", "r"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
 end
 
 class Knight < Piece
   ICONS = ["N", "n"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
 end
 
 class Bishop < Piece
   ICONS = ["B", "b"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
 end
 
 class Queen < Piece
   ICONS = ["Q", "q"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
 end
 
 class King < Piece
   ICONS = ["K", "k"]
+  
   def initialize(player)
     super(player, ICONS)
   end
+  
 end
 
 

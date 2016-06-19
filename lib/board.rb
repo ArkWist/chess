@@ -114,6 +114,8 @@ class Board
     moves = []
     col, row = pos.to_index
     
+    puts "EMPTY COL: #{col}"
+    
     until !valid_position?(pos) && moves.length < limit
       if direction == :n
         row += 1

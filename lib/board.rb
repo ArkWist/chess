@@ -111,22 +111,30 @@ class Board
   end
 
   def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
-    count = 0
+    moves = []
     col, row = pos.to_index
     
-    until !valid_position?(pos) && count < limit
+    until !valid_position?(pos) && moves.length < limit
       if direction == :n
         row += 1
         move = Position.new([col, row])
-        if valid_position?(move.to_notation) && is_empty?(move)
-          count += 1
+        if valid_position?(move) && is_empty?(move)
+          moves << move.to_notation
         else
-          limit = count
+          limit = 0
+        end
+      elsif direction == :s
+        row -= 1
+        move = Position.new([col, row])
+        if valid_position?(move) && is_empty?(move)
+          moves << move.to_notation
+        else
+          limit = 0
         end
       end
+      
     end
 
-    
   end
 
   # This validates move formatting.

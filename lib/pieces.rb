@@ -44,18 +44,13 @@ class Pawn < Piece
   end
   
   def get_double_step(board)
-    col, row = @pos.to_index
-    moves = []
-    move = Position.new([row + 2, col]) if @player == Chess::WHITE
-    move = Position.new([row - 2, col]) if @player == Chess::BLACK
-    if board.valid_indices?(move.pos) #&& board.get_piece()
-    
-    ## NEED a way to check empty until a certain square
-    #if board.empty_up_to?(@pos, :n, 2) == true
-    
-    #if @player == Chess::WHITE && row == 1
-    
+    steps, moves = 2, []
+    steps = empty_up_to(@pos, :n, steps) if @player == Chess::WHITE
+    steps = empty_up_to(@pos, :s, steps) if @player == Chess::BLACK
+    if moves.length == steps
+      moves << steps[-1]
     end
+    moves
   end
   
   def get_captures(board)

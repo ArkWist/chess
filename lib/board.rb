@@ -58,8 +58,12 @@ class Board
   ## JUST INTRODUCED, USE WHERE APPROPRIATE
   def is_empty?(pos)
     pos = Position.new(pos) unless pos.is_a?(Position)
-    col, row = pos.to_index
-    @squares[col][row] == Chess::EMPTY
+    #col, row = pos.to_index
+    #empty = @squares[col][row] == Chess::EMPTY
+    empty = get_piece(pos) == Chess::EMPTY
+    #pos = Position.new(pos) unless pos.is_a?(Position)
+    #empty = true if get_piece(pos) == Chess::EMPTY
+    #empty ||= false
   end
   
   def remove_piece(pos)
@@ -82,6 +86,7 @@ class Board
   
   def valid_position?(pos)
     pos = pos.to_notation if pos.is_a?(Position)
+    puts "MOVE: #{pos}"
     valid = pos.length == 2
     valid = COLUMNS.include?(pos[0].to_s) if valid
     valid = false if pos[1].to_i == 0 && row != "0"
@@ -113,9 +118,9 @@ class Board
   def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
     moves = []
     col, row = pos.to_index
-    
-    puts "EMPTY COL: #{col}"
-    
+    puts "RIGHT BEFORE LOOP"
+    puts "POS: #{pos.to_notation}"
+    ############# WHY IS THIS A3?
     until !valid_position?(pos) && moves.length < limit
       if direction == :n
         row += 1
@@ -220,8 +225,8 @@ class Position
   end
   
   def to_notation
-    col = Board::COLUMNS[@pos[0]]
-    row = @pos[1] + 1
+    col = Board::COLUMNS[@pos[0].to_i]
+    row = @pos[1].to_i + 1
     notation = "#{col}#{row}"
   end
   

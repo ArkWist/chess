@@ -45,9 +45,7 @@ class Pawn < Piece
   
   def get_double_step(board)
     steps, moves = 2, []
-    puts "DOUBLE STEPS: #{steps}"
     empty = board.empty_up_to(@pos, :n, steps) if @player == Chess::WHITE
-    puts "DOUBLE EMPTY: #{empty}"
     empty = board.empty_up_to(@pos, :s, steps) if @player == Chess::BLACK
     if empty.length == steps
       moves << empty[-1]

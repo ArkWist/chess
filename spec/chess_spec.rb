@@ -233,7 +233,7 @@ describe Chess do
         b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
         move = piece.get_double_step(b)
-        #expect(move.include?(target)).to eq(true)
+        expect(move.include?(target)).to eq(true)
       end
     end
   end

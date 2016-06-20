@@ -98,45 +98,45 @@ class Board
 
   ###############################
   def empty_up_to?(start, direction, limit)
-    count = 0
-    col, row = start.to_index
-    
-    if direction == :n
-      max.times do |i|
-        #move = Position.new([col, row + 1])
-      end
-    end
-    
+    moves = empty_up_to(start, direction, limit)
+    up_to = moves.length >= limit
+    up_to
   end
-
   
   def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
     moves = []
     col, row = pos.to_index
     until !valid_position?(pos) || moves.length >= limit
-      if direction == :n
-        row += 1
-        move = Position.new([col, row])
-        if valid_position?(move) && is_empty?(move)
-          moves << move.to_notation
-        else
-          limit = 0
-        end
-      elsif direction == :s
-        row -= 1
-        move = Position.new([col, row])
-        if valid_position?(move) && is_empty?(move)
-          moves << move.to_notation
-        else
-          limit = 0
-        end
+      case direction
+      when :n
+        row = row + 1
+      when :ne
+        col, row = col + 1, row + 1
+      when :e
+        col = col + 1
+      when :se
+        col, row = col + 1, row - 1
+      when :s
+        row = row - 1
+      when :sw
+        col, row = col - 1, row - 1
+      when :w
+        col = col - 1
+      when :sw
+        col, row = col - 1, row + 1
+      end
+      move = Position.new([col, row])
+      if valid_position?(move) && is_empty?(move)
+        moves << move.to_notation
+      else
+        limit = 0
       end
       pos = move
     end
     moves
   end
 
-  # This validates move formatting.
+  # Validates move formatting.
   # It does NOT check if a move is legal.
   def valid_move?(move)
     move = normalize_move(move)
@@ -220,13 +220,6 @@ class Position
       index = [col, row]
     end
     index
-    
-      #col, row = @pos[0], @pos[1]
-      #columns = Board::COLUMNS
-      #col = columns.index(col)
-      #row = row.to_i - 1
-      #index = [col, row]
-      
   end
   
   def to_notation
@@ -241,14 +234,6 @@ class Position
   end
   
 end
-
-#class Move
-#
-#  def initialize(move)
-#    @move = move
-#  end
-#  
-#end
 
 
 

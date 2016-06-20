@@ -58,14 +58,7 @@ class Board
   ## JUST INTRODUCED, USE WHERE APPROPRIATE
   def is_empty?(pos)
     pos = Position.new(pos) unless pos.is_a?(Position)
-    #col, row = pos.to_index
-    #empty = @squares[col][row] == Chess::EMPTY
     empty = get_piece(pos) == Chess::EMPTY
-    puts "EMPTY: #{empty}"
-    #pos = Position.new(pos) unless pos.is_a?(Position)
-    #empty = true if get_piece(pos) == Chess::EMPTY
-    #empty ||= false
-    empty
   end
   
   def remove_piece(pos)
@@ -116,10 +109,11 @@ class Board
     
   end
 
+  
   def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
     moves = []
     col, row = pos.to_index
-    until !valid_position?(pos) && moves.length < limit
+    until !valid_position?(pos) || moves.length >= limit
       if direction == :n
         row += 1
         move = Position.new([col, row])
@@ -137,9 +131,9 @@ class Board
           limit = 0
         end
       end
-      
+      pos = move
     end
-
+    moves
   end
 
   # This validates move formatting.
@@ -207,6 +201,7 @@ class Board
 end
 
 
+# This class was a huge mistake...
 class Position
   attr_reader :pos
 

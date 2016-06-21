@@ -212,7 +212,7 @@ describe Chess do
       b.place_piece(start, Pawn.new(white))
       piece = b.get_piece(start)
       moves = piece.get_moves(b)
-      expect(moves.include?(target)).to eq(true)
+      expect(moves.include?(target)).to eq(true)  # Doesn't work
     end
     it "doesn't put blocked moves in the move list" do
       start, target = "d3", "d4"
@@ -220,7 +220,7 @@ describe Chess do
       b.place_piece(target, Pawn.new(black))
       piece = b.get_piece(start)
       moves = piece.get_moves(b)
-      expect(moves.include?(target)).to eq(false)
+      expect(moves.include?(target)).to eq(false)  #Doesn't work
     end
   end
 

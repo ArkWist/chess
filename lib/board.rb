@@ -10,6 +10,7 @@ class Board
     @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
     @last_player = Chess::EMPTY
     @last_move = 0
+    @en_passant = Chess::NO_POS
     set_board(Chess::WHITE, Chess::BLACK)
   end
   
@@ -174,7 +175,7 @@ class Board
 
   def capturable(pos, direction, player)
     col, row = pos.to_index
-    captures = "*"
+    captures = Chess::NO_POS
     unless !valid_position?(pos)
       case direction
       when :n
@@ -232,6 +233,13 @@ class Board
     COLUMNS.each { |col| line << "#{col}   " }
     line << " "
   end
+  
+  def move
+  end
+  
+  def capture
+  end
+  
   
 end
 

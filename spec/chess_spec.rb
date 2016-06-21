@@ -262,7 +262,7 @@ describe Chess do
         start, target, e_p = "b5", "c6", "c5"
         b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
-        move = piece.get_en_passant_capture(target)
+        move = piece.get_en_passant_capture(board)
         expect(move.include?(e_p)).to eq(true)
       end
     end

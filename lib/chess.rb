@@ -6,6 +6,7 @@ class Chess
   WHITE = :White
   BLACK = :Black
   EMPTY = :Empty
+  NO_POS = :Blank
   attr_reader :player, :board
 
   def initialize

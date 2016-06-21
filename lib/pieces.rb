@@ -7,7 +7,7 @@ class Piece
     @player = player
     @icon = icons[0] if player == Chess::WHITE
     @icon = icons[1] if player == Chess::BLACK
-    @icon ||= "*"
+    @icon ||= Chess::NO_POS
   end
   
   def set_pos(pos)
@@ -56,12 +56,12 @@ class Pawn < Piece
     captures << board.capturable(@pos, :nw, @player) if @player == Chess::WHITE
     captures << board.capturable(@pos, :se, @player) if @player == Chess::BLACK
     captures << board.capturable(@pos, :sw, @player) if @player == Chess::BLACK
-    captures.delete("*")
+    captures.delete(Chess::NO_POS)
     captures
   end
   
   def get_en_passant_captures(board)
-    col, row = @pos.to_index
+    captures = []
   end
   
 end

@@ -61,6 +61,12 @@ class Board
     empty = get_piece(pos) == Chess::EMPTY
   end
   
+  def is_enemy?(pos, player)
+    pos = Position.new(pos) unless pos.is_a?(Position)
+    enemy = get_piece(pos).player != player if !is_empty(pos)
+    enemy ||= false
+  end
+  
   def remove_piece(pos)
     pos = Position.new(pos) unless pos.is_a?(Position)
     col, row = pos.to_index
@@ -96,13 +102,43 @@ class Board
     valid
   end
 
-  ###############################
-  def empty_up_to?(start, direction, limit)
-    moves = empty_up_to(start, direction, limit)
-    up_to = moves.length >= limit
-    up_to
+  # Validates move formatting.
+  # It does NOT check if a move is legal.
+  def valid_move?(move)
+    move = normalize_move(move)
+    valid = move.length == 4
+    if valid
+      start, target = move[0..1], move[2..3]
+      valid = false unless valid_position?(start)
+      valid = false unless valid_position?(target)
+    end
+    valid
   end
   
+  def normalize_move(move)
+    move = move.downcase.gsub(/[, ]+/, "")
+  end
+  
+  def get_move_start(move)
+    start = move[0..1]
+  end
+  
+  def get_move_target(move)
+    target = move[2..3]
+  end
+
+#  def col_list
+#    columns = []
+#    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }
+#    columns
+#  end
+
+  #def empty_up_to?(start, direction, limit)
+  #  moves = empty_up_to(start, direction, limit)
+  #  up_to = moves.length >= limit
+  #  up_to
+  #end
+
   def empty_up_to(pos, direction, limit = [WIDTH, HEIGHT].max)
     moves = []
     col, row = pos.to_index
@@ -136,36 +172,35 @@ class Board
     moves
   end
 
-  # Validates move formatting.
-  # It does NOT check if a move is legal.
-  def valid_move?(move)
-    move = normalize_move(move)
-    valid = move.length == 4
-    if valid
-      start, target = move[0..1], move[2..3]
-      valid = false unless valid_position?(start)
-      valid = false unless valid_position?(target)
+  def capturable(pos, direction, player)
+    col, row = pos.to_index
+    unless !valid_position(pos)
+      case direction
+      when :n
+        row = row + 1
+      when :ne
+        col, row = col + 1, row + 1
+      when :e
+        col = col + 1
+      when :se
+        col, row = col + 1, row - 1
+      when :s
+        row = row - 1
+      when :sw
+        col, row = col - 1, row - 1
+      when :w
+        col = col - 1
+      when :sw
+        col, row = col - 1, row + 1
+      end
+      capture = Position.new([col, row])
+      unless valid_position?(capture) && is_enemy?(capture)
+        capture = nil
+      end      
     end
-    valid
+    capture ||= nil
+    capture
   end
-  
-  def normalize_move(move)
-    move = move.downcase.gsub(/[, ]+/, "")
-  end
-  
-  def get_move_start(move)
-    start = move[0..1]
-  end
-  
-  def get_move_target(move)
-    target = move[2..3]
-  end
-
-#  def col_list
-#    columns = []
-#    0.upto(WIDTH) { |i| columns.push(("a".ord + i).chr) }
-#    columns
-#  end
 
   def display
     puts ascii_col_labels

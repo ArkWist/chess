@@ -33,7 +33,6 @@ class Pawn < Piece
   end
   
   def get_moves(board)
-    col, row = @pos.to_index
     steps = 1
     moves = board.empty_up_to(@pos, :n, steps) if @player == Chess::WHITE
     moves = board.empty_up_to(@pos, :s, steps) if @player == Chess::BLACK
@@ -41,7 +40,8 @@ class Pawn < Piece
   end
   
   def get_double_step(board)
-    steps, moves = 2, []
+    steps = 2
+    moves = []
     empty = board.empty_up_to(@pos, :n, steps) if @player == Chess::WHITE
     empty = board.empty_up_to(@pos, :s, steps) if @player == Chess::BLACK
     if empty.length == steps
@@ -51,7 +51,13 @@ class Pawn < Piece
   end
   
   def get_captures(board)
-    col, row = @pos.to_index
+    steps = 1
+    captures = []
+    captures << board.capturable(@pos, :ne, @player) if @player == Chess::WHITE
+    captures << board.capturable(@pos, :nw, @player) if @player == Chess::WHITE
+    captures << board.capturable(@pos, :se, @player) if @player == Chess::BLACK
+    captures << board.capturable(@pos, :sw, @player) if @player == Chess::BLACK
+    captures
   end
   
   def get_en_passant_captures(board)

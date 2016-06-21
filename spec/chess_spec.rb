@@ -4,7 +4,7 @@ require "chess"
 describe Chess do
   let(:c) { Chess.new }
   let(:b) { c.board }
-  let(:s) { c.board.squares }
+  #let(:s) { c.board.squares }
   let(:p) { c.player }
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
@@ -23,12 +23,13 @@ describe Chess do
 
   # Board creation
   
-  describe "Board.new" do
-    it "creates an 8 x 8 array of squares" do
-      expect(s.length).to eq(8)
-      expect(s[0].length).to eq(8)
-    end
-  end
+  # Squares no longer need to public
+  #describe "Board.new" do
+  #  it "creates an 8 x 8 array of squares" do
+  #    expect(s.length).to eq(8)
+  #    expect(s[0].length).to eq(8)
+  #  end
+  #end
 
   # Board notation
   ######## Should create Positions before translating them ###########
@@ -249,11 +250,7 @@ describe Chess do
       expect(moves.include?(target)).to eq(true)
     end
   end
-=begin
-  ###### If en passant capture matches candidate for target #########
-  ###### So this is called from Board, not from Pawn get_moves
-  ###### Board would check captures, then check moves, then compare to special
-  
+
   # Pawn en passant capture checking
   
   describe "Pawn.get_en_passant_capture" do
@@ -262,12 +259,13 @@ describe Chess do
         start, target, e_p = "b5", "c6", "c5"
         b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
-        move = piece.get_en_passant_capture(board)
-        expect(move.include?(e_p)).to eq(true)
+        b.en_passant = e_p
+        move = piece.get_en_passant_capture(b)
+        expect(move.include?(target)).to eq(true)
       end
     end
   end
-
+=begin
   ####### Handled as a special case by Board after moving if Pawn #######
   
   # Pawn promotion checking

@@ -60,8 +60,22 @@ class Pawn < Piece
     captures
   end
   
-  def get_en_passant_captures(board)
+  # Board.en_passant is where the enemy pawn moved to
+### When moving, kills what's at en_passant ######################################
+  def get_en_passant_capture(board)
+    col, row = @pos.to_index
     captures = []
+    left, right = Position.new([col - 1, row]), Position.new([col + 1, row])
+    if board.valid_position?(left) && left.to_notation == board.en_passant
+      capture = Position.new([col - 1, row + 1]) if @player == Chess::WHITE
+      capture = Position.new([col - 1, row - 1]) if @player == Chess::BLACK
+      captures << capture.to_notation
+    elsif board.valid_position?(right) && right.to_notation == board.en_passant
+      capture = Position.new([col + 1, row + 1]) if @player == Chess::WHITE
+      capture = Position.new([col + 1, row - 1]) if @player == Chess::BLACK
+      captures << capture.to_notation
+    end
+    captures
   end
   
 end

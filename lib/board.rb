@@ -63,7 +63,7 @@ class Board
   
   def is_enemy?(pos, player)
     pos = Position.new(pos) unless pos.is_a?(Position)
-    enemy = get_piece(pos).player != player if !is_empty(pos)
+    enemy = get_piece(pos).player != player if !is_empty?(pos)
     enemy ||= false
   end
   
@@ -174,7 +174,8 @@ class Board
 
   def capturable(pos, direction, player)
     col, row = pos.to_index
-    unless !valid_position(pos)
+    captures = "*"
+    unless !valid_position?(pos)
       case direction
       when :n
         row = row + 1
@@ -194,12 +195,11 @@ class Board
         col, row = col - 1, row + 1
       end
       capture = Position.new([col, row])
-      unless valid_position?(capture) && is_enemy?(capture)
-        capture = nil
-      end      
+      if valid_position?(capture) && is_enemy?(capture, player)
+        captures = capture.to_notation
+      end
     end
-    capture ||= nil
-    capture
+    captures
   end
 
   def display

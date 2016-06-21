@@ -51,12 +51,12 @@ class Pawn < Piece
   end
   
   def get_captures(board)
-    steps = 1
     captures = []
     captures << board.capturable(@pos, :ne, @player) if @player == Chess::WHITE
     captures << board.capturable(@pos, :nw, @player) if @player == Chess::WHITE
     captures << board.capturable(@pos, :se, @player) if @player == Chess::BLACK
     captures << board.capturable(@pos, :sw, @player) if @player == Chess::BLACK
+    captures.delete("*")
     captures
   end
   

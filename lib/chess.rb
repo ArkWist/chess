@@ -10,7 +10,7 @@ class Chess
   attr_reader :player, :board
 
   def initialize
-    @player = WHITE
+    @player = EMPTY
     @board = Board.new
     #play
   end
@@ -23,7 +23,8 @@ class Chess
     game_end = nil
     @board.display
     until game_end
-      next_player unless @board.last_move == EMPTY
+      next_player
+      @board.en_passant = NO_POS unless @board.get_piece(@board.en_passant).player != @player
       take_turn
       @board.display
       #game_end = "check" if check?
@@ -40,7 +41,11 @@ class Chess
       target = @board.get_move_target(move)
       piece = @board.get_piece(start)
       if piece.player == @player
-        do_move(piece, start, target)
+        success = do_move(piece, start, target)
+        unless success
+          puts "Invalid move. Try again."
+          take_turn
+        end
       else
         puts "Player #{@player}'s piece not found at #{start}."
         take_turn
@@ -52,7 +57,34 @@ class Chess
   end
   
   def do_move(piece, start, target)
+    success = move_pawn(piece, start, target) if piece.is_a?(Pawn)
+    success = move_rook(piece, start, target) if piece.is_a?(Rook)
+    success = move_knight(piece, start, target) if piece.is_a?(Knight)
+    success = move_bishop(piece, start, target) if piece.is_a?(Bishop)
+    success = move_queen(piece, start, target) if piece.is_a?(Queen)
+    success = move_king(piece, start, target) if piece.is_a?(King)    
+  end
   
+  def move_pawn(piece, start, target)
+    moves = piece.get_moves(@board)
+    captures = piece.get_captures(@board)
+    double_step = piece.get_double_step(@board)
+    en_passant = piece.get_en_passant_capture(@board)
+    success = true
+    if en_passant.include?(target)
+      @board.move_piece(start, target)
+      @board.kill_piece(@board.en_passant)
+    elsif captures.include?(target)
+      @board.move_piece(start, target)
+    elsif double_step.include?(target)
+      @board.move_piece(start, target)
+      @board.en_passant = target
+    elsif moves.include?(target)
+      @board.move_piece(start, target)
+    else
+      success = false
+    end
+    success
   end
   
 end

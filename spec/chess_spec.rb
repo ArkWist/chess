@@ -201,9 +201,6 @@ describe Chess do
     end
   end
 
-  ######### Pawn should know where it is??? ###########
-  ######### Should know so don't have to pass it all the time ####
-  
   # Pawn move checking
   
   describe "Pawn.get_moves" do
@@ -265,6 +262,37 @@ describe Chess do
       end
     end
   end
+  
+  # Pawn move
+  
+  describe "Board.move" do
+    context "Pawn in start position" do
+      it "moves the pawn to the give empty location" do
+        start, target = "c3", "c4"
+        move = "#{start}#{target}"
+        b.place_piece(start, Pawn.new(white))
+        b.move_piece(move)
+        expect(b.get_piece(start)).to eq(Chess::EMPTY)
+        expect(b.get_piece(target)).to be_instance_of(Pawn)
+      end
+    end
+  end
+    
+    # White Pawn moves one square
+    # Black Pawn moves one square
+    # White Pawn moves two squares
+    # White Pawn can't move there
+    # Space is empty
+  
+  # Pawn capture
+  
+  
+  # Pawn en passant
+  
+  
+  # Pawn promotion
+  
+    
 =begin
   ####### Handled as a special case by Board after moving if Pawn #######
   

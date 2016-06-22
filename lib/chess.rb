@@ -19,6 +19,10 @@ class Chess
     @player == WHITE ? @player = BLACK : @player = WHITE
   end
   
+  def play
+    
+  end
+  
 end
 
 

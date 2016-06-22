@@ -81,7 +81,10 @@ class Board
     remove_piece(pos)
   end
   
-  def move_piece(start, target)
+  #def move_piece(start, target)
+  def move_piece(move, target = nil)
+    target.nil? ? start = get_move_start(move) : start = move
+    target = get_move_target(move) if target.nil?
     kill_piece(target) if get_piece(target) != Chess::EMPTY
     place_piece(target, get_piece(start))
     remove_piece(start)

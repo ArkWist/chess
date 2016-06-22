@@ -266,14 +266,24 @@ describe Chess do
   # Pawn move
   
   describe "Board.move" do
-    context "Pawn in start position" do
-      it "moves the pawn to the give empty location" do
+    context "Standard pawn movement" do
+      it "moves the pawn to the given empty location" do
         start, target = "c3", "c4"
         move = "#{start}#{target}"
         b.place_piece(start, Pawn.new(white))
         b.move_piece(move)
         expect(b.get_piece(start)).to eq(Chess::EMPTY)
         expect(b.get_piece(target)).to be_instance_of(Pawn)
+      end
+    end
+    context "Double step movement" do
+      it "sets en passant when making a move" do
+        start, target = "b2", "b4"
+        move = "#{start}#{target}"
+        b.place_piece(start, Pawn.new(white))
+        #b.move_piece(move)
+        #expect(b.get_piece(start)).to eq(Chess::EMPTY)
+        #expect(b.get_piece(target)).to be_instance_of(Pawn)
       end
     end
   end

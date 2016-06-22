@@ -4,13 +4,13 @@ class Board
   WIDTH = 8
   HEIGHT = 8
   COLUMNS = ["a", "b", "c", "d", "e", "f", "g", "h"]
-  attr_reader :width, :height, :columns, :en_passant, :squares
+  attr_reader :width, :height, :columns, :en_passant, :last_move
   attr_writer :en_passant # This is temporary, for testing.
 
   def initialize
     @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
     @last_player = Chess::EMPTY
-    @last_move = 0
+    @last_move = Chess::EMPTY
     @en_passant = Chess::NO_POS
     set_board(Chess::WHITE, Chess::BLACK)
   end

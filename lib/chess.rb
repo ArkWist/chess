@@ -20,7 +20,39 @@ class Chess
   end
   
   def play
-    
+    game_end = nil
+    @board.display
+    until game_end
+      next_player unless @board.last_move == EMPTY
+      take_turn
+      @board.display
+      #game_end = "check" if check?
+    end
+    #game_set
+  end
+  
+  def take_turn
+    print "Player #{@player}'s move: "
+    move = gets.chomp
+    if @board.valid_move?(move)
+      move = @board.normalize_move(move)
+      start = @board.get_move_start(move)
+      target = @board.get_move_target(move)
+      piece = @board.get_piece(start)
+      if piece.player == @player
+        do_move(piece, start, target)
+      else
+        puts "Player #{@player}'s piece not found at #{start}."
+        take_turn
+      end
+    else
+      puts "Invalid move. Try again."
+      take_turn
+    end
+  end
+  
+  def do_move(piece, start, target)
+  
   end
   
 end

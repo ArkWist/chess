@@ -335,12 +335,13 @@ describe Chess do
   # Rook move checking
   
   describe "Rook.get_moves" do
-    it "puts multiple forward moves in the move list" do
-      start, target = "d3", "d6"
+    it "puts multiple moves in the move list" do
+      start, target, another = "d3", "d6", "g3"
       b.place_piece(start, Rook.new(white))
       piece = b.get_piece(start)
       moves = piece.get_moves(b)
       expect(moves.include?(target)).to eq(true)
+      expect(moves.include?(another)).to eq(true)
     end
     it "doesn't put blocked moves in the move list" do
       start, target = "d3", "d6"

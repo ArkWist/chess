@@ -7,6 +7,7 @@ class Chess
   BLACK = :Black
   EMPTY = :Empty
   NO_POS = :Blank
+  COMMANDS = ["save", "load", "quit"]
   attr_reader :player, :board
 
   def initialize
@@ -53,10 +54,20 @@ class Chess
         puts "Player #{@player}'s piece not found at #{start}."
         take_turn
       end
+    elsif valid_command?(move)
+      do_command(move)
     else
       puts "Invalid move. Try again."
       take_turn
     end
+  end
+  
+  def valid_command?(command)
+    valid = COMMANDS.include?(command.downcase)
+  end
+  
+  def do_command(command)
+    command.downcase!
   end
   
   def do_move(piece, start, target)

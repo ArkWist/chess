@@ -40,6 +40,7 @@ class Pawn < Piece
     steps = 1
     moves = board.empty_up_to(@pos, :n, steps) if @player == Chess::WHITE
     moves = board.empty_up_to(@pos, :s, steps) if @player == Chess::BLACK
+    moves.flatten!
     moves
   end
   
@@ -90,12 +91,25 @@ class Rook < Piece
   end
   
   def get_moves(board)
+    moves = []
+    moves << board.empty_up_to(@pos, :n)
+    moves << board.empty_up_to(@pos, :e)
+    moves << board.empty_up_to(@pos, :s)
+    moves << board.empty_up_to(@pos, :w)
+    moves.flatten!
+    moves
   end
   
   def get_rook_castle(board)
   end
   
   def get_captures(board)
+    captures = []
+    captures << board.empty_up_to(@pos, :n)
+    captures << board.empty_up_to(@pos, :e)
+    captures << board.empty_up_to(@pos, :s)
+    captures << board.empty_up_to(@pos, :w)
+    captures
   end
   
 end

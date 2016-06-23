@@ -21,12 +21,10 @@ class Chess
   end
   
   def play
-    game_end = nil
+    game_end = false
     @board.display
     until game_end
       next_player
-      #en_passant_piece = @board.get_piece(@board.en_passant)
-      #@board.en_passant = NO_POS unless en_passant_piece.player != @player
       take_turn
       @board.display
       #game_end = "check" if check?
@@ -44,7 +42,7 @@ class Chess
       start = @board.get_move_start(move)
       target = @board.get_move_target(move)
       piece = @board.get_piece(start)
-      if piece.player == @player
+      if piece != EMPTY && piece.player == @player
         success = do_move(piece, start, target)
         unless success
           puts "Invalid move. Try again."
@@ -100,6 +98,12 @@ class Chess
       success = false
     end
     success
+  end
+  
+  def game_set?
+  end
+  
+  def game_set
   end
   
 end

@@ -302,13 +302,32 @@ describe Chess do
       expect(piece).to be_instance_of(Pawn)
       expect(piece.read_pos).to eq(target)
     end
-  end
-  
-  describe "Chess.play" do
-    it "shows the board and lets the player do a move" do
-      c.play
+    it "rejects a move from a blank space" do
+      start, target = "b3", "b4"
+      c.next_player
+      c.do_move(b.get_piece(start), start, target)
+      expect(b.get_piece(start)).to eq(empty)
+      expect(b.get_piece(target)).to eq(empty)
     end
   end
+  
+  describe "Chess.do_move" do
+    it "takes a move and executes it" do
+      start, target = "b2", "b4"
+      c.next_player
+      c.do_move(b.get_piece(start), start, target)
+      expect(b.get_piece(start)).to eq(empty)
+      piece = b.get_piece(target)
+      expect(piece).to be_instance_of(Pawn)
+      expect(piece.read_pos).to eq(target)
+    end
+  end
+  
+  #describe "Chess.play" do
+  #  it "shows the board and lets the player do a move" do
+  #    c.play
+  #  end
+  #end
     
     # White Pawn moves one square
     # Black Pawn moves one square

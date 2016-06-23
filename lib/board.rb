@@ -88,6 +88,21 @@ class Board
     kill_piece(target) if get_piece(target) != Chess::EMPTY
     place_piece(target, get_piece(start))
     remove_piece(start)
+    record_move(move, get_piece(target).player)
+  end
+  
+  def record_move(move, player)
+    @last_move = move
+    @last_player = player
+    reset_en_passant if reset_en_passant?
+  end
+  
+  def reset_en_passant?
+    reset = @en_passant != Chess::NO_POS && @last_player != get_piece(@en_passant).player
+  end
+  
+  def reset_en_passant(pos = nil)
+    pos.nil? ? @en_passant = Chess::NO_POS : @en_passant = pos
   end
   
   def valid_position?(pos)
@@ -208,13 +223,15 @@ class Board
   end
 
   def display
+    puts
     puts ascii_col_labels
     puts ascii_separator
     (HEIGHT).downto(1) do |row_no|
-      puts ascii_row(line)
+      puts ascii_row(row_no)
       puts ascii_separator
     end
     puts ascii_col_labels
+    puts
   end
 
   def ascii_separator

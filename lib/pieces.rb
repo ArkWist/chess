@@ -18,6 +18,10 @@ class Piece
     @pos
   end
   
+  def read_pos
+    @pos.pos
+  end
+  
   def get_owner
     @player
   end

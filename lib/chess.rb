@@ -24,10 +24,13 @@ class Chess
     @board.display
     until game_end
       next_player
-      @board.en_passant = NO_POS unless @board.get_piece(@board.en_passant).player != @player
+      #en_passant_piece = @board.get_piece(@board.en_passant)
+      #@board.en_passant = NO_POS unless en_passant_piece.player != @player
       take_turn
       @board.display
       #game_end = "check" if check?
+      ###########
+      game_end = true
     end
     #game_set
   end
@@ -62,7 +65,8 @@ class Chess
     success = move_knight(piece, start, target) if piece.is_a?(Knight)
     success = move_bishop(piece, start, target) if piece.is_a?(Bishop)
     success = move_queen(piece, start, target) if piece.is_a?(Queen)
-    success = move_king(piece, start, target) if piece.is_a?(King)    
+    success = move_king(piece, start, target) if piece.is_a?(King)
+    success
   end
   
   def move_pawn(piece, start, target)

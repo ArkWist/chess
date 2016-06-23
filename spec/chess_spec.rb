@@ -9,12 +9,13 @@ describe Chess do
   let(:white) { Chess::WHITE }
   let(:black) { Chess::BLACK }
   let(:empty) { Chess::EMPTY }
+  let(:nopos) { Chess::NO_POS }
 
   # Chess creation
   
   describe "Chess.new" do
-    it "sets player to #{Chess::WHITE}" do
-      expect(p).to eq(white)
+    it "sets player to #{Chess::EMPTY}" do
+      expect(p).to eq(empty)
     end
     it "creates a new game board" do
       expect(c.board).to be_instance_of(Board)
@@ -107,10 +108,11 @@ describe Chess do
   describe "Chess.next_player" do
     it "changes from #{Chess::WHITE} player to #{Chess::BLACK} player" do
       c.next_player
+      c.next_player
       expect(c.player).to eq(black)
     end
     it "changes from #{Chess::BLACK} player to #{Chess::WHITE} player" do
-      2.times { c.next_player }
+      3.times { c.next_player }
       expect(c.player).to eq(white)
     end
   end
@@ -256,7 +258,7 @@ describe Chess do
         start, target, e_p = "b5", "c6", "c5"
         b.place_piece(start, Pawn.new(white))
         piece = b.get_piece(start)
-        b.en_passant = e_p
+        b.reset_en_passant(e_p)
         move = piece.get_en_passant_capture(b)
         expect(move.include?(target)).to eq(true)
       end
@@ -272,7 +274,7 @@ describe Chess do
         move = "#{start}#{target}"
         b.place_piece(start, Pawn.new(white))
         b.move_piece(move)
-        expect(b.get_piece(start)).to eq(Chess::EMPTY)
+        expect(b.get_piece(start)).to eq(empty)
         expect(b.get_piece(target)).to be_instance_of(Pawn)
       end
     end
@@ -282,9 +284,29 @@ describe Chess do
         move = "#{start}#{target}"
         b.place_piece(start, Pawn.new(white))
         #b.move_piece(move)
-        #expect(b.get_piece(start)).to eq(Chess::EMPTY)
+        #expect(b.get_piece(start)).to eq(empty)
         #expect(b.get_piece(target)).to be_instance_of(Pawn)
       end
+    end
+  end
+  
+  # Pawn movement through Chess turn
+  
+  describe "Chess.do_move" do
+    it "takes a move and executes it" do
+      start, target = "b2", "b4"
+      c.next_player
+      c.do_move(b.get_piece(start), start, target)
+      expect(b.get_piece(start)).to eq(empty)
+      piece = b.get_piece(target)
+      expect(piece).to be_instance_of(Pawn)
+      expect(piece.read_pos).to eq(target)
+    end
+  end
+  
+  describe "Chess.play" do
+    it "shows the board and lets the player do a move" do
+      c.play
     end
   end
     

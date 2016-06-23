@@ -323,13 +323,22 @@ describe Chess do
     end
   end
   
-  #describe "Chess.play" do
-  #  it "shows the board and lets the player do a move" do
-  #    c.play
-  #  end
-  #end
-  
   # Pawn promotion
+  
+  describe "Board.get_promoted_piece" do
+    it "Makes an asked for piece" do
+      piece = b.get_promoted_piece(white, "q")
+      expect(piece).to be_instance_of(Queen)
+    end
+  end
+  
+  # Rook move checking
+  
+  # Rook capture checking
+  
+  # Rook castle checking
+  
+  
   
     
 =begin

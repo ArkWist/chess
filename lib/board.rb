@@ -253,7 +253,7 @@ class Board
     when "b"
       piece = Bishop.new(player)
     when "q"
-      piece = King.new(player)
+      piece = Queen.new(player)
     end
     piece
   end

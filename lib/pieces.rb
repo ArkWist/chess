@@ -101,6 +101,10 @@ class Rook < Piece
   end
   
   def get_rook_castle(board)
+    col, row = @pos.to_index
+    moves = []
+    ######
+    moves
   end
   
   def get_captures(board)

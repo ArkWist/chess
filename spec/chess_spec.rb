@@ -328,18 +328,6 @@ describe Chess do
   #    c.play
   #  end
   #end
-    
-    # White Pawn moves one square
-    # Black Pawn moves one square
-    # White Pawn moves two squares
-    # White Pawn can't move there
-    # Space is empty
-  
-  # Pawn capture
-  
-  
-  # Pawn en passant
-  
   
   # Pawn promotion
   

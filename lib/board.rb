@@ -5,7 +5,7 @@ class Board
   HEIGHT = 8
   COLUMNS = ["a", "b", "c", "d", "e", "f", "g", "h"]
   attr_reader :width, :height, :columns, :en_passant, :last_move
-  attr_writer :en_passant # This is temporary, for testing.
+  #attr_writer :en_passant # This is temporary, for testing.
 
   def initialize
     @squares = Array.new(WIDTH){ Array.new(HEIGHT) }
@@ -220,6 +220,42 @@ class Board
       end
     end
     captures
+  end
+  
+  def promote(pos)
+    pos = pos.to_notation if pos.is_a?(Position)
+    piece = get_piece(pos)
+    player = piece.player
+    promotion = ask_promote(player)
+    piece = get_promoted_piece(player, promotion)
+    remove_piece(target)
+    place_piece(pos, piece)
+  end
+  
+  def ask_promote(player)
+    print "Player #{player}, promote Pawn at #{target} to: "
+    input = gets.chomp
+    if Chess::PROMOTES.include?(input.downcase)
+      promote = input.downcase
+    else
+      "Invalid input. Try again."
+      promote = ask_promote(player)
+    end
+    promote
+  end
+  
+  def get_promoted_piece(player, promotion)
+    case promotion
+    when "r"
+      piece = Rook.new(player)
+    when "n"
+      piece = Knight.new(player)
+    when "b"
+      piece = Bishop.new(player)
+    when "q"
+      piece = King.new(player)
+    end
+    piece
   end
 
   def display

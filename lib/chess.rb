@@ -8,6 +8,7 @@ class Chess
   EMPTY = :Empty
   NO_POS = :Blank
   COMMANDS = ["save", "load", "quit"]
+  PROMOTES = ["r", "n", "b", "q"]
   attr_reader :player, :board
 
   def initialize
@@ -91,11 +92,17 @@ class Chess
       @board.move_piece(start, target)
     elsif double_step.include?(target)
       @board.move_piece(start, target)
-      @board.en_passant = target
+      @board.reset_en_passant(target)
     elsif moves.include?(target)
       @board.move_piece(start, target)
     else
       success = false
+    end
+    if success
+      row = target[1].to_i
+      if row == 0 || row == @board.height
+        @board.promote(target)
+      end
     end
     success
   end

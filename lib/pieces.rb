@@ -64,8 +64,6 @@ class Pawn < Piece
     captures
   end
   
-  # Board.en_passant is where the enemy pawn moved to
-### When moving, kills what's at en_passant ######################################
   def get_en_passant_capture(board)
     col, row = @pos.to_index
     captures = []
@@ -91,6 +89,15 @@ class Rook < Piece
     super(player, ICONS)
   end
   
+  def get_moves(board)
+  end
+  
+  def get_rook_castle(board)
+  end
+  
+  def get_captures(board)
+  end
+  
 end
 
 class Knight < Piece
@@ -98,6 +105,12 @@ class Knight < Piece
   
   def initialize(player)
     super(player, ICONS)
+  end
+  
+  def get_moves(board)
+  end
+  
+  def get_captures(board)
   end
   
 end
@@ -109,6 +122,12 @@ class Bishop < Piece
     super(player, ICONS)
   end
   
+  def get_moves(board)
+  end
+  
+  def get_captures(board)
+  end
+  
 end
 
 class Queen < Piece
@@ -118,6 +137,12 @@ class Queen < Piece
     super(player, ICONS)
   end
   
+  def get_moves(board)
+  end
+  
+  def get_captures(board)
+  end
+  
 end
 
 class King < Piece
@@ -125,6 +150,15 @@ class King < Piece
   
   def initialize(player)
     super(player, ICONS)
+  end
+  
+  def get_moves(board)
+  end
+  
+  def get_king_castle(board)
+  end
+  
+  def get_captures(board)
   end
   
 end

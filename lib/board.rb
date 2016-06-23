@@ -109,7 +109,7 @@ class Board
     pos = pos.to_notation if pos.is_a?(Position)
     valid = pos.length == 2
     valid = COLUMNS.include?(pos[0].to_s) if valid
-    valid = false if pos[1].to_i == 0 && row != "0"
+    valid = false if pos[1].to_i == 0 && pos[1] != "0"
     valid = pos[1].to_i.between?(0, HEIGHT) if valid
     valid
   end

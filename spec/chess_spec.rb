@@ -334,6 +334,24 @@ describe Chess do
   
   # Rook move checking
   
+  describe "Rook.get_moves" do
+    it "puts multiple forward moves in the move list" do
+      start, target = "d3", "d6"
+      b.place_piece(start, Rook.new(white))
+      piece = b.get_piece(start)
+      moves = piece.get_moves(b)
+      expect(moves.include?(target)).to eq(true)
+    end
+    it "doesn't put blocked moves in the move list" do
+      start, target = "d3", "d6"
+      b.place_piece(start, Rook.new(white))
+      b.place_piece(target, Pawn.new(black))
+      piece = b.get_piece(start)
+      moves = piece.get_moves(b)
+      expect(moves.include?(target)).to eq(false)
+    end
+  end
+  
   # Rook capture checking
   
   # Rook castle checking

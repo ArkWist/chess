@@ -370,6 +370,21 @@ describe Chess do
   
   # Rook castle checking
   
+  # This is a King move, so I will leave it for now
+  
+  #describe "Rook.get_rook_castle" do
+  #  it "gets the list of legal castle moves" do
+  #  end
+  #end
+  
+  # King moves 2 squares towards Rook
+  # Rook then moves to last square King passed over
+  # So Left Rook to d1/d8 and King to c1/c8, or Right Rook to f1/f8 and King to g1/g8
+  
+  
+  # Knight move checking
+  
+  # Knight capture checking
   
   
     

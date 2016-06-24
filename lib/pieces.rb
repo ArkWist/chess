@@ -26,6 +26,18 @@ class Piece
     @player
   end
   
+  def get_distant_captures(board, direction)
+    captures = []
+    empty = board.empty_up_to(@pos, direction)
+    if empty.length > 0
+      last_empty = Position.new(empty[-1])
+      captures << board.capturable(last_empty, direction, @player)
+    else
+      captures << board.capturable(@pos, direction, @player)
+    end
+    captures
+  end
+  
 end
 
 
@@ -109,10 +121,11 @@ class Rook < Piece
   
   def get_captures(board)
     captures = []
-    captures << board.empty_up_to(@pos, :n)
-    captures << board.empty_up_to(@pos, :e)
-    captures << board.empty_up_to(@pos, :s)
-    captures << board.empty_up_to(@pos, :w)
+    captures << get_distant_captures(board, :n)
+    captures << get_distant_captures(board, :e)
+    captures << get_distant_captures(board, :s)
+    captures << get_distant_captures(board, :w)
+    captures.flatten!
     captures
   end
   

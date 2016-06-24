@@ -181,17 +181,21 @@ class Board
       when :sw
         col, row = col - 1, row + 1
       end
-      move = Position.new([col, row])
-      if valid_position?(move) && is_empty?(move)
-        moves << move.to_notation
+      if col.between?(0, WIDTH - 1) && row.between?(0, HEIGHT - 1)
+        move = Position.new([col, row])
+        if valid_position?(move) && is_empty?(move)
+          moves << move.to_notation
+        else
+          limit = 0
+        end
+        pos = move
       else
         limit = 0
       end
-      pos = move
     end
     moves
   end
-
+  
   def capturable(pos, direction, player)
     col, row = pos.to_index
     captures = Chess::NO_POS

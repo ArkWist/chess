@@ -355,6 +355,19 @@ describe Chess do
   
   # Rook capture checking
   
+  describe "Rook.get_captures" do
+    it "makes a list of legal captures" do
+      start, target1, target2 = "d3", "d6", "f3"
+      b.place_piece(start, Rook.new(white))
+      b.place_piece(target1, Pawn.new(black))
+      b.place_piece(target2, Pawn.new(black))
+      piece = b.get_piece(start)
+      captures = piece.get_captures(b)
+      expect(captures.include?(target1)).to eq(true)
+      expect(captures.include?(target2)).to eq(true)
+    end
+  end
+  
   # Rook castle checking
   
   

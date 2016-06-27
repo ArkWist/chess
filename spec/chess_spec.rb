@@ -433,6 +433,22 @@ describe Chess do
   
   # Bishop capture checking
   
+  describe "Bishop.get_moves" do
+    it "makes a list of legal moves" do
+      start, empty, empty_far, capture, taken, impossible = "d3", "c4", "b5", "f5", "e2", "a4"
+      b.place_piece(start, Bishop.new(white))
+      b.place_piece(capture, Bishop.new(black))
+      b.place_piece(taken, Bishop.new(white))
+      piece = b.get_piece(start)
+      captures = piece.get_captures(b)
+      expect(captures.include?(empty)).to eq(false)
+      expect(captures.include?(empty_far)).to eq(false)
+      expect(captures.include?(capture)).to eq(true)
+      expect(captures.include?(taken)).to eq(false)
+      expect(captures.include?(impossible)).to eq(false)
+    end
+  end
+  
   # Queen move checking
   
   # Queen capture checking

@@ -383,7 +383,6 @@ describe Chess do
   
   # Knight move checking
   
-  # Somehow get opposite results...
   describe "Knight.get_moves" do
     it "makes a list of legal moves" do
       start, target1, target2, target3, target4 = "d4", "f5", "f3", "d2", "h4"
@@ -398,11 +397,49 @@ describe Chess do
   end
   
   # Knight capture checking
+  
   describe "Knight.get_captures" do
     it "makes a list of legal captures" do
-      
+      start, empty, capture, taken, impossible = "d4", "f5", "f3", "d2", "h4"
+      b.place_piece(start, Knight.new(white))
+      b.place_piece(capture, Knight.new(black))
+      b.place_piece(taken, Knight.new(white))
+      piece = b.get_piece(start)
+      captures = piece.get_captures(b)
+      expect(captures.include?(empty)).to eq(false)
+      expect(captures.include?(capture)).to eq(true)
+      expect(captures.include?(taken)).to eq(false)
+      expect(captures.include?(impossible)).to eq(false)
     end
   end
+  
+  # Bishop move checking
+  
+  # Bishop capture checking
+  
+  # Queen move checking
+  
+  # Queen capture checking
+  
+  # King move checking
+  
+  # King capture checking
+  
+  # King check checking
+  
+  # King castle checking
+  
+  # King check-mate checking
+  
+  # Victory
+  
+  # Surrender
+  
+  # Draw
+  
+  # Save state
+  
+  # Load state
   
     
 =begin

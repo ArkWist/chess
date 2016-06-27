@@ -178,7 +178,7 @@ class Board
         col, row = col - 1, row - 1
       when :w
         col = col - 1
-      when :sw
+      when :nw
         col, row = col - 1, row + 1
       end
       if col.between?(0, WIDTH - 1) && row.between?(0, HEIGHT - 1)

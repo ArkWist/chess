@@ -177,6 +177,13 @@ class Bishop < Piece
   end
   
   def get_moves(board)
+    moves = []
+    moves << board.empty_up_to(@pos, :ne)
+    moves << board.empty_up_to(@pos, :se)
+    moves << board.empty_up_to(@pos, :sw)
+    moves << board.empty_up_to(@pos, :nw)
+    moves.flatten!
+    moves
   end
   
   def get_captures(board)

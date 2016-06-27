@@ -417,7 +417,7 @@ describe Chess do
   
   describe "Bishop.get_moves" do
     it "makes a list of legal moves" do
-      start, empty, empty_far, capture, taken, impossible = "d3", "c4", "a6", "f5", "e2", "a4"
+      start, empty, empty_far, capture, taken, impossible = "d3", "c4", "b5", "f5", "e2", "a4"
       b.place_piece(start, Bishop.new(white))
       b.place_piece(capture, Bishop.new(black))
       b.place_piece(taken, Bishop.new(white))

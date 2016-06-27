@@ -381,11 +381,28 @@ describe Chess do
   # Rook then moves to last square King passed over
   # So Left Rook to d1/d8 and King to c1/c8, or Right Rook to f1/f8 and King to g1/g8
   
-  
   # Knight move checking
   
-  # Knight capture checking
+  # Somehow get opposite results...
+  describe "Knight.get_moves" do
+    it "makes a list of legal moves" do
+      start, target1, target2, target3, target4 = "d4", "f5", "f3", "d2", "h4"
+      b.place_piece(start, Knight.new(white))
+      piece = b.get_piece(start)
+      moves = piece.get_moves(b)
+      expect(moves.include?(target1)).to eq(true)
+      expect(moves.include?(target2)).to eq(true)
+      expect(moves.include?(target3)).to eq(false)
+      expect(moves.include?(target4)).to eq(false)
+    end
+  end
   
+  # Knight capture checking
+  describe "Knight.get_captures" do
+    it "makes a list of legal captures" do
+      
+    end
+  end
   
     
 =begin

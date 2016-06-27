@@ -139,9 +139,32 @@ class Knight < Piece
   end
   
   def get_moves(board)
+    moves = []
+    positions = get_positions
+    positions.each { |pos| moves << pos.pos if board.valid_position?(pos) && board.is_empty?(pos) }
+    moves
   end
   
   def get_captures(board)
+    captures = []
+    positions = get_positions
+    positions.each { |pos| captures << pos.pos if board.valid_position?(pos) && board.is_enemy?(pos, @player) }
+    captures
+  end
+  
+  def get_positions
+    col, row = @pos.to_index
+    positions = []
+    positions << Position.new([col - 2, row - 1])
+    positions << Position.new([col - 2, row + 1])
+    positions << Position.new([col - 1, row - 2])
+    positions << Position.new([col - 1, row + 2])
+    positions << Position.new([col + 1, row - 2])
+    positions << Position.new([col + 1, row + 2])
+    positions << Position.new([col + 2, row - 1])
+    positions << Position.new([col + 2, row + 1])
+    positions.map! { |pos| pos = Position.new(pos.to_notation) }
+    positions
   end
   
 end

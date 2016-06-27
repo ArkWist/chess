@@ -215,7 +215,7 @@ class Board
         col, row = col - 1, row - 1
       when :w
         col = col - 1
-      when :sw
+      when :nw
         col, row = col - 1, row + 1
       end
       capture = Position.new([col, row])

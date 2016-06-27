@@ -187,6 +187,13 @@ class Bishop < Piece
   end
   
   def get_captures(board)
+    captures = []
+    captures << get_distant_captures(board, :ne)
+    captures << get_distant_captures(board, :se)
+    captures << get_distant_captures(board, :sw)
+    captures << get_distant_captures(board, :nw)
+    captures.flatten!
+    captures
   end
   
 end

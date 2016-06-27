@@ -206,9 +206,31 @@ class Queen < Piece
   end
   
   def get_moves(board)
+    moves = []
+    moves << board.empty_up_to(@pos, :n)
+    moves << board.empty_up_to(@pos, :ne)
+    moves << board.empty_up_to(@pos, :e)
+    moves << board.empty_up_to(@pos, :se)
+    moves << board.empty_up_to(@pos, :s)
+    moves << board.empty_up_to(@pos, :sw)
+    moves << board.empty_up_to(@pos, :w)
+    moves << board.empty_up_to(@pos, :nw)
+    moves.flatten!
+    moves
   end
   
   def get_captures(board)
+    captures = []
+    captures << get_distant_captures(board, :n)
+    captures << get_distant_captures(board, :ne)
+    captures << get_distant_captures(board, :e)
+    captures << get_distant_captures(board, :se)
+    captures << get_distant_captures(board, :s)
+    captures << get_distant_captures(board, :sw)
+    captures << get_distant_captures(board, :w)
+    captures << get_distant_captures(board, :nw)
+    captures.flatten!
+    captures
   end
   
 end

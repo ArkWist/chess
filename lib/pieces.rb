@@ -242,13 +242,21 @@ class King < Piece
     super(player, ICONS)
   end
   
+  # Must check not going into check before allowing a move
+  
   def get_moves(board)
+    moves = []
+    moves
   end
   
   def get_king_castle(board)
+    castles = []
+    castles
   end
   
   def get_captures(board)
+    captures = []
+    captures
   end
   
 end

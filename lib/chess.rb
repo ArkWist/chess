@@ -26,8 +26,6 @@ class Chess
     @board.display
     until game_end
       next_player
-      #take_turn
-      
       begin
         take_turn
         check = @board.king_in_check(player)?
@@ -36,11 +34,6 @@ class Chess
           @board.reverse_move
         end
       end while !check
-      
-      # NOW NEEDS TO CHECK IF KING IS IN CHECK
-      # AND RESET THE MOVE IF IT IS
-      # THEN RETURN AN ERROR
-      
       @board.display
       #game_end = "check" if check?
       ###########

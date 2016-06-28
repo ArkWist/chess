@@ -30,7 +30,7 @@ class Chess
       
       begin
         take_turn
-        check = @board.king_in_check?
+        check = @board.king_in_check(player)?
         if check
           puts "Move would put King in check"
           @board.reverse_move

@@ -268,6 +268,7 @@ class Board
   
   def king_in_check?(player)
     check = false
+    king = @squares
   end
   
   def reverse_move

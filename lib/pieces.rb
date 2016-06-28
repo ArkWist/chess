@@ -245,7 +245,24 @@ class King < Piece
   # Must check not going into check before allowing a move
   
   def get_moves(board)
+    steps = 1
     moves = []
+    moves << board.empty_up_to(@pos, :n, steps)
+    moves << board.empty_up_to(@pos, :ne, steps)
+    moves << board.empty_up_to(@pos, :e, steps)
+    moves << board.empty_up_to(@pos, :se, steps)
+    moves << board.empty_up_to(@pos, :s, steps)
+    moves << board.empty_up_to(@pos, :sw, steps)
+    moves << board.empty_up_to(@pos, :w, steps)
+    moves << board.empty_up_to(@pos, :nw, steps)
+    moves.flatten!
+    #safe_moves = []
+    #moves.each do |move|
+    #  safe_moves << move if board.king_would_be_safe?(@player, @pos, move)
+    #end
+    # Generates a list of possible moves
+    # Should make a temporary board where it makes the move
+    # Then checks if king under attack in each
     moves
   end
   
@@ -256,6 +273,15 @@ class King < Piece
   
   def get_captures(board)
     captures = []
+    captures << board.capturable(@pos, :n, @player)
+    captures << board.capturable(@pos, :ne, @player)
+    captures << board.capturable(@pos, :e, @player)
+    captures << board.capturable(@pos, :se, @player)
+    captures << board.capturable(@pos, :s, @player)
+    captures << board.capturable(@pos, :sw, @player)
+    captures << board.capturable(@pos, :w, @player)
+    captures << board.capturable(@pos, :nw, @player)
+    captures.delete(Chess::NO_POS)
     captures
   end
   

@@ -261,6 +261,10 @@ class Board
     end
     piece
   end
+  
+  #def king_would_be_safe?(player, start, target)
+  #  test_squares = @squares
+  #end
 
   def display
     puts

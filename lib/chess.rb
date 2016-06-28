@@ -27,6 +27,11 @@ class Chess
     until game_end
       next_player
       take_turn
+      
+      # NOW NEEDS TO CHECK IF KING IS IN CHECK
+      # AND RESET THE MOVE IF IT IS
+      # THEN RETURN AN ERROR
+      
       @board.display
       #game_end = "check" if check?
       ###########

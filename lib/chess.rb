@@ -26,7 +26,7 @@ class Chess
     @board.display
     until game_end
       next_player
-      check = false
+      check = true
       begin
         take_turn
         check = @board.king_in_check?(player)
@@ -34,7 +34,9 @@ class Chess
           puts "Move would put King in check"
           @board.reverse_move
         end
-      end while !check
+        puts "Here"
+        puts "Check: #{check}"
+      end until !check
       @board.display
       #game_end = "check" if check?
       ###########

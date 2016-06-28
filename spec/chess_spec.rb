@@ -473,4 +473,10 @@ describe Chess do
   
   # Load state
   
+  describe "Chess" do
+    it "Lets you play the game" do
+      c.play
+    end
+  end
+  
 end

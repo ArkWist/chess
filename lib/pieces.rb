@@ -266,7 +266,7 @@ class King < Piece
     moves
   end
   
-  def get_king_castle(board)
+  def get_castles(board)
     castles = []
     castles
   end

@@ -26,7 +26,16 @@ class Chess
     @board.display
     until game_end
       next_player
-      take_turn
+      #take_turn
+      
+      begin
+        take_turn
+        check = @board.king_in_check?
+        if check
+          puts "Move would put King in check"
+          @board.reverse_move
+        end
+      end while !check
       
       # NOW NEEDS TO CHECK IF KING IS IN CHECK
       # AND RESET THE MOVE IF IT IS
@@ -110,6 +119,10 @@ class Chess
       end
     end
     success
+  end
+  
+  def move_rook(piece, start, target)
+  
   end
   
   def game_set?

@@ -265,6 +265,14 @@ class Board
   #def king_would_be_safe?(player, start, target)
   #  test_squares = @squares
   #end
+  
+  def king_in_check?(player)
+    check = false
+  end
+  
+  def reverse_move
+  end
+  
 
   def display
     puts

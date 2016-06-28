@@ -121,6 +121,7 @@ class Chess
   def normal_move(piece, start, target)
     moves = piece.get_moves(@board)
     captures = piece.get_captures(@board)
+    success = true
     if captures.include?(target)
       @board.move_piece(start, target)
     elsif moves.include?(target)
@@ -151,6 +152,7 @@ class Chess
     moves = piece.get_moves(@board)
     captures = piece.get_captures(@board)
     castles = piece.get_castles(@board)
+    success = true
     if castles.include?(target)
       @board.do_castle(start, target)
     elsif captures.include?(target)

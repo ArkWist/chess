@@ -266,6 +266,9 @@ class Board
   #  test_squares = @squares
   #end
   
+  def do_castle(start, target)
+  end
+  
   def king_in_check?(player)
     check = false
   end
@@ -311,7 +314,6 @@ class Board
     # check specials (en passant, promotion, castling)
   end
   
-  
 end
 
 
@@ -348,9 +350,3 @@ class Position
   end
   
 end
-
-
-
-
-
-

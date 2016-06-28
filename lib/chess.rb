@@ -57,7 +57,7 @@ class Chess
       if piece != EMPTY && piece.player == @player
         success = do_move(piece, start, target)
         unless success
-          puts "Invalid move. Try again."
+          puts "Unable to move. Try again."
           take_turn
         end
       else

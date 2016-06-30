@@ -10,13 +10,14 @@ end
 
 
 class Move
-  attr_reader :origin, :destination
+  attr_reader :origin, :destination, :positions
   
   def initialize(move)
     @origin = Position.new(get_origin(move))
     @destination = Position.new(get_destination(move))
+    @positions = [@origin, @destination]
   end
-  
+
   def set(move)
     initialize(move)
   end
@@ -24,11 +25,13 @@ class Move
   private
   
   def get_origin(move)
-    origin = split(normalize(move))[0]
+    #origin = split(normalize(move))[0]
+    origin = split(move)[0]
   end
 
   def get_destination(move)
-    destination = split(normalize(move))[1]
+    #destination = split(normalize(move))[1]
+    destination = split(move)[1]
   end
   
   def split(move)
@@ -36,9 +39,9 @@ class Move
     origin, destination = move[0..1], move[2..3]
   end
   
-  def normalize(move)
-    move = move.delete(/ ,/)
-  end
+  #def normalize(move)
+  #  move = move.delete(/ ,/)
+  #end
 end
   
 
@@ -53,7 +56,7 @@ class Position
   def set(pos)
     initialize(pos)
   end
-  
+
   private
   
   def to_index(pos)

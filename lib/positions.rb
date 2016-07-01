@@ -25,12 +25,12 @@ class Move
   private
   
   def get_origin(move)
-    #origin = split(normalize(move))[0]
+    origin = split(normalize(move))[0]
     origin = split(move)[0]
   end
 
   def get_destination(move)
-    #destination = split(normalize(move))[1]
+    destination = split(normalize(move))[1]
     destination = split(move)[1]
   end
   
@@ -39,9 +39,10 @@ class Move
     origin, destination = move[0..1], move[2..3]
   end
   
-  #def normalize(move)
-  #  move = move.delete(/ ,/)
-  #end
+  # This is mirrored by normalization checks (not normalization itself) in Chessboard.
+  def normalize(move)
+    move = move.delete(/ ,/)
+  end
 end
   
 

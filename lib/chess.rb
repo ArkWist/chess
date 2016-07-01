@@ -1,22 +1,3 @@
-=begin
-
-
-8  [r][n][b][k][q][b][n][r]
-7  [p][p][p][p][p][p][p][p]
-6  [ ][ ][ ][ ][ ][ ][ ][ ]
-5  [ ][ ][ ][ ][ ][ ][ ][ ]
-4  [ ][ ][ ][ ][ ][ ][ ][ ]
-3  [ ][ ][ ][ ][ ][ ][ ][ ]
-2  [P][P][P][P][P][P][P][P]
-1  [R][N][B][K][Q][B][N][R]
-
-    A  B  C  D  E  F  G  H
-
-@en_passant
-@moved[] << pos if rook or king
-or have unmoved, and delete when start and target from it, probably better
-
-=end
 
 
 class Chess
@@ -25,56 +6,178 @@ class Chess
   
   def initialize
     @board = Chessboard.new
-    @player = :none
+    @player = :white
+    #start_match
   end
-
-  origin, destination = "g4", "g5"
   
-  #move_outcome = try_move(origin, destination)
+  private
   
-  def try_move(origin, desintation)
-    #Empty position
-    
-    # Wrong player
-    @board.get_piece(origin).player == @player
+  def start_match
+    play
+  end
+  
+  def play
+    puts
+    print_board
+    until game_set
+      case try_turn
+      when :do_load
+        game_set = :loaded
+      when :do_quit
+        game_set = :quit
+      when :do_draw
+        game_set = :draw
+      when :do_save
+        do_save
+      when :moved
+        @player = next_player
+        print_board
+        game_set = :checkmate if checkmated?
+      when :unknown
+        report(:unknown)
+      end
+    end
+    handle_game_set(game_set)
   end
   
   def next_player
     i = PLAYERS.find_index(@player)
-    player = PLAYERS[0] if i.nil?
-    player ||= PLAYERS[0] if i == PLAYERS.length - 1
-    player ||= PLAYERS[i + 1]
-    #player
+    @player = PLAYERS[0] if i.nil?
+    @player ||= PLAYERS[0] if i == PLAYERS.length - 1
+    @player ||= PLAYERS[i + 1]
   end
   
-  def do_turn
+  def try_turn
+    puts
     print "Player #{@player.to_s.capitalize}'s command: "
-    outcome = verify_input(gets.chomp)
-    outcome = try_move if outcome == :move
-    outcome = try_command if outcome == :command
-    
-    
-    
-    case verify_input(input)
-    when :move
-      case try_move(Move.new(input))
-      when
-      end
-    when :command
-      case try_command(input)
-      when
-      end
-    else
-      puts "Unsupported command. Try again."
-    end
+    input = gets.chomp
+    outcome = classify_input(input)
+    outcome = handle_command(input) if outcome == :command
+    outcome = handle_move(input) if outcome == :move
+    outcome
   end
-  
-  def verify_input(input)
+
+  def classify_input(input)
     outcome = :command if is_raw_command?(input)
     outcome ||= :move if is_raw_move?(input)
     outcome ||= :unknown
   end
   
+  def handle_command(input)
+    outcome = try_command(input)
+    outcome
+  end
+  
+  def handle_move(input)
+    outcome = try_move(input)
+    outcome = :moved if outcome == :success
+    outcome
+  end
+  
+  def try_command(input)
+    case input.downcase.to_sym
+    when :save
+      outcome = verify_save
+      outcome = :do_save if outcome == :verified
+    when :load
+      outcome = verify_load
+      outcome = :do_load if outcome == :verified
+    when :quit
+      outcome = :do_quit
+    when :draw
+      outcome = verify_draw
+      outcome = :do_draw if outcome == :verified
+    end
+    if outcome == :failed || outcome == :unknown
+      report(outcome)
+      outcome = :rejected
+    end
+    outcome
+  end
+  
+  def try_move(input)
+    case @board.verify_move(Move.new(input))
+    when :verified
+      do_move(Move.new(input))
+      outcome = :success
+    when :blocked, :occupied, :illegal
+      report(:illegal)
+    when :besieged
+      report(:besieged)
+    when :exposed
+      report(:exposed)
+    else
+      report(:unknown)
+    end
+    outcome = :rejected unless :outcome == :success
+    outcome
+  end
+  
+  def do_move(move)
+    @board.do_move(move)
+  end
+  
+  def verify_save
+    #don't report anything
+    #outcome = :verified, failed
+  end
+  
+  def verify_load
+    #don't report anything
+    #outcome = :verified, failed
+  end
+  
+  def verify_draw
+    #don't report anything
+    #outcome = :verified, :failed
+  end
+  
+  def do_save
+    report(:saved)
+    #no return value
+  end
+  
+  def do_load
+    report(:loaded)
+    #no return value
+  end
+  
+  # Unable to check if a castle could escape check... because illegal anyways
+  def checkmated?
+    @board.checkmate?(@player)
+  end
+
+  def handle_game_set(exit)
+    case exit
+    when :loaded
+    when :quit
+    when :draw
+    when :checkmate
+    end
+  end
+
+  def print_board
+    puts
+    @board.print_board
+  end  
+  
+  def report(type)
+    case type
+    when :illegal
+      puts "Rejected! Move is illegal."
+    when :beseiged
+      puts "Rejected! King cannot move through squares in check."
+    when :exposed
+      puts "Rejected! Move puts you in check."
+    when :unknown
+      puts "Error! Command not recognized."
+    when :success
+      puts "Success!"
+    when :failed
+      puts "Error! Command failed."
+    end
+  end
+
   def is_raw_command?(input)
     input.downcase!
     valid = COMMANDS.include?(input.to_sym)
@@ -98,47 +201,7 @@ class Chess
     valid = files.include?(file)
     valid ||= ranks.include?(rank) if valid
   end
-  
-  def try_move(input)
-    move = Move.new(input)
 
-  end
-  #def take_turn
-  #  print "Player #{@player}'s move: "
-  #  move = gets.chomp
-  #  if @board.valid_move?(move)
-  #    move = @board.normalize_move(move)
-  #    start = @board.get_move_start(move)
-  #    target = @board.get_move_target(move)
-  #    piece = @board.get_piece(start)
-  #    if piece != EMPTY && piece.player == @player
-  #      success = do_move(piece, start, target)
-  #      unless success
-  #        puts "Unable to move. Try again."
-  #        take_turn
-  #      end
-  #    else
-  #      puts "Player #{@player}'s piece not found at #{start}."
-  #      take_turn
-  #    end
-  #  elsif valid_command?(move)
-  #    do_command(move)
-  #  else
-  #    puts "Invalid move. Try again."
-  #    take_turn
-  #  end
-  #end
-
-
-  def test_move(move)
-    player = @board.get_piece(move.origin).player
-    board = @board.make_projection_model(move)
-    @board.in_check?(player, board) ? outcome = :check : outcome = :moved
-    outcome
-  end
-  
-
-  
 end
 
 

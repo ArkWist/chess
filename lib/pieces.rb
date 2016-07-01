@@ -12,6 +12,10 @@ class Piece
     moves.flatten
   end
   
+  def get_captures(board)
+    captures = make_capture_list(board)
+    captures.flatten
+  
   def move_to(destination)
     @pos = destination
   end

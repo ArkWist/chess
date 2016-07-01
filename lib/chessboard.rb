@@ -32,15 +32,18 @@ class Chessboard
     outcome
   end
   
+  def do_move(move)
+  
+  end
+  
   private
   
-  ##### These go further done once written
+  ##### These go further down once written
   
   def verify_piece(piece)
     outcome = :empty if piece.type == :none
     outcome ||= :occupied if piece.player != @player
     outcome ||= :verified
-    outcome
   end
   
   def verify_move(move)
@@ -48,7 +51,6 @@ class Chessboard
     outcome = :blocked if get_piece(destination).player == @player
     outcome ||= :illegal if !get_piece(origin).get_moves(make_model)
     outcome ||= :verified
-    #outcome
   end
   
   def verify_en_passant(move)
@@ -56,21 +58,18 @@ class Chessboard
     outcome = :verified if destination.notation == en_passant_destination && \
                            get_piece(origin).can_en_passant?(make_model, @en_passant_destination)
     outcome ||= :illegal
-    #outcome
   end
   
   ####### Castle checks should internally perform check tests for empty intermediate squares ########
   # Also need to make sure checks if rook and castle have before moved
   def verify_rook_castle(move)
     outcome = :verified
-    outcome ||= :sieged_castle
-    #outcome
+    outcome ||= :besieged
   end
   
   def verify_king_castle(move)
     outcome = :verified
-    outcome ||= :sieged_castle
-    #outcome
+    outcome ||= :besieged
   end
     
   
@@ -97,6 +96,7 @@ class Chessboard
     pieces
   end
   
+  # ! Could use a make_piece method with types and the splat operator and all needed positions
   def make_pawns_at(player, rank)
     pawns = []
     WIDTH.times_with_index { |i| pawns << Pawn.new(player, [i, rank]) }
@@ -172,7 +172,7 @@ class Chessboard
     king_pos = Position.new
     board.each_with_index do |rank, i|
       rank.each_with_index do |square, j|
-        king_pos = Position.new([i][j]) if square.player == player && square.type == :king }
+        king_pos = Position.new([i, j]) if square.player == player && square.type == :king }
       end
     end
     check = under_attack?(player, board, king_pos)
@@ -180,17 +180,50 @@ class Chessboard
   
   def under_attack?(player, board, pos)
     captures = []
-    
-    # need a good method for figuring out moves and captures from this board/square thing
-    
-    #pieces = compile_pieces
-    # then get all captures and compare to pos
+    board.each_with_index do |rank, i|
+      rank.each_with_index do |square, j|
+        if square.player != :none && square.player != player
+          piece = make_dummy_piece(player, Position.new([i, j]), square.type)
+          captures << piece.get_captures(board).map { |c| c = c.notation }
+        end
+      end
+    end
+    captures.flatten
+    captures.include?(pos.notation)
+  end
+  
+  def checkmate?(player)
+    board = make_model
+    checkmate = true
+    board.each_with_index do |rank, i|
+      rank.each_with_index do |square, j|
+        if checkmate && square.player == player
+          piece = make_dummy_piece(player, Position.new([i, j]), square.type)
+          moves = piece.get_moves(board).map { |c| c = c.notation }
+          moves.each do |pos|
+            model = make_project_model(Move.new([i, j, pos.index].flatten))
+            checkmate = false if !in_check?(player, board)
+          end
+        end
+      end
+    end
+    checkmate
   end
   
   def get_piece(pos)
     piece = Piece.new
     @pieces.each { |p| piece = p if p.pos.notation = pos.notation }
     piece
+  end
+  
+  def make_dummy_piece(player, pos.notation, type)
+    piece = Pawn.new(player, pos) if type == :pawn
+    piece ||= Rook.new(player, pos) if type == :rook
+    piece ||= Knight.new(player, pos) if type == :knight
+    piece ||= Bishop.new(player, pos) if type == :bishop
+    piece ||= Queen.new(player, pos) if type == :queen
+    piece ||= King.new(player, pos) if type == :king
+    piece ||= Piece.new(player, pos)
   end
   
   def get_piece_index(pos)
@@ -208,7 +241,7 @@ class Chessboard
     @pieces.delete_at(get_piece_index(pos))
   end
   
-  # Alises #remove_pos unless a distinction need be made
+  # Aliases #remove_pos (for in case a distinction is ever needed).
   def kill_piece(pos)
     remove_piece(pos)
   end

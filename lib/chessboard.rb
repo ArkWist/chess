@@ -38,18 +38,18 @@ class Chessboard
   
   private
   
-  ##### These go further down once written
-  
-  def verify_piece(piece)
-    outcome = :empty if piece.type == :none
-    outcome ||= :occupied if piece.player != @player
-    outcome ||= :verified
-  end
-  
+  ###############################################
+  # These go further down once written
   def verify_move(move)
     origin, destination = move.positions
     outcome = :blocked if get_piece(destination).player == @player
     outcome ||= :illegal if !get_piece(origin).get_moves(make_model)
+    outcome ||= :verified
+  end
+  
+  def verify_piece(piece)
+    outcome = :empty if piece.type == :none
+    outcome ||= :occupied if piece.player != @player
     outcome ||= :verified
   end
   
@@ -60,7 +60,8 @@ class Chessboard
     outcome ||= :illegal
   end
   
-  ####### Castle checks should internally perform check tests for empty intermediate squares ########
+  #############################################
+  # Castle checks should internally perform check tests for empty intermediate squares
   # Also need to make sure checks if rook and castle have before moved
   def verify_rook_castle(move)
     outcome = :verified
@@ -74,6 +75,7 @@ class Chessboard
     
   
   ########################################
+  # Tracking variables must be updated when doing moves
   
   def make_tracking_variables
     @en_passant_destination = :none
@@ -96,7 +98,8 @@ class Chessboard
     pieces
   end
   
-  # ! Could use a make_piece method with types and the splat operator and all needed positions
+  #############################################
+  # Could use a make_piece method with types and the splat operator and all needed positions
   def make_pawns_at(player, rank)
     pawns = []
     WIDTH.times_with_index { |i| pawns << Pawn.new(player, [i, rank]) }
@@ -116,10 +119,8 @@ class Chessboard
     pieces
   end
   
-  ##################
-  
-  # ALL MOVEMENT CHECKING AND TESTING MUST USE THIS
-  # THIS WAY EVERYTHING IS COMPATIBLE WITH CHECK PREDICTIONS
+  # All movement checks must use a model.
+  # This lets detailed checks be performed without manipulating pieces.
   def make_model
     board = Array.new(WIDTH){ Array.new(HEIGHT, Square.new) }
     @pieces.each do |piece|
@@ -178,6 +179,8 @@ class Chessboard
     check = under_attack?(player, board, king_pos)
   end
   
+  ##########################################
+  # This doesn't consider en passant attacks when it ought to
   def under_attack?(player, board, pos)
     captures = []
     board.each_with_index do |rank, i|
@@ -188,6 +191,7 @@ class Chessboard
         end
       end
     end
+    # Add en_passant captures here
     captures.flatten
     captures.include?(pos.notation)
   end
@@ -232,6 +236,8 @@ class Chessboard
     index
   end
   
+  ###########################################
+  # What was this meant to even do?
   def compile_pieces(board)
     
   end

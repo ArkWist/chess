@@ -1,6 +1,6 @@
-require "chessboard"
-require "pieces"
-require "positions"
+require_relative "chessboard"
+require_relative "pieces"
+require_relative "positions"
 
 
 class Chess

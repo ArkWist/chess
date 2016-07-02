@@ -1,4 +1,4 @@
-require "positions"
+require_relative "positions"
 
 
 class Piece

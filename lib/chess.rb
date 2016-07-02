@@ -1,4 +1,4 @@
-
+require chessboard, pieces, positions
 
 class Chess
   PLAYERS = [:white, :black]
@@ -20,19 +20,16 @@ class Chess
     puts
     print_board
     until game_set
-      case try_turn
-      when :do_load
-        game_set = :loaded
-      when :do_quit
-        game_set = :quit
-      when :do_draw
-        game_set = :draw
+      outcome = try_turn
+      case outcome
+      when :do_load, :do_quit, :do_draw
+        game_set = outcome
       when :do_save
         do_save
       when :moved
         @player = next_player
         print_board
-        game_set = :checkmate if checkmated?
+        game_set = :checkmate if checkmate?
       when :unknown
         report(:unknown)
       end
@@ -114,7 +111,30 @@ class Chess
   end
   
   def do_move(move)
+    promote = @board.promote?(move)
     @board.do_move(move)
+    do_promotion(move) if @board.promote?(move)
+  end
+  
+  def do_promotion(move)
+    print "Promote to what piece?: "
+    input = gets.chomp.downcase.to_sym
+    case input
+    when :rook, :r
+      @board.do_promotion(move, :rook)
+    when :knight, :n
+      @board.do_promotion(move, :knight)
+    when :bishop, :b
+      @board.do_promotion(move, :bishop)
+    when :queen, :q
+      @board.do_promotion(move, :queen)
+    when :pawn, :p, :king, :k
+      report(:illegal_promotion)
+      do_promotion(move)
+    else
+      report(:unknown_promotion)
+      do_promotion(move)
+    end
   end
   
   def verify_save
@@ -143,7 +163,7 @@ class Chess
   end
   
   # Unable to check if a castle could escape check... because illegal anyways
-  def checkmated?
+  def checkmate?
     @board.checkmate?(@player)
   end
 
@@ -175,6 +195,10 @@ class Chess
       puts "Success!"
     when :failed
       puts "Error! Command failed."
+    when :illegal_promotion
+      puts "Rejected! Cannot promote to that piece."
+    when :unknown_promotion
+      puts "Error! Piece not recognized."
     end
   end
 
@@ -183,6 +207,7 @@ class Chess
     valid = COMMANDS.include?(input.to_sym)
   end
   
+  # Mirrored (as a process) by #normalization in Move.
   def is_raw_move?(input)
     input.downcase.delete!(/ ,/)
     input.length == 4 ? valid = true : valid = false

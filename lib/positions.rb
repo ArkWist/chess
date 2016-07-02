@@ -39,7 +39,7 @@ class Move
     origin, destination = move[0..1], move[2..3]
   end
   
-  # This is mirrored by normalization checks (not normalization itself) in Chessboard.
+  # This is mirrored by #is_raw_move? (which is only a boolean check) in Chess.
   def normalize(move)
     move = move.delete(/ ,/)
   end

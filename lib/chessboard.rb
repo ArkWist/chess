@@ -8,7 +8,8 @@ class Chessboard
   #CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king] \
   #             ["P",   "R",   "N",     "B",     "Q",    "K"]   \
   #             ["p",   "r",   "n",     "b",     "q",    "k"]
-  CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]["P","R","N","B","Q","K"]["p","r","n","b","q","k"]
+  #CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]["P","R","N","B","Q","K"]["p","r","n","b","q","k"]
+  CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]
   
   def initialize
     @pieces = (make_white_pieces << make_black_pieces).flatten

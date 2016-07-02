@@ -5,9 +5,10 @@ require_relative "positions"
 class Chessboard
   attr_reader :height, :width
   HEIGHT, WIDTH = 8, 8
-  CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king] \
-               ["P",   "R",   "N",     "B",     "Q",    "K"]   \
-               ["p",   "r",   "n",     "b",     "q",    "k"]
+  #CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king] \
+  #             ["P",   "R",   "N",     "B",     "Q",    "K"]   \
+  #             ["p",   "r",   "n",     "b",     "q",    "k"]
+  CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]["P","R","N","B","Q","K"]["p","r","n","b","q","k"]
   
   def initialize
     @pieces = (make_white_pieces << make_black_pieces).flatten
@@ -165,7 +166,7 @@ class Chessboard
       continue = o_rank == d_rank && (o_file == d_file - 2 || o_file == d_file + 2) # check destination file is +/- 2 from origin
       if continue
         d_file < o_file ? direction = :left : direction = :right
-        direction == :left ? r_file, r_rank = 0, o_rank : r_file, r_rank = WIDTH - 1, o_rank
+        r_file, r_rank = direction == :left ? [0, o_rank] : [WIDTH - 1, o_rank]
         rook = board[r_file, r_rank]
         player = king.player
         continue = rook.type == :rook && rook.player == player # check file 0/width-1 is same player rook
@@ -174,7 +175,7 @@ class Chessboard
           rook_pos = Position.new([r_file, r_rank])
           continue = @unmoved_piece_positions.include?(king_pos.notation) && @unmoved_piece_positions.include?(rook_pos.notation) # check king and rook haven't moved
           if continue
-            direction == :left ? t_file, t_rank = o_file - 1, o_rank : t_file, t_rank = o_file + 1, o_rank
+            t_file, t_rank = direction == :left ? [o_file - 1, o_rank] : [o_file + 1, o_rank]
             rookward_pos = Position.new([t_file, t_rank])
             mock_rook = Rook.new(player, rook_pos)
             rook_moves = mock_rook.get_moves(board)
@@ -284,8 +285,8 @@ class Chessboard
   end
   
   def playerize_character(player, index)
-    list = 1 if player = :white
-    list = 2 if player = :white
+    list = 1 if player == :white
+    list = 2 if player == :white
     character = CHARACTERS[list][index]
   end
   
@@ -293,7 +294,7 @@ class Chessboard
     king_pos = Position.new
     board.each_with_index do |rank, i|
       rank.each_with_index do |square, j|
-        king_pos = Position.new([i, j]) if square.player == player && square.type == :king }
+        king_pos = Position.new([i, j]) if square.player == player && square.type == :king
       end
     end
     check = under_attack?(player, board, king_pos)
@@ -349,7 +350,7 @@ class Chessboard
   # #verify_move could then do multiple future move projections with full move legality checks.
   def get_piece(pos)#, board = :none)
     piece = Piece.new
-    @pieces.each { |p| piece = p if p.pos.notation = pos.notation }
+    @pieces.each { |p| piece = p if p.pos.notation == pos.notation }
     piece
   end
   
@@ -359,7 +360,8 @@ class Chessboard
   #  index
   #end
   
-  def make_dummy_piece(player, pos.notation, type)
+  def make_dummy_piece(player, pos, type)
+    pos = pos.notation
     piece = Pawn.new(player, pos) if type == :pawn
     piece ||= Rook.new(player, pos) if type == :rook
     piece ||= Knight.new(player, pos) if type == :knight
@@ -390,3 +392,5 @@ class Chessboard
   end
   
 end
+end
+#Somehow an extra end is needed?

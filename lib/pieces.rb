@@ -42,7 +42,7 @@ class Piece
   
   def path_captures(board, direction, steps = -1)
     moves = path_moves(board, direction, steps)
-    moves.empty? ? file, rank = @pos.index : file, rank = moves[-1].pos.index
+    file, rank = move.empty? ? [@pos.index] : [moves[-1].pos.index]
     steps -= moves.length
     captures = []
     unless steps == 0
@@ -259,7 +259,8 @@ class King < Piece
   end
   
 end
-
+end
+#Somehow an extra end is needed?
 
 
 

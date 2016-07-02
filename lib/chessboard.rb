@@ -1,4 +1,6 @@
-require pieces, positions
+require "pieces"
+require "positions"
+
 
 class Chessboard
   attr_reader :height, :width

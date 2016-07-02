@@ -1,4 +1,5 @@
-require positions
+require "positions"
+
 
 class Piece
   attr_reader :player, :pos, :type

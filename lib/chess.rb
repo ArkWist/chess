@@ -1,4 +1,7 @@
-require chessboard, pieces, positions
+require "chessboard"
+require "pieces"
+require "positions"
+
 
 class Chess
   PLAYERS = [:white, :black]
@@ -7,7 +10,7 @@ class Chess
   def initialize
     @board = Chessboard.new
     @player = :white
-    #start_match
+    start_match
   end
   
   private

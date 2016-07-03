@@ -1,16 +1,19 @@
-require_relative "pieces"
-require_relative "positions"
+#require_relative "pieces"
+#require_relative "positions"
 
 
 class Chessboard
-  attr_reader :height, :width
+  #attr_reader :height, :width
+  
   HEIGHT, WIDTH = 8, 8
   #CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king] \
   #             ["P",   "R",   "N",     "B",     "Q",    "K"]   \
   #             ["p",   "r",   "n",     "b",     "q",    "k"]
-  #CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]["P","R","N","B","Q","K"]["p","r","n","b","q","k"]
-  CHARACTERS = [:pawn, :rook, :knight, :bishop, :queen, :king]
-  
+  # This is structured oddly because Ruby didn't want a 2D array.
+  CHARACTERS = [[:pawn, :rook, :knight, :bishop, :queen, :king], \
+               ["P",   "R",   "N",     "B",     "Q",    "K"],    \
+               ["p",   "r",   "n",     "b",     "q",    "k"]]
+               
   def initialize
     @pieces = (make_white_pieces << make_black_pieces).flatten
     make_tracking_variables
@@ -18,7 +21,7 @@ class Chessboard
   
   def print_board
     board = make_model
-    (HEIGHT).downto(1) { |rank| print_rank(board[rank], rank) }
+    (HEIGHT).downto(1) { |rank| print_rank(board, rank) }
     puts
     print_files
   end
@@ -29,10 +32,10 @@ class Chessboard
   #  this method could fully verify current or future moves.
   # Note: All other helper methods are already compatible with models.
   # Note: Only works with moves with legal positions.
-  def verify_move(move, board = make_model)#(move))
+  def verify_move(move, player, board = make_model)#(move))    # This returns :occupied for everything except :empty
     origin, destination = move.positions
     piece = get_piece(origin)
-    outcome = verify_piece(piece)
+    outcome = verify_piece(piece, player)   # This is where we're getting :occupied
     outcome = verify_move_legality(move, board) if outcome == :verified
     if outcome == :illegal
       outcome = verify_en_passant(move, board) if piece.type == :pawn
@@ -86,7 +89,7 @@ class Chessboard
     if direction == :left
       rook_index = get_piece_index(Position.new([0, o_rank]))
       rook_pos = Position.new([d_file + 1, d_rank])
-    if direction == :right
+    elsif direction == :right
       rook_index = get_piece_index(Position.new([WIDTH - 1, o_rank]))
       rook_pos = Position.new([d_file - 1, d_rank])
     end
@@ -138,9 +141,9 @@ class Chessboard
     outcome ||= :verified
   end
   
-  def verify_piece(piece)
+  def verify_piece(piece, player)
     outcome = :empty if piece.type == :none
-    outcome ||= :occupied if piece.player != @player
+    outcome ||= :occupied if piece.player != player
     outcome ||= :verified
   end
   
@@ -222,20 +225,20 @@ class Chessboard
   # Such a method could use the splat operator to place multiple pieces.
   def make_pawns_at(player, rank)
     pawns = []
-    WIDTH.times_with_index { |i| pawns << Pawn.new(player, [i, rank]) }
+    WIDTH.times { |i| pawns << Piece::Pawn.new(player, [i, rank]) }
     pawns
   end
   
   def make_capitals_at(player, rank)
     pieces = []
-    pieces << Rook.new(player, [0, rank])
-    pieces << Rook.new(player, [7, rank])
-    pieces << Knight.new(player, [1, rank])
-    pieces << Knight.new(player, [6, rank])
-    pieces << Bishop.new(player, [2, rank])
-    pieces << Bishop.new(player, [5, rank])
-    pieces << Queen.new(player, [3, rank])
-    pieces << King.new(player, [4, rank])
+    pieces << Piece::Rook.new(player, [0, rank])
+    pieces << Piece::Rook.new(player, [7, rank])
+    pieces << Piece::Knight.new(player, [1, rank])
+    pieces << Piece::Knight.new(player, [6, rank])
+    pieces << Piece::Bishop.new(player, [2, rank])
+    pieces << Piece::Bishop.new(player, [5, rank])
+    pieces << Piece::Queen.new(player, [3, rank])
+    pieces << Piece::King.new(player, [4, rank])
     pieces
   end
   
@@ -261,10 +264,10 @@ class Chessboard
     model
   end
   
-  def print_rank(squares, rank)
+  def print_rank(board, rank)
     string = "#{rank}"
     rank >= 10 ? string += " " : string += "  "
-    squares.each { |square| string += "[#{get_character_for(square)}]" }
+    WIDTH.downto(1) { |file| string += "[#{get_character_for(board[file - 1][rank - 1])}]" }
     puts string
   end
   
@@ -276,19 +279,14 @@ class Chessboard
   end
   
   def get_character_for(square)
-    index = CHARACTERS[0].index(square.type)
-    if index
-      character = playerize_character(square.player, index)
-    else
-      character = " "
-    end
-    character
+    index = CHARACTERS[0[0]].index(square.type)
+    character = index ? playerize_character(square.player, index) : " "
   end
   
   def playerize_character(player, index)
-    list = 1 if player == :white
-    list = 2 if player == :white
-    character = CHARACTERS[list][index]
+    list = CHARACTERS[1] if player == :white
+    list = CHARACTERS[2] if player == :black
+    character = list[index]
   end
   
   def in_check?(player, board)
@@ -393,5 +391,4 @@ class Chessboard
   end
   
 end
-end
-#Somehow an extra end is needed?
+

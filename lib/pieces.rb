@@ -1,6 +1,9 @@
-require_relative "positions"
+#require_relative "positions"
 
 
+# If refactoring, consider making Piece a module.
+# This will clear up complicating supers.
+# Note: This means Chessboard must be checked it doesn't use generic Pieces.
 class Piece
   attr_reader :player, :pos, :type
 
@@ -90,9 +93,11 @@ class Pawn < Piece
   
   private
   
+  ######################### Need to call super here somehow. Why is inheritance not working?
   def make_move_list(board)
-    starting_rank? ? moves = path_moves(board, :n, 2) : moves = path_moves(board, :n, 1)
+    moves = path_moves(board, :n, 2)
     moves
+    #moves = starting_rank?(board) ? [path_moves(board, :n, 2)] : [path_moves(board, :n, 1)]
   end
   
   def make_capture_list(board)

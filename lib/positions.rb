@@ -41,7 +41,7 @@ class Move
   
   # This is mirrored by #is_raw_move? (which is only a boolean check) in Chess.
   def normalize(move)
-    move = move.delete(/ ,/)
+    move.downcase.gsub(/[, ]+/, "")
   end
 end
   

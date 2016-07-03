@@ -21,8 +21,8 @@ class Chess
   end
   
   def play
-    puts
     print_board
+    game_set = false
     until game_set
       outcome = try_turn
       case outcome
@@ -97,11 +97,11 @@ class Chess
   end
   
   def try_move(input)
-    case @board.verify_move(Move.new(input))
+    case @board.verify_move(Move.new(input), @player)
     when :verified
       do_move(Move.new(input))
       outcome = :success
-    when :blocked, :occupied, :illegal
+    when :empty, :blocked, :occupied, :illegal
       report(:illegal)
     when :besieged
       report(:besieged)
@@ -213,28 +213,29 @@ class Chess
   
   # Mirrored (as a process) by #normalization in Move.
   def is_raw_move?(input)
-    input.downcase.delete!(/ ,/)
-    input.length == 4 ? valid = true : valid = false
+    move = input.downcase.gsub(/[, ]+/, "")
+    valid = move.length == 4
     if valid
       origin, destination = move[0..1], move[2..3]
-      valid = false if !is_position?(origin)
-      valid = false if !is_position?(destination)
+      valid = false if !is_raw_position?(origin)
+      valid = false if !is_raw_position?(destination)
     end
     valid
   end
 
   def is_raw_position?(pos)
     file, rank = pos[0], pos[1]
-    files = ("a".."z").to_a.take(@board.WIDTH)
-    ranks = ("1"..@board.HEIGHT.to_s).to_a
+    files = ("a".."z").to_a.take(Chessboard::WIDTH)
+    ranks = ("1"..Chessboard::HEIGHT.to_s).to_a
     valid = files.include?(file)
     valid ||= ranks.include?(rank) if valid
+    valid
   end
 
 end
 
 
-
+chess_game = Chess.new
 
 
 

@@ -21,6 +21,7 @@ class Piece
   def get_captures(board)
     captures = make_capture_list(board)
     captures.flatten
+  end
   
   def move_to(destination)
     @pos = destination
@@ -32,8 +33,9 @@ class Piece
     moves = []
     file, rank = @pos.index
     until steps == 0
-      file, rank = poll_direction(direction, file, rank).index
-      if !board[file][rank].nil? && board[file][rank].type == :none
+      pos = poll_direction(direction, file, rank)
+      file, rank = pos.index
+      if legal_position?(pos) && board[file][rank].type == :none
         moves << Position.new([file, rank])
         steps -= 1
       else
@@ -45,13 +47,13 @@ class Piece
   
   def path_captures(board, direction, steps = -1)
     moves = path_moves(board, direction, steps)
-    file, rank = move.empty? ? [@pos.index] : [moves[-1].pos.index]
+    file, rank = moves.empty? ? @pos.index : moves[-1].index
     steps -= moves.length
     captures = []
     unless steps == 0
-      file, rank = poll_direction(direction, file, rank).index
-      #if !board[file][rank].nil? && board[file][rank].player != @player
-      if !board[file][rank].nil? && board[file][rank].type != :none && board[file][rank].player != @player
+      pos = poll_direction(direction, file, rank)
+      file, rank = pos.index
+      if legal_position?(pos) && board[file][rank].type != :none && board[file][rank].player != @player
         captures << Position.new([file, rank])
       end
     end
@@ -59,21 +61,29 @@ class Piece
   end
   
   def poll_direction(direction, file, rank)
-    case direction.to_s
-    when include?("n")
+    direction = direction.to_s
+    if direction.include?("n")
       rank += 1 if @player == :white
       rank -= 1 if @player == :black
-    when include?("e")
+    end
+    if direction.include?("e")
       file += 1 if @player == :white
       file -= 1 if @player == :black
-    when include?("s")
+    end
+    if direction.include?("s")
       rank -= 1 if @player == :white
       rank += 1 if @player == :black
-    when include?("w")
+    end
+    if direction.include?("w")
       file -= 1 if @player == :white
       file += 1 if @player == :black
     end
-    pos = Position.new([file][rank])
+    pos = Position.new([file, rank])
+  end
+  
+  def legal_position?(pos)
+    file, rank = pos.index
+    legal = (file >= 0 && file < Chessboard::WIDTH) && (rank >= 0 && rank < Chessboard::HEIGHT)
   end
   
 end
@@ -93,11 +103,9 @@ class Pawn < Piece
   
   private
   
-  ######################### Need to call super here somehow. Why is inheritance not working?
   def make_move_list(board)
-    moves = path_moves(board, :n, 2)
-    moves
-    #moves = starting_rank?(board) ? [path_moves(board, :n, 2)] : [path_moves(board, :n, 1)]
+    #moves = path_moves(board, :n, 2)
+    moves = starting_rank?(board) ? [path_moves(board, :n, 2)] : [path_moves(board, :n, 1)]
   end
   
   def make_capture_list(board)
@@ -160,6 +168,7 @@ class Knight < Piece
     captures = []
     make_possible_moves_list.each do |move|
       file, rank = move.index
+      next if !legal_position?(move)
       captures << move if !board[file][rank].nil? && board[file][rank].type != :none && board[file][rank].player != @player
     end
     captures
@@ -168,14 +177,14 @@ class Knight < Piece
   def make_possible_moves_list
     file, rank = @pos.index
     options = []
-    options << Position.new(file + 1, rank + 2)
-    options << Position.new(file + 1, rank - 2)
-    options << Position.new(file - 1, rank + 2)
-    options << Position.new(file - 1, rank - 2)
-    options << Position.new(file + 2, rank + 1)
-    options << Position.new(file + 2, rank - 1)
-    options << Position.new(file - 2, rank + 1)
-    options << Position.new(file - 2, rank - 1)
+    options << Position.new([file + 1, rank + 2])
+    options << Position.new([file + 1, rank - 2])
+    options << Position.new([file - 1, rank + 2])
+    options << Position.new([file - 1, rank - 2])
+    options << Position.new([file + 2, rank + 1])
+    options << Position.new([file + 2, rank - 1])
+    options << Position.new([file - 2, rank + 1])
+    options << Position.new([file - 2, rank - 1])
     options
   end
   
@@ -264,8 +273,6 @@ class King < Piece
   end
   
 end
-end
-#Somehow an extra end is needed?
 
 
 

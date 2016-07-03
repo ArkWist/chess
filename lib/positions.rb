@@ -49,9 +49,9 @@ end
 class Position
   attr_reader :index, :notation
   
-  def initialize(pos)
-    @index = to_index(pos)
-    @notation = to_notation(pos)
+  def initialize(pos = :none)
+    @index = pos == :none ? pos : to_index(pos)
+    @notation = pos == :none ? pos : to_notation(pos)
   end
   
   def set(pos)

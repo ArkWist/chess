@@ -19,7 +19,9 @@ class Chess
   def start_match
     play
   end
-  
+  ###############
+  # CURRENT ERROR
+  # For some reason, the try_move outcome isn't recognized as anything and the board moves the wrong piece.
   def play
     print_board
     game_set = false
@@ -36,6 +38,9 @@ class Chess
         game_set = :checkmate if checkmate?
       when :unknown
         report(:unknown)
+      else
+        puts "Error! An unknown error has occured."
+        print_board
       end
     end
     handle_game_set(game_set)

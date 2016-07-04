@@ -19,9 +19,7 @@ class Chess
   def start_match
     play
   end
-  ###############
-  # CURRENT ERROR
-  # For some reason, the try_turn outcome isn't recognized as anything and the board moves the wrong piece.
+
   def play
     print_board
     game_set = false
@@ -48,9 +46,10 @@ class Chess
   
   def next_player
     i = PLAYERS.find_index(@player)
-    @player = PLAYERS[0] if i.nil?
-    @player ||= PLAYERS[0] if i == PLAYERS.length - 1
-    @player ||= PLAYERS[i + 1]
+    puts "Index: #{i}"
+    @player = if i.nil? then PLAYERS[0]
+    elsif i == PLAYERS.length - 1 then PLAYERS[0]
+    else PLAYERS[i + 1] end
   end
   
   def try_turn

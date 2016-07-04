@@ -23,6 +23,10 @@ class Chessboard
     print_files
   end
   
+  ########################
+  # Units are moving to spots they can attack when there's nothing to attack.
+  # This is also overriding en passant kills
+  ########################
   # This only verifies moves for the current board.
   # This means it can't verify (future) moves with (projection) models.
   # If #get_piece were rewritten to interpret pieces from models,
@@ -133,7 +137,9 @@ class Chessboard
           piece = make_dummy_piece(player, Position.new([i, j]), square.type)
           moves = piece.get_moves(board).map { |c| c = c.notation }
           moves.each do |pos|
-            model = make_project_model(Move.new([i, j, pos.index].flatten))
+            origin = Position.new([i, j])
+            destination = Position.new(pos)
+            model = make_projection_model(Move.new("#{origin.notation}#{destination.notation}"))
             checkmate = false if !in_check?(player, board)
           end
         end

@@ -104,7 +104,6 @@ class Pawn < Piece
   private
   
   def make_move_list(board)
-    #moves = path_moves(board, :n, 2)
     moves = starting_rank?(board) ? [path_moves(board, :n, 2)] : [path_moves(board, :n, 1)]
   end
   

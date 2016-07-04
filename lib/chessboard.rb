@@ -37,7 +37,7 @@ class Chessboard
     origin, destination = move.positions
     piece = get_piece(origin)
     outcome = verify_piece(piece, player)
-    outcome = verify_move_legality(move, board) if outcome == :verified
+    outcome = verify_move_legality(move, player, board) if outcome == :verified
     if outcome == :illegal
       outcome = verify_en_passant(move, board) if piece.type == :pawn
       outcome = verify_castle(move, board) if piece.type == :king
@@ -156,10 +156,27 @@ class Chessboard
   # All private methods ought be reorganized for legibility.
   ##########################################################
   
-  def verify_move_legality(move, board = make_model)
+  
+  ##################################################################
+  # After rewrite to fix logic this returns :illegal for legal moves
+  def verify_move_legality(move, player, board = make_model)
+  
+    # Instead of getting a piece, it should create a dummy piece for movement rules.
+    # This will make it work better with projection models.
+    
     origin, destination = move.positions
-    outcome = :blocked if get_piece(destination).player == @player
-    outcome ||= :illegal if !get_piece(origin).get_moves(board)
+    
+    
+  
+    origin, destination = move.positions
+    o_piece, d_piece = get_piece(origin), get_piece(destination)
+    moves = o_piece.get_moves(board)
+    moves.map { |move| move = move.notation }
+    captures = captures = o_piece.get_captures(board)
+    captures.map { |capture| capture = capture.notation }
+    outcome = :blocked if d_piece.player == player
+    outcome ||= :illegal if !moves.include?(destination.notation)
+    outcome ||= :illegal if d_piece.player != :none && d_piece.player != player && !captures.include?(destination.notation)
     outcome ||= :verified
   end
   

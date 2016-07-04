@@ -75,7 +75,7 @@ class Chess
   end
   
   def handle_move(input)
-    outcome = try_move(input) # This creates a phantom puts for some reason
+    outcome = try_move(input)
     outcome = :moved if outcome == :success
     outcome
   end
@@ -102,7 +102,7 @@ class Chess
   end
   
   def try_move(input)
-    case @board.verify_move(Move.new(input), @player)
+    case @board.verify_move(Move.new(input), @player) # This creates a phantom puts for some reason
     when :verified
       do_move(Move.new(input))
       outcome = :success

@@ -29,10 +29,10 @@ class Chessboard
   #  this method could fully verify current or future moves.
   # Note: All other helper methods are already compatible with models.
   # Note: Only works with moves with legal positions.
-  def verify_move(move, player, board = make_model)#(move))    # This returns :occupied for everything except :empty
+  def verify_move(move, player, board = make_model)#(move))
     origin, destination = move.positions
     piece = get_piece(origin)
-    outcome = verify_piece(piece, player)   # This is where we're getting :occupied
+    outcome = verify_piece(piece, player)
     outcome = verify_move_legality(move, board) if outcome == :verified
     if outcome == :illegal
       outcome = verify_en_passant(move, board) if piece.type == :pawn
@@ -45,7 +45,7 @@ class Chessboard
   end
 
   
-  def do_move(move)
+  def do_move(move) # This moves from the opposite file, and why does DID MOVE have a puts before it?
     origin, destination = move.positions
     origin_index, capture_index = get_piece_index(origin), get_piece_index(destination)
     piece = get_piece(origin)
@@ -320,7 +320,6 @@ class Chessboard
   end
   
   def under_en_passant_attack?(player, board, pos)
-    puts
     if pos.notation == @en_passant_destination.notation
       file, rank = pos.index
       right, left = board[file + 1, rank + 1], board[file - 1, rank + 1] if player == :white

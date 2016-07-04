@@ -21,7 +21,7 @@ class Chess
   end
   ###############
   # CURRENT ERROR
-  # For some reason, the try_move outcome isn't recognized as anything and the board moves the wrong piece.
+  # For some reason, the try_turn outcome isn't recognized as anything and the board moves the wrong piece.
   def play
     print_board
     game_set = false
@@ -75,7 +75,7 @@ class Chess
   end
   
   def handle_move(input)
-    outcome = try_move(input)
+    outcome = try_move(input) # This creates a phantom puts for some reason
     outcome = :moved if outcome == :success
     outcome
   end
@@ -115,13 +115,13 @@ class Chess
     else
       report(:unknown)
     end
-    outcome = :rejected unless :outcome == :success
+    outcome = :rejected unless outcome == :success
     outcome
   end
   
   def do_move(move)
-    promote = @board.promote?(move)
-    @board.do_move(move)
+    #promote = @board.promote?(move)
+    @board.do_move(move) # This moves from the opposite file, and why does DID MOVE have a puts before it?
     do_promotion(move) if @board.promote?(move)
   end
   

@@ -102,7 +102,7 @@ class Chess
   end
   
   def try_move(input)
-    case @board.verify_move(Move.new(input), @player) # This creates a phantom puts for some reason
+    case @board.verify_move(Move.new(input), @player)
     when :verified
       do_move(Move.new(input))
       outcome = :success
@@ -120,8 +120,7 @@ class Chess
   end
   
   def do_move(move)
-    #promote = @board.promote?(move)
-    @board.do_move(move) # This moves from the opposite file, and why does DID MOVE have a puts before it?
+    @board.do_move(move)
     do_promotion(move) if @board.promote?(move)
   end
   

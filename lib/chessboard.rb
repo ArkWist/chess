@@ -45,7 +45,7 @@ class Chessboard
   end
 
   
-  def do_move(move) # This moves from the opposite file, and why does DID MOVE have a puts before it?
+  def do_move(move)
     origin, destination = move.positions
     origin_index, capture_index = get_piece_index(origin), get_piece_index(destination)
     piece = get_piece(origin)
@@ -58,7 +58,6 @@ class Chessboard
     @pieces[origin_index].move_to(destination)
     kill_piece(destination) if capture_index != :none
     clean_up_tracking_variables(move)
-    puts "DID MOVE"
   end
   
   
@@ -122,6 +121,25 @@ class Chessboard
     origin, destination = move.positions
     file, rank = destination.index
     promote = get_piece(origin).type == :pawn && (rank == 0 || rank == HEIGHT - 1)
+  end
+  
+  def checkmate?(player)
+    board = make_model
+    checkmate = true
+    return checkmate if in_check?(player, board)
+    board.each_with_index do |file, i|
+      file.each_with_index do |square, j|
+        if checkmate && square.player == player
+          piece = make_dummy_piece(player, Position.new([i, j]), square.type)
+          moves = piece.get_moves(board).map { |c| c = c.notation }
+          moves.each do |pos|
+            model = make_project_model(Move.new([i, j, pos.index].flatten))
+            checkmate = false if !in_check?(player, board)
+          end
+        end
+      end
+    end
+    checkmate
   end
   
   
@@ -249,7 +267,7 @@ class Chessboard
   
   # All movement checks must use a model or a projection model.
   # This lets detailed checks be performed without manipulating pieces.
-  def make_model
+  def make_model # This prints the board the wrong way around?
     board = Array.new(WIDTH){ Array.new(HEIGHT, Square.new) }
     @pieces.each do |piece|
       file, rank = piece.pos.index
@@ -272,7 +290,7 @@ class Chessboard
   def print_rank(board, rank)
     string = "#{rank}"
     rank >= 10 ? string += " " : string += "  "
-    WIDTH.downto(1) { |file| string += "[#{get_character_for(board[file - 1][rank - 1])}]" }
+    1.upto(WIDTH) { |file| string += "[#{get_character_for(board[file - 1][rank - 1])}]" }
     puts string
   end
   
@@ -328,25 +346,6 @@ class Chessboard
       attack = true if left.type == :pawn && left.player != player
     end
     attack ||= false
-  end
-  
-  def checkmate?(player)
-    board = make_model
-    checkmate = true
-    return checkmate if in_check?(player, board)
-    board.each_with_index do |file, i|
-      file.each_with_index do |square, j|
-        if checkmate && square.player == player
-          piece = make_dummy_piece(player, Position.new([i, j]), square.type)
-          moves = piece.get_moves(board).map { |c| c = c.notation }
-          moves.each do |pos|
-            model = make_project_model(Move.new([i, j, pos.index].flatten))
-            checkmate = false if !in_check?(player, board)
-          end
-        end
-      end
-    end
-    checkmate
   end
   
   # This only returns real pieces.

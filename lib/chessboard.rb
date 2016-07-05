@@ -55,10 +55,16 @@ class Chessboard
     elsif piece.type == :king
       clean_up_castle(move) if verify_castle(mode) == :verified
     end
+    
+    # This kill the attacker
     @pieces[origin_index].move_to(destination)
     kill_piece(destination) if capture_index != :none
+    
+    # This duplicates the attacker
+    kill_piece(destination) if capture_index != :none
+    @pieces[origin_index].move_to(destination)
+    
     clean_up_tracking_variables(move)
-    puts "En_passant -- destination, capture: #{@en_passant_destination.notation}, #{@en_passant_capture.notation}"
   end
   
   def promote?(move)
@@ -194,7 +200,6 @@ class Chessboard
     outcome = :blocked if d_piece.player == player
     outcome ||= :illegal if !moves.include?(destination.notation)
     outcome ||= :verified
-puts "verify_move_legality outcome: #{outcome}"
     outcome
   end
   
@@ -210,11 +215,6 @@ puts "verify_move_legality outcome: #{outcome}"
     if destination.notation == @en_passant_destination.notation && \
        get_piece(origin, board).can_en_passant?(board, @en_passant_destination) then outcome = :verified
     end
-    #outcome = :verified if destination.notation == @en_passant_destination && \
-    #                       get_piece(origin, board).can_en_passant?(board, @en_passant_destination)
-    #outcome ||= :illegal
-puts "verify_en_passant outcome: #{outcome}"
-puts "destination.notation: #{destination.notation}"
     outcome
   end
   

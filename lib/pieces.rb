@@ -100,7 +100,7 @@ class Pawn < Piece
   
   def can_en_passant?(board, en_passant)
     can = false
-    make_en_passant_list(board).each { |move| puts "move.notation: #{move.notation}"; can = move.notation == en_passant.notation unless can }
+    make_en_passant_list(board).each { |move| can = move.notation == en_passant.notation unless can }
     can
   end
   

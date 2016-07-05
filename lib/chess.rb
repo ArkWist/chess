@@ -47,7 +47,6 @@ class Chess
   
   def next_player
     i = PLAYERS.find_index(@player)
-    puts "Index: #{i}"
     @player = if i.nil? then PLAYERS[0]
     elsif i == PLAYERS.length - 1 then PLAYERS[0]
     else PLAYERS[i + 1] end

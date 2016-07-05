@@ -56,6 +56,10 @@ class Chessboard
       clean_up_castle(move) if verify_castle(mode) == :verified
     end
     
+    # Kill piece at destination
+    # Move piece to destination, which should be working fine
+    puts "Capture_index: #{capture_index}"
+    
     # This kill the attacker
     @pieces[origin_index].move_to(destination)
     kill_piece(destination) if capture_index != :none

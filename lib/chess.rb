@@ -36,6 +36,7 @@ class Chess
         game_set = :checkmate if checkmate?
       when :unknown
         report(:unknown)
+      when :rejected
       else
         puts "Error! An unknown error has occured."
         print_board

@@ -48,15 +48,17 @@ class Chessboard
     origin, destination = move.positions
     origin_index, capture_index = get_piece_index(origin), get_piece_index(destination)
     piece = get_piece(origin)
+    @new_en_passant = false
     if piece.type == :pawn
       clean_up_en_passant(move) if verify_en_passant(move) == :verified
-      record_double_step(move) if @unmoved_piece_positions.include?(origin.notation)
+      record_double_step(move) if unmoved_piece?(origin)
     elsif piece.type == :king
       clean_up_castle(move) if verify_castle(mode) == :verified
     end
     @pieces[origin_index].move_to(destination)
     kill_piece(destination) if capture_index != :none
     clean_up_tracking_variables(move)
+    puts "En_passant -- destination, capture: #{@en_passant_destination.notation}, #{@en_passant_capture.notation}"
   end
   
   def promote?(move)
@@ -107,6 +109,7 @@ class Chessboard
   def make_tracking_variables
     @en_passant_destination = Position.new
     @en_passant_capture = Position.new
+    @new_en_passant = false
     @unmoved_piece_positions = []
     @pieces.each { |piece| @unmoved_piece_positions << piece.pos }
   end
@@ -137,19 +140,19 @@ class Chessboard
     pieces = []
     case type
     when :pawn
-      pos.each { pieces << Pawn.new(player, pos) }
+      pos.each { |p| pieces << Pawn.new(player, p) }
     when :rook
-      pos.each { pieces << Rook.new(player, pos) }
+      pos.each { |p| pieces << Rook.new(player, p) }
     when :knight
-      pos.each { pieces << Knight.new(player, pos) }
+      pos.each { |p| pieces << Knight.new(player, p) }
     when :bishop
-      pos.each { pieces << Bishop.new(player, pos) }
+      pos.each { |p| pieces << Bishop.new(player, p) }
     when :queen
-      pos.each { pieces << Queen.new(player, pos) }
+      pos.each { |p| pieces << Queen.new(player, p) }
     when :king
-      pos.each { pieces << King.new(player, pos) }
+      pos.each { |p| pieces << King.new(player, p) }
     else
-      pos.each { pieces << Piece.new(player, pos) }
+      pos.each { pieces << Piece.new(player, p) }
     end
     pieces
   end
@@ -203,10 +206,15 @@ puts "verify_move_legality outcome: #{outcome}"
   
   def verify_en_passant(move, board = make_model)
     origin, destination = move.positions
-    outcome = :verified if destination.notation == @en_passant_destination && \
-                           get_piece(origin, board).can_en_passant?(board, @en_passant_destination)
-    outcome ||= :illegal
+    outcome = :illegal
+    if destination.notation == @en_passant_destination.notation && \
+       get_piece(origin, board).can_en_passant?(board, @en_passant_destination) then outcome = :verified
+    end
+    #outcome = :verified if destination.notation == @en_passant_destination && \
+    #                       get_piece(origin, board).can_en_passant?(board, @en_passant_destination)
+    #outcome ||= :illegal
 puts "verify_en_passant outcome: #{outcome}"
+puts "destination.notation: #{destination.notation}"
     outcome
   end
   
@@ -237,8 +245,7 @@ puts "verify_en_passant outcome: #{outcome}"
           king_pos = origin
           rook_pos = Position.new([r_file, r_rank])
           # Check the King and Rook haven't ever moved.
-          continue = @unmoved_piece_positions.include?(king_pos.notation) && \
-                     @unmoved_piece_positions.include?(rook_pos.notation)
+          continue = unmoved_piece?(king_pos) && unmoved_piece?(rook_pos)
           if continue
             t_file, t_rank = direction == :left ? [o_file - 1, o_rank] : [o_file + 1, o_rank]
             rookward_pos = Position.new([t_file, t_rank])
@@ -261,6 +268,12 @@ puts "verify_en_passant outcome: #{outcome}"
       end
     end
     outcome ||= :besieged
+  end
+  
+  def unmoved_piece?(pos)
+    unmoved = false
+    @unmoved_piece_positions.each { |p| unmoved = true if p.notation == pos.notation }
+    unmoved
   end
   
   def in_check?(player, board)
@@ -329,12 +342,14 @@ puts "verify_en_passant outcome: #{outcome}"
     origin, destination = move.positions
     o_file, o_rank = origin.index
     d_file, d_rank = destination.index
-    if d_rank - o_rank == 2
+    if (d_rank - o_rank).abs == 2
       piece = get_piece(origin)
-      @en_passant_destination = Position.new([d_file, d_rank])
-      @en_passant_capture = Position.new([d_file, d_rank - 1]) if piece.player == :white
-      @en_passant_capture = Position.new([d_file, d_rank + 1]) if piece.player == :black
+      @en_passant_capture = Position.new([d_file, d_rank])
+      @en_passant_destination = Position.new([d_file, d_rank - 1]) if piece.player == :white
+      @en_passant_destination = Position.new([d_file, d_rank + 1]) if piece.player == :black
+      @new_en_passant = true
     end
+    puts "Double step -- en_passant -- destination, capture: #{@en_passant_destination.notation}, #{@en_passant_capture.notation}"
   end
   
   def clean_up_en_passant(move)
@@ -362,6 +377,7 @@ puts "verify_en_passant outcome: #{outcome}"
     origin, destination = move.positions
     @unmoved_piece_positions.delete(origin.notation)
     @unmoved_piece_positions.delete(destination.notation)
+    @en_passant_destination, @en_passant_capture = Position.new, Position.new unless @new_en_passant
   end
   
   def print_rank(board, rank)

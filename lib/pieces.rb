@@ -99,8 +99,9 @@ class Pawn < Piece
   end
   
   def can_en_passant?(board, en_passant)
-    make_en_passant_list.each { |move| can = move.notation == en_passant.notation unless can }
-    can ||= false
+    can = false
+    make_en_passant_list(board).each { |move| puts "move.notation: #{move.notation}"; can = move.notation == en_passant.notation unless can }
+    can
   end
   
   private
@@ -115,6 +116,7 @@ class Pawn < Piece
   
   def make_en_passant_list(board)
     moves = path_moves(board, :ne, 1) << path_moves(board, :nw, 1)
+    moves.flatten
   end
   
   def starting_rank?(board)

@@ -238,11 +238,6 @@ class Chess
 end
 
 
+# Program start.
 chess_game = Chess.new
-
-
-
-
-
-
 

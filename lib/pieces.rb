@@ -1,6 +1,3 @@
-#require_relative "positions"
-
-
 # If refactoring, consider making Piece a module.
 # This will clear up complicating supers.
 # Note: This means Chessboard must be checked it doesn't use generic Pieces.
@@ -13,8 +10,13 @@ class Piece
     @type = :none
   end
   
-  def get_moves(board)
+  def get_all_moves(board)
     moves = make_move_list(board) << make_capture_list(board)
+    moves.flatten
+  end
+  
+  def get_moves(board)
+    moves = move_move_list(board)
     moves.flatten
   end
   
@@ -135,11 +137,13 @@ class Rook < Piece
   private
   
   def make_move_list(board)
-    moves = path_moves(board, :n) << path_moves(board, :e) << path_moves(board, :s) << path_moves(board, :w)
+    moves = path_moves(board, :n) << path_moves(board, :e) << path_moves(board, :s) \
+         << path_moves(board, :w)
   end
   
   def make_capture_list(board)
-    captures = path_captures(board, :n) << path_captures(board, :e) << path_captures(board, :s) << path_captures(board, :w)
+    captures = path_captures(board, :n) << path_captures(board, :e) << path_captures(board, :s) \
+            << path_captures(board, :w)
   end
   
 end
@@ -200,11 +204,13 @@ class Bishop < Piece
   private
   
   def make_move_list(board)
-    moves = path_moves(board, :ne) << path_moves(board, :se) << path_moves(board, :sw) << path_moves(board, :nw)
+    moves = path_moves(board, :ne) << path_moves(board, :se) \
+         << path_moves(board, :sw) << path_moves(board, :nw)
   end
   
   def make_capture_list(board)
-    captures = path_captures(board, :ne) << path_captures(board, :se) << path_captures(board, :sw) << path_captures(board, :nw)
+    captures = path_captures(board, :ne) << path_captures(board, :se) \
+            << path_captures(board, :sw) << path_captures(board, :nw)
   end
   
 end
@@ -220,13 +226,15 @@ class Queen < Piece
   private
   
   def make_move_list(board)
-    moves = path_moves(board, :n) << path_moves(board, :e) << path_moves(board, :s) << path_moves(board, :w) \
-         << path_moves(board, :ne) << path_moves(board, :se) << path_moves(board, :sw) << path_moves(board, :nw)
+    moves = path_moves(board, :n) << path_moves(board, :e) << path_moves(board, :s)   \
+         << path_moves(board, :w) << path_moves(board, :ne) << path_moves(board, :se) \
+         << path_moves(board, :sw) << path_moves(board, :nw)
   end
   
   def make_capture_list(board)
-    captures = path_captures(board, :n) << path_captures(board, :e) << path_captures(board, :s) << path_captures(board, :w) \
-            << path_captures(board, :ne) << path_captures(board, :se) << path_captures(board, :sw) << path_captures(board, :nw)
+    captures = path_captures(board, :n) << path_captures(board, :e) << path_captures(board, :s)   \
+            << path_captures(board, :w) << path_captures(board, :ne) << path_captures(board, :se) \
+            << path_captures(board, :sw) << path_captures(board, :nw)
   end
   
 end
@@ -239,29 +247,23 @@ class King < Piece
     @type = :king
   end
   
-  #######################################################
-  # Exterior methods are needed to check castle legality.
-  # This is because King isn*t equipped to do its own #in_check? tests.
-  # Even if it were, King can't read if a Rook has moved.
-  #def can_castle?(board)
-  #  can = false
-  #  make_castle_list.each do |move|
-  #  end
-  #  can
-  #end
-  
   private
   
   def make_move_list(board)
-    moves = path_moves(board, :n, 1) << path_moves(board, :e, 1) << path_moves(board, :s, 1) << path_moves(board, :w, 1) \
-         << path_moves(board, :ne, 1) << path_moves(board, :se, 1) << path_moves(board, :sw, 1) << path_moves(board, :nw, 1)
+    moves = path_moves(board, :n, 1) << path_moves(board, :e, 1) << path_moves(board, :s, 1)   \
+         << path_moves(board, :w, 1) << path_moves(board, :ne, 1) << path_moves(board, :se, 1) \
+         << path_moves(board, :sw, 1) << path_moves(board, :nw, 1)
   end
   
   def make_capture_list(board)
-    captures = path_captures(board, :n, 1) << path_captures(board, :e, 1) << path_captures(board, :s, 1) << path_captures(board, :w, 1) \
-            << path_captures(board, :ne, 1) << path_captures(board, :se, 1) << path_captures(board, :sw, 1) << path_captures(board, :nw, 1)
+    captures = path_captures(board, :n, 1) << path_captures(board, :e, 1) << path_captures(board, :s, 1)   \
+            << path_captures(board, :w, 1) << path_captures(board, :ne, 1) << path_captures(board, :se, 1) \
+            << path_captures(board, :sw, 1) << path_captures(board, :nw, 1)
   end
   
+  # This cannot confirm castle legality.
+  # Only outside methods can check if the King and Rook have moved.
+  # Note: Castling is illegal if either has ever moved.
   def make_castle_list(board)
     moves = []
     left = path_moves(board, :w, 2)
@@ -272,15 +274,4 @@ class King < Piece
   end
   
 end
-
-
-
-
-
-
-
-
-
-
-
 

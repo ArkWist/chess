@@ -53,7 +53,7 @@ class Chessboard
       clean_up_en_passant(move) if verify_en_passant(move) == :verified
       record_double_step(move) if unmoved_piece?(origin)
     elsif piece.type == :king
-      clean_up_castle(move) if verify_castle(mode) == :verified
+      clean_up_castle(move) if verify_castle(move) == :verified
     end
     kill_piece(destination) if capture_index != :none
     origin_index = get_piece_index(origin)
@@ -64,7 +64,7 @@ class Chessboard
   def promote?(move)
     origin, destination = move.positions
     file, rank = destination.index
-    promote = get_piece(origin).type == :pawn && (rank == 0 || rank == HEIGHT - 1)
+    promote = get_piece(destination).type == :pawn && (rank == 0 || rank == HEIGHT - 1)
   end
   
   def do_promotion(move, type)
@@ -72,13 +72,13 @@ class Chessboard
     player = get_piece(destination).player
     case type
     when :rook
-      piece = Rook.new(player, destination)
+      piece = Rook.new(player, destination.notation)
     when :knight
-      piece = Knight.new(player, destination)
+      piece = Knight.new(player, destination.notation)
     when :bishop
-      piece = Bishop.new(player, destination)
+      piece = Bishop.new(player, destination.notation)
     when :queen
-      piece = Queen.new(player, destination)
+      piece = Queen.new(player, destination.notation)
     end
     remove_piece(destination)
     @pieces << piece
@@ -221,7 +221,7 @@ class Chessboard
   def verify_castle(move, board = make_model)
     origin, destination = move.positions
     o_file, o_rank = origin.index
-    king = board[o_file, o_rank]
+    king = board[o_file][o_rank]
     # Check if the moving piece is a King.
     continue = king.type == :king
     if continue
@@ -231,7 +231,7 @@ class Chessboard
       if continue
         d_file < o_file ? direction = :left : direction = :right
         r_file, r_rank = direction == :left ? [0, o_rank] : [WIDTH - 1, o_rank]
-        rook = board[r_file, r_rank]
+        rook = board[r_file][r_rank]
         player = king.player
          # Check the Rook to move exists and is owned by the player.
         continue = rook.type == :rook && rook.player == player
@@ -243,7 +243,7 @@ class Chessboard
           if continue
             t_file, t_rank = direction == :left ? [o_file - 1, o_rank] : [o_file + 1, o_rank]
             rookward_pos = Position.new([t_file, t_rank])
-            mock_rook = Rook.new(player, rook_pos)
+            mock_rook = Rook.new(player, rook_pos.notation)
             rook_moves = mock_rook.get_moves(board)
             # Check the squares between the King and Rook and empty.
             continue == rook_moves.include?(rookward_pos.notation)
@@ -298,8 +298,8 @@ class Chessboard
   def under_en_passant_attack?(player, board, pos)
     if pos.notation == @en_passant_destination.notation
       file, rank = pos.index
-      right, left = board[file + 1, rank + 1], board[file - 1, rank + 1] if player == :white
-      right, left = board[file + 1, rank - 1], board[file - 1, rank - 1] if player == :black
+      right, left = board[file + 1][rank + 1], board[file - 1][rank + 1] if player == :white
+      right, left = board[file + 1][rank - 1], board[file - 1][rank - 1] if player == :black
       attack = true if right.type == :pawn && right.player != player
       attack = true if left.type == :pawn && left.player != player
     end
@@ -320,13 +320,13 @@ class Chessboard
       o_file, o_rank = origin.index
       d_file, d_rank = destination.index
       if d_file < o_file
-        player = model[0, d_rank].player
-        model[0, d_rank] = Square.new
-        model[d_file + 1, d_rank] = Square.new(player, :rook)
+        player = model[0][d_rank].player
+        model[0][d_rank] = Square.new
+        model[d_file + 1][d_rank] = Square.new(player, :rook)
       else
-        player = model[WIDTH - 1, d_rank].player
-        model[WIDTH - 1, d_rank] = Square.new
-        model[d_file - 1, d_rank] = Square.new(player, :rook)
+        player = model[WIDTH - 1][d_rank].player
+        model[WIDTH - 1][d_rank] = Square.new
+        model[d_file - 1][d_rank] = Square.new(player, :rook)
       end
     end
     model    
@@ -363,7 +363,7 @@ class Chessboard
       rook_pos = Position.new([d_file - 1, d_rank])
     end
     @pieces[rook_index].move_to(rook_pos)
-    @unmoved_piece_positions.delete_at(rook_pos)
+    @unmoved_piece_positions.delete(rook_pos.notation)
   end
   
   def clean_up_tracking_variables(move)

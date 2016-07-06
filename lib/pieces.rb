@@ -16,7 +16,7 @@ class Piece
   end
   
   def get_moves(board)
-    moves = move_move_list(board)
+    moves = make_move_list(board)
     moves.flatten
   end
   

@@ -164,6 +164,7 @@ class Knight < Piece
     moves = []
     make_possible_moves_list.each do |move|
       file, rank = move.index
+      puts "FILE, RANK: #{file}, #{rank}"
       moves << move if !board[file][rank].nil? && board[file][rank].type == :none
     end
     moves
@@ -182,14 +183,14 @@ class Knight < Piece
   def make_possible_moves_list
     file, rank = @pos.index
     options = []
-    options << Position.new([file + 1, rank + 2])
-    options << Position.new([file + 1, rank - 2])
-    options << Position.new([file - 1, rank + 2])
-    options << Position.new([file - 1, rank - 2])
-    options << Position.new([file + 2, rank + 1])
-    options << Position.new([file + 2, rank - 1])
-    options << Position.new([file - 2, rank + 1])
-    options << Position.new([file - 2, rank - 1])
+    options << Position.new([file + 1, rank + 2]) unless file >= 7 || rank >= 6
+    options << Position.new([file + 1, rank - 2]) unless file >= 7 || rank <= 1
+    options << Position.new([file - 1, rank + 2]) unless file <= 0 || rank >= 6
+    options << Position.new([file - 1, rank - 2]) unless file <= 0 || rank <= 1
+    options << Position.new([file + 2, rank + 1]) unless file >= 6 || rank >= 7
+    options << Position.new([file + 2, rank - 1]) unless file >= 6 || rank <= 0
+    options << Position.new([file - 2, rank + 1]) unless file <= 1 || rank >= 7
+    options << Position.new([file - 2, rank - 1]) unless file <= 1 || rank <= 0
     options
   end
   

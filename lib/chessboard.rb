@@ -55,27 +55,9 @@ class Chessboard
     elsif piece.type == :king
       clean_up_castle(move) if verify_castle(mode) == :verified
     end
-    
-    # Kill piece at destination
-    # Move piece to destination, which should be working fine
-    puts "Capture_index: #{capture_index}"
-    
-    # This kill the attacker
-    #@pieces[origin_index].move_to(destination)
-    #kill_piece(destination) if capture_index != :none
-    
-    # This duplicates the attacker
-    #kill_piece(destination) if capture_index != :none
-    #@pieces[origin_index].move_to(destination)
-    
-    # The issue is removing first changes where in the array the pieces are
-    # But removing after removes the piece that moved
-    
-    # We should remove, then recalculate moving piece, then move it
     kill_piece(destination) if capture_index != :none
     origin_index = get_piece_index(origin)
     @pieces[origin_index].move_to(destination)
-    
     clean_up_tracking_variables(move)
   end
   
@@ -361,7 +343,6 @@ class Chessboard
       @en_passant_destination = Position.new([d_file, d_rank + 1]) if piece.player == :black
       @new_en_passant = true
     end
-    puts "Double step -- en_passant -- destination, capture: #{@en_passant_destination.notation}, #{@en_passant_capture.notation}"
   end
   
   def clean_up_en_passant(move)
@@ -447,9 +428,7 @@ class Chessboard
   def remove_piece(pos)
     #@pieces.delete_at(get_piece_index(pos))
     piece_to_remove = get_piece(pos)
-    index to_remove = get_piece_index(pos)
-    puts "Piece to remove: #{piece_to_remove}"
-    puts "Index to remove: #{index_to_remove}"
+    index_to_remove = get_piece_index(pos)
     @pieces.delete_at(index_to_remove)
   end
   

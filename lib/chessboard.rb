@@ -46,8 +46,8 @@ class Chessboard
   
   def do_move(move)
     origin, destination = move.positions
-    origin_index, capture_index = get_piece_index(origin), get_piece_index(destination)
     piece = get_piece(origin)
+    capture_index = get_piece_index(destination)
     @new_en_passant = false
     if piece.type == :pawn
       clean_up_en_passant(move) if verify_en_passant(move) == :verified
@@ -61,11 +61,19 @@ class Chessboard
     puts "Capture_index: #{capture_index}"
     
     # This kill the attacker
-    @pieces[origin_index].move_to(destination)
-    kill_piece(destination) if capture_index != :none
+    #@pieces[origin_index].move_to(destination)
+    #kill_piece(destination) if capture_index != :none
     
     # This duplicates the attacker
+    #kill_piece(destination) if capture_index != :none
+    #@pieces[origin_index].move_to(destination)
+    
+    # The issue is removing first changes where in the array the pieces are
+    # But removing after removes the piece that moved
+    
+    # We should remove, then recalculate moving piece, then move it
     kill_piece(destination) if capture_index != :none
+    origin_index = get_piece_index(origin)
     @pieces[origin_index].move_to(destination)
     
     clean_up_tracking_variables(move)
@@ -435,9 +443,14 @@ class Chessboard
     index
   end
 
+  ###############################################################
   def remove_piece(pos)
-    piece = get_piece(pos)
-    @pieces.delete_at(get_piece_index(pos))
+    #@pieces.delete_at(get_piece_index(pos))
+    piece_to_remove = get_piece(pos)
+    index to_remove = get_piece_index(pos)
+    puts "Piece to remove: #{piece_to_remove}"
+    puts "Index to remove: #{index_to_remove}"
+    @pieces.delete_at(index_to_remove)
   end
   
   # Aliases #remove_pos (for in case a distinction is ever needed).

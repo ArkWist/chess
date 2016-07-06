@@ -164,7 +164,6 @@ class Knight < Piece
     moves = []
     make_possible_moves_list.each do |move|
       file, rank = move.index
-      puts "FILE, RANK: #{file}, #{rank}"
       moves << move if !board[file][rank].nil? && board[file][rank].type == :none
     end
     moves

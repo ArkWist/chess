@@ -51,7 +51,8 @@ describe Chessboard do
         b.do_move("e7e5")
         b.do_move("g2g4")
         b.do_move("d8h4")
-        b.checkmate?(:black).to eq(true)
+        b.in_check?(:white).to eq(true)
+        b.checkmate?(:white).to eq(true)
       end
     end
   end

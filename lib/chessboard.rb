@@ -271,6 +271,7 @@ class Chessboard
   end
   
   def in_check?(player, board)
+puts "Checking if in check..."
     king_pos = Position.new
     board.each_with_index do |file, i|
       file.each_with_index do |square, j|
@@ -281,6 +282,7 @@ class Chessboard
   end
   
   def under_attack?(player, board, pos)
+puts "Checking piece at #{pos.notation} in check..."
     return true if under_en_passant_attack?(player, board, pos)
     captures = []
     board.each_with_index do |file, i|

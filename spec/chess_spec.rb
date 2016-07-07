@@ -44,6 +44,18 @@ describe Chessboard do
     end
   end
   
+  describe "Chessboard.checkmate?" do
+    context "Black puts White into checkmate" do
+      it "ends the game" do
+        b.do_move("f2f3")
+        b.do_move("e7e5")
+        b.do_move("g2g4")
+        b.do_move("d8h4")
+        b.checkmate?(:black).to eq(true)
+      end
+    end
+  end
+  
 end
 
 describe Chess do

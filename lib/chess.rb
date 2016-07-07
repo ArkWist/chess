@@ -11,14 +11,14 @@ class Chess
     puts "Running..."
     @board = Chessboard.new
     @player = :white
-    start_match
+    #start_match
   end
-  
-  private
   
   def start_match
     play
   end
+  
+  private
 
   def play
     print_board
@@ -239,5 +239,6 @@ end
 
 
 # Program start
-chess_game = Chess.new
+#chess_game = Chess.new
+#chess_game.start_match
 

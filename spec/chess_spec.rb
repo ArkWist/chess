@@ -59,7 +59,7 @@ describe Chessboard do
   
 end
 
-describe Chess do
-  let(:c) { Chess.new }
-end
+#describe Chess do
+#  let(:c) { Chess.new }
+#end
 

@@ -32,27 +32,31 @@ describe Chessboard do
   let(:b) { Chessboard.new }
   
   describe "Chessboard.do_move" do
+=begin
     context "Black tries to take a piece" do
       it "moves black's piece and removes the piece it captures" do
-        b.do_move("b2b4")
-        b.do_move("b7b6")
-        b.do_move("b4b5")
-        b.do_move("a7a5")
-        b.do_move("b5a6")
-        b.do_move("a8a6")
+        b.do_move(Move.new("b2b4"))
+        b.do_move(Move.new("b7b6"))
+        b.do_move(Move.new("b4b5"))
+        b.do_move(Move.new("a7a5"))
+        b.do_move(Move.new("b5a6"))
+        b.do_move(Move.new("a8a6"))
       end
     end
+=end
   end
   
   describe "Chessboard.checkmate?" do
     context "Black puts White into checkmate" do
       it "ends the game" do
-        b.do_move("f2f3")
-        b.do_move("e7e5")
-        b.do_move("g2g4")
-        b.do_move("d8h4")
-        b.in_check?(:white).to eq(true)
-        b.checkmate?(:white).to eq(true)
+        b.do_move(Move.new("f2f3"))
+        b.do_move(Move.new("e7e5"))
+        b.do_move(Move.new("g2g4"))
+        b.do_move(Move.new("d8h4"))
+        b.print_board
+        model = b.make_model
+        expect(b.in_check?(:white, model)).to eq(true)
+        expect(b.checkmate?(:white, model)).to eq(true)
       end
     end
   end

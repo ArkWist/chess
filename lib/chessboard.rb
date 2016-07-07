@@ -106,6 +106,9 @@ class Chessboard
   
   private
   
+  ###########################
+  public
+  
   def make_tracking_variables
     @en_passant_destination = Position.new
     @en_passant_capture = Position.new

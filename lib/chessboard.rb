@@ -297,6 +297,8 @@ puts "Checking piece at #{pos.notation} in check..."
       end
     end
     captures.flatten
+print "All possible captures: "
+captures.each { |c| print "#{c.notation}, " }
     captures.include?(pos.notation)
   end
   

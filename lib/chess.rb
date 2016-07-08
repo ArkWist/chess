@@ -20,6 +20,7 @@ class Chess
   
   private
 
+  # This method is unwieldy and should be rewritten if refactoring.
   def play
     print_board
     game_set = false
@@ -31,10 +32,13 @@ class Chess
       when :do_save
         do_save
       when :moved
-        @player = next_player
+        next_player
         print_board
         game_set = :checkmate if checkmate? unless game_set
         game_set = :stalemate if stalemate? unless game_set
+        game_set = ask_draw(:fifty) if fifty_move?
+        game_set = ask_draw(:insufficient) if insufficient_material?
+        game_set = ask_draw(:threefold) if threefold?
       when :unknown
         report(:unknown)
       when :rejected
@@ -184,8 +188,20 @@ class Chess
   end
   
 ################
-  def fiftymove?
-    return false
+  def ask_draw(reason)
+    case reason
+    when :fifty
+    when :insufficient
+    when :threefold
+    end
+    # ask last player
+    # ask current player
+    #returns nil or :do_draw
+  end
+  
+################
+  def fifty_move?
+    @board.fifty_move?
   end
   
 ################
@@ -193,7 +209,10 @@ class Chess
     return false
   end
   
-
+  def insufficient_material?(player)
+    @board.insufficient_material?(player)
+  end
+  
   def handle_game_set(exit)
     case exit
     when :loaded

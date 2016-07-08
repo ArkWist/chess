@@ -51,7 +51,9 @@ class Chessboard
     piece = get_piece(origin)
     capture_index = get_piece_index(destination)
     @new_en_passant = false
+    @fifty += 1
     if piece.type == :pawn
+      @fifty = 0
       clean_up_en_passant(move) if verify_en_passant(move) == :verified
       record_double_step(move) if unmoved_piece?(origin)
     elsif piece.type == :king
@@ -121,6 +123,15 @@ class Chessboard
     stalemate
   end
   
+  def fifty_move?
+    fifty = @fifty >= 50
+  end
+  
+  ###################################
+  def insufficient_materials?(player)
+    return false
+  end
+  
   private
   
   ###########################
@@ -130,6 +141,7 @@ class Chessboard
     @en_passant_destination = Position.new
     @en_passant_capture = Position.new
     @new_en_passant = false
+    @fifty = 0
     @unmoved_piece_positions = []
     @pieces.each { |piece| @unmoved_piece_positions << piece.pos }
   end
@@ -465,6 +477,7 @@ class Chessboard
   
   # Aliases #remove_pos (for in case a distinction is ever needed).
   def kill_piece(pos)
+    @fifty = 0
     remove_piece(pos)
   end
   

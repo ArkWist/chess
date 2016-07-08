@@ -288,17 +288,18 @@ puts "Checking if in check..."
 puts "Checking piece at #{pos.notation} in check..."
     return true if under_en_passant_attack?(player, board, pos)
     captures = []
-    board.each_with_index do |file, i|
-      file.each_with_index do |square, j|
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
         if square.player != :none && square.player != player
-          piece = make_dummy_piece(square.player, Position.new([i, j]), square.type)
-          captures << piece.get_captures(board).map { |c| c = c.notation }
+          piece = make_dummy_piece(square.player, Position.new([f, r]), square.type)
+puts "Piece found: #{piece.player}, #{piece.pos.notation}"
+          captures << piece.get_captures(board).map { |c| puts "c notation: #{c.notation}"; c = c.notation }
         end
       end
     end
     captures.flatten
 print "All possible captures: "
-captures.each { |c| print "#{c.notation}, " }
+captures.each { |c| print "#{c}, " }
     captures.include?(pos.notation)
   end
   
@@ -416,13 +417,23 @@ captures.each { |c| print "#{c.notation}, " }
   
   def make_dummy_piece(player, pos, type)
     pos = pos.notation
-    piece = Pawn.new(player, pos) if type == :pawn
-    piece ||= Rook.new(player, pos) if type == :rook
-    piece ||= Knight.new(player, pos) if type == :knight
-    piece ||= Bishop.new(player, pos) if type == :bishop
-    piece ||= Queen.new(player, pos) if type == :queen
-    piece ||= King.new(player, pos) if type == :king
-    piece ||= Piece.new(player, pos)
+    piece = case type
+    when :pawn
+      Pawn.new(player, pos)
+    when :rook
+      Rook.new(player, pos)
+    when :knight
+      Knight.new(player, pos)
+    when :bishop
+      Bishop.new(player, pos)
+    when :queen
+      Queen.new(player, pos)
+    when :king
+      King.new(player, pos)
+    else
+      Piece.new(player, pos)
+    end
+    piece
   end
   
   def get_piece_index(pos)
@@ -445,4 +456,3 @@ captures.each { |c| print "#{c.notation}, " }
   end
   
 end
-

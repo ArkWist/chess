@@ -36,7 +36,7 @@ class Chess
         print_board
         game_set = :checkmate if checkmate? unless game_set
         game_set = :stalemate if stalemate? unless game_set
-        game_set = ask_draw(:fifty) if fifty_move?
+        game_set = ask_draw(:fifty) if fifty_moves?
         game_set = ask_draw(:insufficient) if insufficient_material?
         game_set = ask_draw(:threefold) if threefold?
       when :unknown
@@ -200,7 +200,7 @@ class Chess
   end
   
 ################
-  def fifty_move?
+  def fifty_moves?
     @board.fifty_move?
   end
   

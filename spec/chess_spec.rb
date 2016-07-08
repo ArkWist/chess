@@ -86,6 +86,19 @@ describe Chessboard do
     end
   end
   
+  describe "Chessboard.fifty_moves?" do
+    context "fifty moves taken without a capture or pawn movement" do
+      it "confirms this fact" do
+        25.times do
+          b.do_move(Move.new("b1a3"))
+          b.do_move(Move.new("a3b1"))
+        end
+        model = b.make_model
+        expect(b.fifty_moves?).to eq(true)
+      end
+    end
+  end
+  
 end
 
 #describe Chess do

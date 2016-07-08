@@ -123,7 +123,7 @@ class Chessboard
     stalemate
   end
   
-  def fifty_move?
+  def fifty_moves?
     fifty = @fifty >= 50
   end
   

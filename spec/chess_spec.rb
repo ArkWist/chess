@@ -95,6 +95,8 @@ describe Chessboard do
         end
         model = b.make_model
         expect(b.fifty_moves?).to eq(true)
+        b.do_move(Move.new("a2a4"))
+        expect(b.fifty_moves?).to eq(false)
       end
     end
   end

@@ -9,7 +9,7 @@ class Chess
   
   def initialize
     @board = Chessboard.new
-    @last_player = nil
+    @last_player = :black
     @player = :white
     #start_match
   end
@@ -195,11 +195,23 @@ class Chess
     when :insufficient
     when :threefold
     end
+    consent = verify_draw_ask(@player)
+    consent = verify_draw_ask(@last_player) if consent
+    verify = if consent then :do_draw else nil end
+  end
+  
+  def verify_draw_ask(player)
     print "Player #{@player}, do you accept a draw? (y/n): "
-    # Oh crud, need verficiation here... I shoudl have fully read chess rules before designing this
-    # ask last player
-    # ask current player
-    #returns nil or :do_draw
+    input = gets.chomp
+    if input.downcase == "y"
+      consent = true
+    elsif input.downcase == "n"
+      consent = false
+    else
+      report(:unknoqn)
+      consent = verify_draw_ask(player)
+    end
+    consent
   end
   
 ################

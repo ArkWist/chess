@@ -32,7 +32,8 @@ class Chess
       when :moved
         @player = next_player
         print_board
-        game_set = :checkmate if checkmate?
+        game_set = :checkmate if checkmate? unless game_set
+        game_set = :stalemate if stalemate? unless game_set
       when :unknown
         report(:unknown)
       when :rejected
@@ -40,6 +41,8 @@ class Chess
         puts "Error! An unknown error has occured."
         print_board
       end
+      if !game_set && fiftymove? && verify_draw(:fiftymove) == :verified then game_set = :do_draw
+      #if !game_set && threefold? && verify_draw(:threefold) == :verified then game_set = :do_draw
     end
     handle_game_set(game_set)
   end
@@ -145,17 +148,18 @@ class Chess
   
   def verify_save
     #don't report anything
-    #outcome = :verified, failed
+    #outcome = :verified, :failed
   end
   
   def verify_load
     #don't report anything
-    #outcome = :verified, failed
+    #outcome = :verified, :failed
   end
   
-  def verify_draw
+  def verify_draw(type = :none)
     #don't report anything
     #outcome = :verified, :failed
+    outcome = :failed
   end
   
   def do_save
@@ -172,6 +176,21 @@ class Chess
   def checkmate?
     @board.checkmate?(@player)
   end
+  
+  def stalemate?
+    @board.stalemate?(@player)
+  end
+  
+################
+  def fiftymove?
+    return false
+  end
+  
+################
+  def threefold?
+    return false
+  end
+  
 
   def handle_game_set(exit)
     case exit
@@ -179,6 +198,7 @@ class Chess
     when :quit
     when :draw
     when :checkmate
+    when :stalemate
     end
   end
 
@@ -240,3 +260,4 @@ end
 # Program start
 #chess_game = Chess.new
 #chess_game.start_match
+

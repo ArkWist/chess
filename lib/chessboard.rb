@@ -14,6 +14,8 @@ class Chessboard
   
   def print_board
     board = make_model
+    print_files
+    puts
     (HEIGHT).downto(1) { |rank| print_rank(board, rank) }
     puts
     print_files
@@ -87,13 +89,13 @@ class Chessboard
   def checkmate?(player)
     board, checkmate = make_model, true
     return checkmate if in_check?(player, board)
-    board.each_with_index do |file, i|
-      file.each_with_index do |square, j|
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
         if checkmate && square.player == player
-          piece = make_dummy_piece(player, Position.new([i, j]), square.type)
+          piece = make_dummy_piece(player, Position.new([f, r]), square.type)
           moves = piece.get_all_moves(board).map { |c| c = c.notation }
           moves.each do |pos|
-            origin = Position.new([i, j])
+            origin = Position.new([f, r])
             destination = Position.new(pos)
             model = make_projection_model(Move.new("#{origin.notation}#{destination.notation}"))
             checkmate = false if !in_check?(player, board)
@@ -102,6 +104,21 @@ class Chessboard
       end
     end
     checkmate
+  end
+  
+  def stalemate?(player)
+    board, stalemate = make_model, true
+    0.upto(WIDTH) do |file|
+      0.upto(HEIGHT) do |rank|
+        square = board[file][rank]
+        if square.player == player
+          piece = make_dummy_piece(player, Position.new([file, rank]), square.type)
+          moves = piece.get_all_moves(board).map { |move| move = move.notation }
+          stalemate = false if stalemate && moves.flatten.length > 0
+        end
+      end
+    end
+    stalemate
   end
   
   private
@@ -385,6 +402,8 @@ captures.each { |c| print "#{c}, " }
     string = "#{rank}"
     rank >= 10 ? string += " " : string += "  "
     1.upto(WIDTH) { |file| string += "[#{get_character_for(board[file - 1][rank - 1])}]" }
+    rank >= 10 ? string += " " : string += "  "
+    string += "#{rank}"
     puts string
   end
   
@@ -456,3 +475,4 @@ captures.each { |c| print "#{c}, " }
   end
   
 end
+

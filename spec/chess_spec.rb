@@ -65,13 +65,9 @@ describe Chessboard do
     context "White's pieces are all blocked from moving" do
       it "confirms a stalemate" do
         b.remove_piece(Position.new("a1"))
-        b.remove_piece(Position.new("a2"))
         b.remove_piece(Position.new("b1"))
-        b.remove_piece(Position.new("b2"))
         b.remove_piece(Position.new("c1"))
-        b.remove_piece(Position.new("c2"))
         b.remove_piece(Position.new("d1"))
-        b.remove_piece(Position.new("d2"))
         b.remove_piece(Position.new("e2"))
         b.remove_piece(Position.new("f1"))
         b.remove_piece(Position.new("f2"))
@@ -79,7 +75,11 @@ describe Chessboard do
         b.remove_piece(Position.new("g2"))
         b.remove_piece(Position.new("h1"))
         b.remove_piece(Position.new("h2"))
-        b.do_move("e1a8")
+        b.do_move(Move.new("e1a8"))
+        b.do_move(Move.new("a2a7"))
+        b.do_move(Move.new("b2b8"))
+        b.do_move(Move.new("c2c8"))
+        b.do_move(Move.new("d2b7"))
         model = b.make_model
         expect(b.stalemate?(:white, model)).to eq(true)
       end

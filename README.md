@@ -5,10 +5,10 @@ A [FIDE Laws of Chess](http://www.fide.com/component/handbook/?id=171&view=artic
 ## How to start
 
 From the command list:
-  * Enter `$ ruby lib/chess.rb` from the root directory.
+  * Enter `$ ruby lib/chess.rb` from the root directory
   
 From the IRB:
-  * Enter `$ load "lib/chess.rb"` from the root directory.
+  * Enter `$ load "lib/chess.rb"` from the root directory
 
 The game should start once loaded.
 
@@ -50,21 +50,19 @@ Example: `b2, b4`*
       a  b  c  d  e  f  g  h                  a  b  c  d  e  f  g  h
 ```
 
-\* `b2, b4`, `b2,b4`, `b2 b4`, and `b2b4` are all valid and equivalent.
-
 The format is the same for captures and special moves (eg. en passant and castling).
+
+\* `b2, b4`, `b2,b4`, `b2 b4`, and `b2b4` are all valid and equivalent.
 
 ### Game Finish
 
 The game ends automatically in the case of:
-
 * [ ] [Checkmate](https://en.wikipedia.org/wiki/Glossary_of_chess#Checkmate)
 * [ ] [Stalemate](https://en.wikipedia.org/wiki/Glossary_of_chess#Stalemate)
 * [ ] [Fifty-move rule](https://en.wikipedia.org/wiki/Glossary_of_chess#Fifty-move_rule)
 * [ ] [Insufficient material](https://en.wikipedia.org/wiki/Glossary_of_chess#Insufficient_material)
 
 The game otherwise ends in the case of:
-
 * [ ] [Draw by agreement](https://en.wikipedia.org/wiki/Glossary_of_chess#Draw_by_agreement)
 * [ ] [Resignation](https://en.wikipedia.org/wiki/Glossary_of_chess#Resign)
 * [ ] ~~[Threefold repetition](https://en.wikipedia.org/wiki/Glossary_of_chess#Threefold_repetition)~~ (instead use "draw by agreement")

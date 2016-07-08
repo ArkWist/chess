@@ -86,8 +86,8 @@ class Chessboard
     @pieces << piece
   end
   
-  def checkmate?(player)
-    board, checkmate = make_model, true
+  def checkmate?(player, board = make_model)
+    checkmate = true
     return checkmate if in_check?(player, board)
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
@@ -106,10 +106,10 @@ class Chessboard
     checkmate
   end
   
-  def stalemate?(player)
-    board, stalemate = make_model, true
-    0.upto(WIDTH) do |file|
-      0.upto(HEIGHT) do |rank|
+  def stalemate?(player, board = make_model)
+    stalemate = true
+    0.upto(WIDTH - 1) do |file|
+      0.upto(HEIGHT - 1) do |rank|
         square = board[file][rank]
         if square.player == player
           piece = make_dummy_piece(player, Position.new([file, rank]), square.type)
@@ -290,8 +290,7 @@ class Chessboard
     unmoved
   end
   
-  def in_check?(player, board)
-puts "Checking if in check..."
+  def in_check?(player, board = make_model)
     king_pos = Position.new
     board.each_with_index do |file, i|
       file.each_with_index do |square, j|
@@ -302,22 +301,17 @@ puts "Checking if in check..."
   end
   
   def under_attack?(player, board, pos)
-puts "Checking piece at #{pos.notation} in check..."
     return true if under_en_passant_attack?(player, board, pos)
     captures = []
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
         if square.player != :none && square.player != player
           piece = make_dummy_piece(square.player, Position.new([f, r]), square.type)
-puts "Piece found: #{piece.player}, #{piece.pos.notation}"
-          captures << piece.get_captures(board).map { |c| puts "c notation: #{c.notation}"; c = c.notation }
+          captures << piece.get_captures(board).map { |c| c = c.notation }
         end
       end
     end
-    captures.flatten
-print "All possible captures: "
-captures.each { |c| print "#{c}, " }
-    captures.include?(pos.notation)
+    captures.flatten.include?(pos.notation)
   end
   
   def under_en_passant_attack?(player, board, pos)

@@ -9,6 +9,7 @@ class Chess
   
   def initialize
     @board = Chessboard.new
+    @last_player = nil
     @player = :white
     #start_match
   end
@@ -41,13 +42,14 @@ class Chess
         puts "Error! An unknown error has occured."
         print_board
       end
-      if !game_set && fiftymove? && verify_draw(:fiftymove) == :verified then game_set = :do_draw
-      #if !game_set && threefold? && verify_draw(:threefold) == :verified then game_set = :do_draw
+      if !game_set && fiftymove? && verify_draw(:fiftymove) == :verified then game_set = :do_draw end
+      #if !game_set && threefold? && verify_draw(:threefold) == :verified then game_set = :do_draw end
     end
     handle_game_set(game_set)
   end
   
   def next_player
+    @last_player = @player
     i = PLAYERS.find_index(@player)
     @player = if i.nil? then PLAYERS[0]
     elsif i == PLAYERS.length - 1 then PLAYERS[0]
@@ -174,7 +176,7 @@ class Chess
   
   # Unable to check if a castle could escape check... because illegal anyways
   def checkmate?
-    @board.checkmate?(@player)
+    checkmate = @board.checkmate?(@player)
   end
   
   def stalemate?
@@ -198,6 +200,7 @@ class Chess
     when :quit
     when :draw
     when :checkmate
+      puts "\nCheckmate! Player #{@last_player.to_s.capitalize} is victorious!"
     when :stalemate
     end
   end
@@ -258,6 +261,6 @@ end
 
 
 # Program start
-#chess_game = Chess.new
-#chess_game.start_match
+chess_game = Chess.new
+chess_game.start_match
 

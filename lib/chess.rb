@@ -8,7 +8,6 @@ class Chess
   COMMANDS = [:save, :load, :quit, :draw]
   
   def initialize
-    puts "Running..."
     @board = Chessboard.new
     @player = :white
     #start_match
@@ -241,4 +240,3 @@ end
 # Program start
 #chess_game = Chess.new
 #chess_game.start_match
-

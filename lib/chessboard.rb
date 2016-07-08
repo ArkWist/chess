@@ -402,7 +402,7 @@ class Chessboard
   end
   
   def print_files
-    files = ("A".."Z").to_a.take(WIDTH)
+    files = ("a".."z").to_a.take(WIDTH)
     string = "   "
     files.each { |file| string += " #{file} " }
     puts string

@@ -261,6 +261,6 @@ end
 
 
 # Program start
-chess_game = Chess.new
-chess_game.start_match
+#chess_game = Chess.new
+#chess_game.start_match
 

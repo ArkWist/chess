@@ -73,19 +73,12 @@ Only checkmate and resignation end with a victor.
 
 Before making a move, a player may invoke the following commands.
 
-`save`*
-  * Saves the current game
-  
-`load`*
-  * Loads the previously saved game
-  
-`quit` or `resign`
-  * Resigns from the game
-  
-`draw`*
-  * Draws the game
+* `save` -- Saves the current game
+* `load` -- Loads the previously saved game
+* `quit` or `resign` -- Resigns from the game
+* `draw` -- Draws the game
 
-\* These commands require the opponent's agreement.
+Note: Only `quit` / `resign` don't require the opponent's agreement.
 
 ## About
 

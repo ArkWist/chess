@@ -191,9 +191,12 @@ class Chess
   def ask_draw(reason)
     case reason
     when :fifty
+      puts "\nFifty or more moves taken with neither a capture nor a pawn movement."
     when :insufficient
     when :threefold
     end
+    print "Player #{@player}, do you accept a draw? (y/n): "
+    # Oh crud, need verficiation here... I shoudl have fully read chess rules before designing this
     # ask last player
     # ask current player
     #returns nil or :do_draw

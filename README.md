@@ -57,7 +57,7 @@ The format is the same for captures and special moves (eg. en passant and castli
 ### Game Finish
 
 The game ends automatically in the case of:
-* [*] [Checkmate](https://en.wikipedia.org/wiki/Glossary_of_chess#Checkmate)
+* [x] [Checkmate](https://en.wikipedia.org/wiki/Glossary_of_chess#Checkmate)
 * [ ] [Stalemate](https://en.wikipedia.org/wiki/Glossary_of_chess#Stalemate)
 * [ ] [Fifty-move rule](https://en.wikipedia.org/wiki/Glossary_of_chess#Fifty-move_rule)
 * [ ] [Insufficient material](https://en.wikipedia.org/wiki/Glossary_of_chess#Insufficient_material)

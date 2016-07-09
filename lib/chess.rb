@@ -4,8 +4,7 @@ require_relative "positions"
 
 
 class Chess
-  PLAYERS = [:white, :black]
-  COMMANDS = [:save, :load, :quit, :draw]
+  COMMANDS = [:save, :load, :draw, :quit, :resign]
   
   def initialize
     @board = Chessboard.new
@@ -20,7 +19,126 @@ class Chess
   
   private
 
-  # This method is unwieldy and should be rewritten if refactoring.
+  def next_player
+    player = if @player == :white then :black else :white end
+  end
+  
+  def play
+    print_board
+    game_result = manage_match
+    handle_game_result(game_result)
+  end
+  
+  def manage_match
+    game_over = false
+    until game_over
+      turn_outcome = try_turn
+      case turn_outcome when :loaded, :quit, :draw, :checkmate, :stalemate then game_over = turn_outcome end
+    end
+    game_over
+  end
+  
+  def try_turn
+    print "\nPlayer #{@player.to_s.capitalize}'s command: "
+    input = gets.chomp
+    outcome = if is_raw_command?(input) then try_command(input) # :load, :no_load, :fail_load, :save, :no_save, :fail_save, :draw, :no_draw, :quit
+              elsif is_raw_move? (input) then try_move(input) # :illegal, :beseiged, :en_passant, :checkmate, :stalemate, :check
+              else :unknown_input end
+  end
+  
+  def try_command(input)
+    command_outcome = case input.downcase.to_sym
+                      when :save then try_save # :save, :no_save
+                      when :load then try_load # :load, :no_load
+                      when :draw then try_draw # :draw, :no_draw
+                      when :quit, :resign then :quit end # :quit
+  end
+  
+  def try_save
+    # Check if can save
+    save = if receive_permission(next_player) { "saving" } then :save else :no_save end
+  end
+
+  def try_load
+    # Check if can load
+    load = if receive_permission(next_player) { "loading" } then :load else :no_load end
+  end
+  
+  def try_draw
+    draw = if receive_permission(next_player) { "a draw" } then :draw else :no_draw end
+  end
+  
+  def try_move(input)
+    move_outcome = @board.verify_move(Move.new(input), @player)
+    case move_outcome when :no_piece, :blocked, :occupied, :illegal then report_rejected { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
+                      when :beseiged then report_rejected { "puts your king through check" }
+                      when :exposed then report_rejected { "puts you in check" }
+                      when :move then move_outcome = try_finish_move(Move.new(input)) end # Should return :move instead of :verified
+    move_outcome
+  end
+  
+  def try_move(input)
+    case @board.verify_move(Move.new(input), @player)
+    when :verified
+      do_move(Move.new(input))
+      outcome = :success
+    when :empty, :blocked, :occupied, :illegal
+      report(:illegal)
+    when :besieged
+      report(:besieged)
+    when :exposed
+      report(:exposed)
+    else
+      report(:unknown)
+    end
+    outcome = :rejected unless outcome == :success
+    outcome
+  end
+  
+  def receive_permission(player, &block)
+    print "\nPlayer #{player}, do you agree to #{yield}? (y/n): "
+    input = gets.chomp
+    consent = case input.downcase.to_sym
+              when :y then true
+              when :n then false
+              else receive_permission(player, &block) end
+  end
+  
+  def report_rejected
+    puts "Rejected! That move #{yield.capitalize}."
+  end
+    
+    
+    
+    
+    
+    if outcome == :failed || outcome == :unknown
+      report(outcome)
+      outcome = :rejected
+    end
+    outcome
+  end
+
+  
+    
+        handle_turn()
+      
+      when :moved
+        post_move_outcome = handle_post_move
+      when :beseiged
+        report(:unknown_input)
+      when :saved, :unknown_input_type
+        report(turn_outcome)
+      end
+    end
+    game_over
+  end
+  
+  def handle_game_result
+  end
+  
+  
+=begin
   def play
     print_board
     game_set = false
@@ -39,7 +157,7 @@ class Chess
         game_set = claim_draw(:fifty) if fifty_moves?
         game_set = :do_draw if insufficient_material?
         game_set = claim_draw(:threefold) if threefold?
-      when :unknown
+      when :unknown_input_type
         report(:unknown)
       when :rejected
       else
@@ -51,62 +169,10 @@ class Chess
     end
     handle_game_set(game_set)
   end
+=end
   
-  def next_player
-    @last_player = @player
-    i = PLAYERS.find_index(@player)
-    @player = if i.nil? then PLAYERS[0]
-    elsif i == PLAYERS.length - 1 then PLAYERS[0]
-    else PLAYERS[i + 1] end
-  end
-  
-  def try_turn
-    puts
-    print "Player #{@player.to_s.capitalize}'s command: "
-    input = gets.chomp
-    outcome = classify_input(input)
-    outcome = handle_command(input) if outcome == :command
-    outcome = handle_move(input) if outcome == :move
-    outcome
-  end
 
-  def classify_input(input)
-    outcome = :command if is_raw_command?(input)
-    outcome ||= :move if is_raw_move?(input)
-    outcome ||= :unknown
-  end
-  
-  def handle_command(input)
-    outcome = try_command(input)
-    outcome
-  end
-  
-  def handle_move(input)
-    outcome = try_move(input)
-    outcome = :moved if outcome == :success
-    outcome
-  end
-  
-  def try_command(input)
-    case input.downcase.to_sym
-    when :save
-      outcome = verify_save
-      outcome = :do_save if outcome == :verified
-    when :load
-      outcome = verify_load
-      outcome = :do_load if outcome == :verified
-    when :quit
-      outcome = :do_quit
-    when :draw
-      outcome = verify_draw
-      outcome = :do_draw if outcome == :verified
-    end
-    if outcome == :failed || outcome == :unknown
-      report(outcome)
-      outcome = :rejected
-    end
-    outcome
-  end
+
   
   def try_move(input)
     case @board.verify_move(Move.new(input), @player)

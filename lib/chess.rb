@@ -42,7 +42,7 @@ class Chess
     print "\nPlayer #{@player.to_s.capitalize}'s command: "
     input = gets.chomp
     outcome = if is_raw_command?(input) then try_command(input) # :load, :no_load, :fail_load, :save, :no_save, :fail_save, :draw, :no_draw, :quit
-              elsif is_raw_move? (input) then try_move(input) # :illegal, :beseiged, :en_passant, :checkmate, :stalemate, :check
+              elsif is_raw_move? (input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :beseiged, :exposed, :check, :checkmate, :stalemate, :fifty_moves, :insufficient, :threefold
               else :unknown_input end
   end
   
@@ -70,30 +70,18 @@ class Chess
   
   def try_move(input)
     move_outcome = @board.verify_move(Move.new(input), @player)
-    case move_outcome when :no_piece, :blocked, :occupied, :illegal then report_rejected { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
+    case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
                       when :beseiged then report_rejected { "puts your king through check" }
                       when :exposed then report_rejected { "puts you in check" }
-                      when :move then move_outcome = try_finish_move(Move.new(input)) end # Should return :move instead of :verified
-    move_outcome
+                      when :move then move_outcome = complete_move(Move.new(input)) end # Should return :move instead of :verified
+    move = case move_outcome when :empty, :blocked, :occupied, :illegal, :beseiged, :exposed then :no_move else move_outcome end
   end
   
-  def try_move(input)
-    case @board.verify_move(Move.new(input), @player)
-    when :verified
-      do_move(Move.new(input))
-      outcome = :success
-    when :empty, :blocked, :occupied, :illegal
-      report(:illegal)
-    when :besieged
-      report(:besieged)
-    when :exposed
-      report(:exposed)
-    else
-      report(:unknown)
-    end
-    outcome = :rejected unless outcome == :success
-    outcome
+  def complete_move(move)
+  
   end
+  
+
   
   def receive_permission(player, &block)
     print "\nPlayer #{player}, do you agree to #{yield}? (y/n): "

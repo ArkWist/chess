@@ -42,7 +42,7 @@ class Chess
     print "\nPlayer #{@player.to_s.capitalize}'s command: "
     input = gets.chomp
     outcome = if is_raw_command?(input) then try_command(input) # :load, :no_load, :fail_load, :save, :no_save, :fail_save, :draw, :no_draw, :quit
-              elsif is_raw_move?(input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :beseiged, :exposed, :check, :checkmate, :stalemate, :draw, :no_draw
+              elsif is_raw_move?(input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :besieged, :exposed, :check, :checkmate, :stalemate, :draw, :no_draw
               else :unknown_input end
   end
   
@@ -97,10 +97,10 @@ class Chess
     print "\nPlayer #{@player}, promote your Pawn to what piece? (q/b/r/n): "
     input = gets.chomp
     case inputs.downcase.to_sym when :queen, :q then @board.do_promotion(move, :queen)
-                                when :bishop, :b, then @board.do_promotion(move, :bishop)
-                                when :rook, :r then @board.do_promotion(move, :rook)
-                                when :knight, :n then @board.do_promotion(move, :knight)
-                                else ask_promote end
+                                 when :bishop, :b, then @board.do_promotion(move, :bishop)
+                                 when :rook, :r then @board.do_promotion(move, :rook)
+                                 when :knight, :n then @board.do_promotion(move, :knight)
+                                 else ask_promote end
   end
   
   def checkmate?
@@ -108,16 +108,19 @@ class Chess
   end
   
   def stalemate?
-    @board.stalemate?(@player)
+    stalemate = @board.stalemate?(@player)
   end
   
   def fifty_moves?
+    fifty_moves = @board.fifty_moves?
   end
   
   def insufficient_material?
+    insufficient = @board.insufficient_material?
   end
   
   def threefold?
+    threefold = @board.threefold?
   end
   
   def try_fifty_move_draw
@@ -129,7 +132,7 @@ class Chess
     draw = try_draw(@player)
   end
   def try_threefold_draw
-    puts "\nThe same position has occured three times."
+    puts "\nThe same position has occurred three times."
     draw = try_draw(@player)
   end
   
@@ -143,98 +146,28 @@ class Chess
   end
   
   def report_rejected_move
-    puts "Rejected! That move #{yield.capitalize}."
+    puts "Rejected! That move #{yield}."
   end
   
   def handle_game_result(game_result)
+    case game_result when :load then complete_load
+                      when :quit then puts "\nPlayer #{@player} has surrendered."
+                      when :draw then puts "\nGame is a draw."
+                      when :checkmate, :stalemate then puts "\nPlayer #{next_player} is victorious." end
   end
   
-
-
-  
-################
-  def claim_draw(reason)
-    puts
-    puts case reason
-    when :fifty
-      "Fifty or more moves taken with neither a capture nor a pawn movement."
-    when :threefold
-      "Threefold repetition."
-    end
-    consent = verify_draw_ask(@player)
-    verify = if consent then :do_draw else nil end
+  def complete_load
+    puts "/nLoading saved game..."
+    manage_match
   end
   
-  def verify_draw_ask(player)
-    print "Player #{@player}, do you accept a draw? (y/n): "
-    input = gets.chomp
-    if input.downcase == "y"
-      consent = true
-    elsif input.downcase == "n"
-      consent = false
-    else
-      report(:unknoqn)
-      consent = verify_draw_ask(player)
-    end
-    consent
-  end
-  
-################
-  def fifty_moves?
-    @board.fifty_move?
-  end
-  
-################
-  def threefold?
-    return false
-  end
-  
-  def insufficient_material?(player)
-    insufficient = @board.insufficient_material?(player)
-    puts "Insufficient material to checkmate."
-    insufficient
-  end
-  
-  def handle_game_set(exit)
-    case exit
-    when :loaded
-    when :quit
-    when :draw
-    when :checkmate
-      puts "\nCheckmate! Player #{@last_player.to_s.capitalize} is victorious!"
-    when :stalemate
-    end
-  end
-
   def print_board
     puts
     @board.print_board
   end  
-  
-  def report(type)
-    case type
-    when :illegal
-      puts "Rejected! Move is illegal."
-    when :beseiged
-      puts "Rejected! King cannot move through squares in check."
-    when :exposed
-      puts "Rejected! Move puts you in check."
-    when :unknown
-      puts "Error! Command not recognized."
-    when :success
-      puts "Success!"
-    when :failed
-      puts "Error! Command failed."
-    when :illegal_promotion
-      puts "Rejected! Cannot promote to that piece."
-    when :unknown_promotion
-      puts "Error! Piece not recognized."
-    end
-  end
 
   def is_raw_command?(input)
-    input.downcase!
-    valid = COMMANDS.include?(input.to_sym)
+    valid = COMMANDS.include?(input.downcase.to_sym)
   end
   
   # Mirrored (as a process) by #normalization in Move.
@@ -253,9 +186,7 @@ class Chess
     file, rank = pos[0], pos[1]
     files = ("a".."z").to_a.take(Chessboard::WIDTH)
     ranks = ("1"..Chessboard::HEIGHT.to_s).to_a
-    valid = files.include?(file)
-    valid ||= ranks.include?(rank) if valid
-    valid
+    valid = files.include?(file) && ranks.include?(rank)
   end
 
 end
@@ -264,4 +195,74 @@ end
 # Program start
 #chess_game = Chess.new
 #chess_game.start_match
+
+
+
+##################
+
+  def try_save
+    # Check if can save
+    save = if ask_permission(next_player) { "saving" } then :save else :no_save end
+  end
+
+  def try_load
+    # Check if can load
+    load = if ask_permission(next_player) { "loading" } then :load else :no_load end
+  end
+  
+#################
+
+
+
+
+
+def save(right, wrong, mercy, answer)
+  filename = get_filename
+  File.open(filename, "w") do |file|
+    file.puts "right=#{right}"
+    file.puts "wrong=#{wrong}"
+    file.puts "mercy=#{mercy}"
+    file.puts "answer=#{answer}"
+  end
+  puts "#{filename} saved."
+end
+
+def get_filename
+  print "Input filename: "
+  filename = gets.chomp.downcase + ".sav"
+end
+
+def save_var(line)
+  line.split("=").at(
+end
+
+def sav_value(line)
+  line.split("=").at(1)
+end
+
+
+####################
+
+print "Load save game? (y/n): "
+if gets.chomp.downcase == "y"
+  filename = get_filename
+  if File.exist?(filename)
+    File.readlines(filename) do |line|
+      case save_var(line)
+      when right
+        right = save_value(line)
+      when wrong
+        wrong = save_value(line)
+      when mercy
+        mercy = save_value(line)
+      when answer
+        answer = save_value(line)
+      end
+    end
+    puts "#{filename} loaded."
+  else
+  puts "#{filename} does not exist."
+end
+
+#######################
 

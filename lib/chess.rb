@@ -33,7 +33,7 @@ class Chess
     game_over = false
     until game_over
       turn_outcome = try_turn
-      case turn_outcome when :loaded, :quit, :draw, :checkmate, :stalemate then game_over = turn_outcome end
+      case turn_outcome when :load, :quit, :draw, :checkmate, :stalemate then game_over = turn_outcome end
     end
     game_over
   end
@@ -42,7 +42,7 @@ class Chess
     print "\nPlayer #{@player.to_s.capitalize}'s command: "
     input = gets.chomp
     outcome = if is_raw_command?(input) then try_command(input) # :load, :no_load, :fail_load, :save, :no_save, :fail_save, :draw, :no_draw, :quit
-              elsif is_raw_move? (input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :beseiged, :exposed, :check, :checkmate, :stalemate, :fifty_moves, :insufficient, :threefold
+              elsif is_raw_move?(input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :beseiged, :exposed, :check, :checkmate, :stalemate, :draw, :no_draw
               else :unknown_input end
   end
   
@@ -56,183 +56,53 @@ class Chess
   
   def try_save
     # Check if can save
-    save = if receive_permission(next_player) { "saving" } then :save else :no_save end
+    save = if ask_permission(next_player) { "saving" } then :save else :no_save end
   end
 
   def try_load
     # Check if can load
-    load = if receive_permission(next_player) { "loading" } then :load else :no_load end
+    load = if ask_permission(next_player) { "loading" } then :load else :no_load end
   end
   
-  def try_draw
-    draw = if receive_permission(next_player) { "a draw" } then :draw else :no_draw end
+  def try_draw(player = next_player)
+    draw = if ask_permission(player) { "a draw" } then :draw else :no_draw end
   end
   
   def try_move(input)
     move_outcome = @board.verify_move(Move.new(input), @player)
-    case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
-                      when :beseiged then report_rejected { "puts your king through check" }
-                      when :exposed then report_rejected { "puts you in check" }
+    case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected_move { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
+                      when :beseiged then report_rejected_move { "puts your king through check" }
+                      when :exposed then report_rejected_move { "puts you in check" }
                       when :move then move_outcome = complete_move(Move.new(input)) end # Should return :move instead of :verified
     move = case move_outcome when :empty, :blocked, :occupied, :illegal, :beseiged, :exposed then :no_move else move_outcome end
   end
   
   def complete_move(move)
-  
-  end
-  
-
-  
-  def receive_permission(player, &block)
-    print "\nPlayer #{player}, do you agree to #{yield}? (y/n): "
-    input = gets.chomp
-    consent = case input.downcase.to_sym
-              when :y then true
-              when :n then false
-              else receive_permission(player, &block) end
-  end
-  
-  def report_rejected
-    puts "Rejected! That move #{yield.capitalize}."
-  end
-    
-    
-    
-    
-    
-    if outcome == :failed || outcome == :unknown
-      report(outcome)
-      outcome = :rejected
-    end
-    outcome
-  end
-
-  
-    
-        handle_turn()
-      
-      when :moved
-        post_move_outcome = handle_post_move
-      when :beseiged
-        report(:unknown_input)
-      when :saved, :unknown_input_type
-        report(turn_outcome)
-      end
-    end
-    game_over
-  end
-  
-  def handle_game_result
-  end
-  
-  
-=begin
-  def play
-    print_board
-    game_set = false
-    until game_set
-      outcome = try_turn
-      case outcome
-      when :do_load, :do_quit, :do_draw
-        game_set = outcome
-      when :do_save
-        do_save
-      when :moved
-        next_player
-        print_board
-        game_set = :checkmate if checkmate? unless game_set
-        game_set = :stalemate if stalemate? unless game_set
-        game_set = claim_draw(:fifty) if fifty_moves?
-        game_set = :do_draw if insufficient_material?
-        game_set = claim_draw(:threefold) if threefold?
-      when :unknown_input_type
-        report(:unknown)
-      when :rejected
-      else
-        puts "Error! An unknown error has occured."
-        print_board
-      end
-      if !game_set && fiftymove? && verify_draw(:fiftymove) == :verified then game_set = :do_draw end
-      #if !game_set && threefold? && verify_draw(:threefold) == :verified then game_set = :do_draw end
-    end
-    handle_game_set(game_set)
-  end
-=end
-  
-
-
-  
-  def try_move(input)
-    case @board.verify_move(Move.new(input), @player)
-    when :verified
-      do_move(Move.new(input))
-      outcome = :success
-    when :empty, :blocked, :occupied, :illegal
-      report(:illegal)
-    when :besieged
-      report(:besieged)
-    when :exposed
-      report(:exposed)
-    else
-      report(:unknown)
-    end
-    outcome = :rejected unless outcome == :success
-    outcome
-  end
-  
-  def do_move(move)
     @board.do_move(move)
-    do_promotion(move) if @board.promote?(move)
+    handle_promote(move)
+    @player = next_turn
+    move_outcome = if checkmate? then :checkmate
+                   elsif stalemate? then :stalemate
+                   elsif fifty_moves? then try_fifty_move_draw
+                   elsif insufficient_material? then try_insufficient_material_draw
+                   elsif threefold? then try_threefold_draw
+                   else :move end
   end
   
-  def do_promotion(move)
-    print "Promote to what piece?: "
-    input = gets.chomp.downcase.to_sym
-    case input
-    when :rook, :r
-      @board.do_promotion(move, :rook)
-    when :knight, :n
-      @board.do_promotion(move, :knight)
-    when :bishop, :b
-      @board.do_promotion(move, :bishop)
-    when :queen, :q
-      @board.do_promotion(move, :queen)
-    when :pawn, :p, :king, :k
-      report(:illegal_promotion)
-      do_promotion(move)
-    else
-      report(:unknown_promotion)
-      do_promotion(move)
-    end
+  def handle_promote(move)
+    ask_promote if @board.promote?(move)
   end
   
-  def verify_save
-    #don't report anything
-    #outcome = :verified, :failed
+  def ask_promote
+    print "\nPlayer #{@player}, promote your Pawn to what piece? (q/b/r/n): "
+    input = gets.chomp
+    case inputs.downcase.to_sym when :queen, :q then @board.do_promotion(move, :queen)
+                                when :bishop, :b, then @board.do_promotion(move, :bishop)
+                                when :rook, :r then @board.do_promotion(move, :rook)
+                                when :knight, :n then @board.do_promotion(move, :knight)
+                                else ask_promote end
   end
   
-  def verify_load
-    #don't report anything
-    #outcome = :verified, :failed
-  end
-  
-  def verify_draw(type = :none)
-    #don't report anything
-    #outcome = :verified, :failed
-    outcome = :failed
-  end
-  
-  def do_save
-    report(:saved)
-    #no return value
-  end
-  
-  def do_load
-    report(:loaded)
-    #no return value
-  end
-  
-  # Unable to check if a castle could escape check... because illegal anyways
   def checkmate?
     checkmate = @board.checkmate?(@player)
   end
@@ -240,6 +110,47 @@ class Chess
   def stalemate?
     @board.stalemate?(@player)
   end
+  
+  def fifty_moves?
+  end
+  
+  def insufficient_material?
+  end
+  
+  def threefold?
+  end
+  
+  def try_fifty_move_draw
+    puts "\nFifty or more moves have passed without captures or pawn moves."
+    draw = try_draw(@player)
+  end
+  def try_insufficient_material_draw
+    puts "\nNeither player has sufficient material to checkmate their opponent."
+    draw = try_draw(@player)
+  end
+  def try_threefold_draw
+    puts "\nThe same position has occured three times."
+    draw = try_draw(@player)
+  end
+  
+  def ask_permission(player, &block)
+    print "\nPlayer #{player}, do you agree to #{yield}? (y/n): "
+    input = gets.chomp
+    consent = case input.downcase.to_sym
+              when :y then true
+              when :n then false
+              else ask_permission(player, &block) end
+  end
+  
+  def report_rejected_move
+    puts "Rejected! That move #{yield.capitalize}."
+  end
+  
+  def handle_game_result(game_result)
+  end
+  
+
+
   
 ################
   def claim_draw(reason)

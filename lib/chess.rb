@@ -36,9 +36,9 @@ class Chess
         print_board
         game_set = :checkmate if checkmate? unless game_set
         game_set = :stalemate if stalemate? unless game_set
-        game_set = ask_draw(:fifty) if fifty_moves?
-        game_set = ask_draw(:insufficient) if insufficient_material?
-        game_set = ask_draw(:threefold) if threefold?
+        game_set = claim_draw(:fifty) if fifty_moves?
+        game_set = :do_draw if insufficient_material?
+        game_set = claim_draw(:threefold) if threefold?
       when :unknown
         report(:unknown)
       when :rejected
@@ -188,15 +188,15 @@ class Chess
   end
   
 ################
-  def ask_draw(reason)
-    case reason
+  def claim_draw(reason)
+    puts
+    puts case reason
     when :fifty
-      puts "\nFifty or more moves taken with neither a capture nor a pawn movement."
-    when :insufficient
+      "Fifty or more moves taken with neither a capture nor a pawn movement."
     when :threefold
+      "Threefold repetition."
     end
     consent = verify_draw_ask(@player)
-    consent = verify_draw_ask(@last_player) if consent
     verify = if consent then :do_draw else nil end
   end
   
@@ -225,7 +225,9 @@ class Chess
   end
   
   def insufficient_material?(player)
-    @board.insufficient_material?(player)
+    insufficient = @board.insufficient_material?(player)
+    puts "Insufficient material to checkmate."
+    insufficient
   end
   
   def handle_game_set(exit)

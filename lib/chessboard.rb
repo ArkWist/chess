@@ -8,31 +8,40 @@ class Chessboard
                [ "p",   "r",   "n",     "b",     "q",    "k"]]
                
   def initialize
-    @pieces = (make_white_pieces << make_black_pieces).flatten
-    make_tracking_variables
+    @pieces = (make_white_pieces + make_black_pieces).flatten
+    @en_passant_destination = Position.new
+    @en_passant_capture = Position.new
+    @new_en_passant = false
+    @fifty_move_counter = 0
+    @unmoved_piece_positions = []
+    @pieces.each { |piece| @unmoved_piece_positions << piece.pos }
   end
   
   def print_board
-    board = make_model
     print_files
     puts
-    (HEIGHT).downto(1) { |rank| print_rank(board, rank) }
+    (HEIGHT).downto(1) { |rank| print_rank(make_model, rank) }
     puts
     print_files
   end
   
-  ###########################################################################
-  # Units are moving to spots they can attack when there's nothing to attack.
-  # This is also overriding en passant kills.
-  # The problem lies with #verify_move_legality.
-  ###########################################################################
   # This only verifies moves for the current board.
   # This means it can't verify (future) moves with (projection) models.
   # Rewriting #get_piece to interpret pieces from models would be step forward,
   #  but future en passants could not be accounted for.
   # Note: Only works with moves with legal positions.
-  def verify_move(move, player, board = make_model)#(move))
+  def verify_move(move, player)
     origin, destination = move.positions
+    board = make_model
+    square = get_square(origin, board)
+    move_outcome = case square.player when player then verify_move_legality(move, player)
+                                      when :none then :empty
+                                      else :occupied end
+  end
+  
+  def verify_move_legality(move, player)
+  end
+    
     piece = get_piece(origin, board)
     outcome = verify_piece(piece, player)
     outcome = verify_move_legality(move, player, board) if outcome == :verified
@@ -136,15 +145,6 @@ class Chessboard
   
   ###########################
   public
-  
-  def make_tracking_variables
-    @en_passant_destination = Position.new
-    @en_passant_capture = Position.new
-    @new_en_passant = false
-    @fifty = 0
-    @unmoved_piece_positions = []
-    @pieces.each { |piece| @unmoved_piece_positions << piece.pos }
-  end
   
   def make_white_pieces
     pieces = []

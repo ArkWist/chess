@@ -97,10 +97,10 @@ class Chess
     print "\nPlayer #{@player}, promote your Pawn to what piece? (q/b/r/n): "
     input = gets.chomp
     case inputs.downcase.to_sym when :queen, :q then @board.do_promotion(move, :queen)
-                                 when :bishop, :b, then @board.do_promotion(move, :bishop)
-                                 when :rook, :r then @board.do_promotion(move, :rook)
-                                 when :knight, :n then @board.do_promotion(move, :knight)
-                                 else ask_promote end
+                                when :bishop, :b, then @board.do_promotion(move, :bishop)
+                                when :rook, :r then @board.do_promotion(move, :rook)
+                                when :knight, :n then @board.do_promotion(move, :knight)
+                                else ask_promote end
   end
   
   def checkmate?
@@ -197,7 +197,7 @@ end
 #chess_game.start_match
 
 
-
+=begin
 ##################
 
   def try_save
@@ -265,4 +265,4 @@ if gets.chomp.downcase == "y"
 end
 
 #######################
-
+=end

@@ -2,6 +2,7 @@
 
 
 class Chessboard
+  include SaveDataReader
   HEIGHT, WIDTH = 8, 8
   CHARACTERS = [[:pawn, :rook, :knight, :bishop, :queen, :king], \
                [ "P",   "R",   "N",     "B",     "Q",    "K"],   \
@@ -99,7 +100,7 @@ class Chessboard
     @fifty_move_counter >= 100
   end
   
-################################################################
+  ##############################################################
   # Insufficient material checking has not yet been implemented.
   # Players must (currently) request and agree to a draw or wait for a fifty-move rule invocation.
   def insufficient_material?(player)
@@ -110,6 +111,19 @@ class Chessboard
   # Players must request and agree to a draw or wait for a fifty-move rule invocation.
   def threefold_repetition?
     return false
+  end
+  
+  def make_save_data
+    data += "en_passant_destination=#{@en_passant_destination.notation};\n"
+    data += "en_passant_capture=#{@en_passant_capture.notation};\n"
+    data += "new_en_passant=#{@new_en_passant};\n"
+    data += "fifty_move_counter=#{@fifty_move_counter};\n"
+    @pieces.each { |piece| data += "piece=player:#{piece.player},pos:#{piece.pos.notation},type:#{type};\n" }
+    @unmoved_piece_positions.each { |pos| data += "unmoved=#{pos.notation};\n" }
+    data
+  end
+  
+  def load_save_data(data)
   end
   
   ########

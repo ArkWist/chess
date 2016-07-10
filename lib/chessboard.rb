@@ -1,8 +1,8 @@
+# lib/chessboard.rb
+
+
 class Chessboard
-  #attr_reader :height, :width
-  
   HEIGHT, WIDTH = 8, 8
-  # This is structured oddly because Ruby didn't want a 2D array.
   CHARACTERS = [[:pawn, :rook, :knight, :bishop, :queen, :king], \
                [ "P",   "R",   "N",     "B",     "Q",    "K"],   \
                [ "p",   "r",   "n",     "b",     "q",    "k"]]
@@ -26,52 +26,26 @@ class Chessboard
   end
   
   # This only verifies moves for the current board.
-  # This means it can't verify (future) moves with (projection) models.
-  # Rewriting #get_piece to interpret pieces from models would be step forward,
-  #  but future en passants could not be accounted for.
-  # Note: Only works with moves with legal positions.
-  def verify_move(move, player)
+  # It can't verify (future) moves with (projection) models.
+  # Returns -- :move, :empty, :blocked, :occupied, :illegal, :besieged, :exposed
+  def verify_move(player, move)
     origin, destination = move.positions
     board = make_model
     square = get_square(origin, board)
-    move_outcome = case square.player when player then verify_move_legality(move, player)
+    move_outcome = case square.player when player then verify_move_legality(player, move)
                                       when :none then :empty
                                       else :occupied end
   end
   
-  def verify_move_legality(move, player)
-  end
-    
-    piece = get_piece(origin, board)
-    outcome = verify_piece(piece, player)
-    outcome = verify_move_legality(move, player, board) if outcome == :verified
-    if outcome == :illegal
-      outcome = verify_en_passant(move, board) if piece.type == :pawn
-      outcome = verify_castle(move, board) if piece.type == :king
-    end
-    if outcome == :verified
-      outcome = :exposed if in_check?(player, make_projection_model(move))
-    end
-    outcome
-  end
-  
   def do_move(move)
     origin, destination = move.positions
-    piece = get_piece(origin)
-    capture_index = get_piece_index(destination)
+    piece, capture = get_piece(origin), get_piece_index(destination)
     @new_en_passant = false
-    @fifty += 1
-    if piece.type == :pawn
-      @fifty = 0
-      clean_up_en_passant(move) if verify_en_passant(move) == :verified
-      record_double_step(move) if unmoved_piece?(origin)
-    elsif piece.type == :king
-      clean_up_castle(move) if verify_castle(move) == :verified
-    end
-    kill_piece(destination) if capture_index != :none
-    origin_index = get_piece_index(origin)
-    @pieces[origin_index].move_to(destination)
-    clean_up_tracking_variables(move)
+    @fifty_move_counter += 1
+    clean_up_after_special_moves(move)
+    kill_piece(destination) if capture_index
+    @pieces[get_piece_index(origin)].move_to(destination)
+    update_tracking(move)
   end
   
   def promote?(move)
@@ -83,34 +57,24 @@ class Chessboard
   def do_promotion(move, type)
     origin, destination = move.positions
     player = get_piece(destination).player
-    case type
-    when :rook
-      piece = Rook.new(player, destination.notation)
-    when :knight
-      piece = Knight.new(player, destination.notation)
-    when :bishop
-      piece = Bishop.new(player, destination.notation)
-    when :queen
-      piece = Queen.new(player, destination.notation)
-    end
+    case type when :queen then piece = Queen.new(player, destination.notation)
+               when :bishop then piece = Bishop.new(player, destination.notation)
+               when :rook then piece = Rook.new(player, destination.notation)
+               when :knight then piece = Knight.new(player, destination.notation) end
     remove_piece(destination)
     @pieces << piece
   end
   
   def checkmate?(player, board = make_model)
+    return true if in_check?(player, board)
     checkmate = true
-    return checkmate if in_check?(player, board)
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
         if checkmate && square.player == player
-          piece = make_dummy_piece(player, Position.new([f, r]), square.type)
-          moves = piece.get_all_moves(board).map { |c| c = c.notation }
-          moves.each do |pos|
-            origin = Position.new([f, r])
-            destination = Position.new(pos)
-            model = make_projection_model(Move.new("#{origin.notation}#{destination.notation}"))
-            checkmate = false if !in_check?(player, board)
-          end
+          piece = make_pieces_at(square.player, square.type, Position.new([file, rank]).notation)
+          moves = list_to_notation(piece.get_all_moves(board))
+          test_origin = Position.new([f, r])
+          checkmate = false if are_safe_moves?(player, moves, test_origin, board)
         end
       end
     end
@@ -119,12 +83,11 @@ class Chessboard
   
   def stalemate?(player, board = make_model)
     stalemate = true
-    0.upto(WIDTH - 1) do |file|
-      0.upto(HEIGHT - 1) do |rank|
-        square = board[file][rank]
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
         if square.player == player
-          piece = make_dummy_piece(player, Position.new([file, rank]), square.type)
-          moves = piece.get_all_moves(board).map { |move| move = move.notation }
+          piece = make_pieces_at(square.player, square.type, Position.new([file, rank]).notation)
+          moves = list_to_notation(piece.get_all_moves(board))
           stalemate = false if stalemate && moves.flatten.length > 0
         end
       end
@@ -133,18 +96,198 @@ class Chessboard
   end
   
   def fifty_moves?
-    fifty = @fifty >= 50
+    @fifty_move_counter >= 100
   end
   
-  ###################################
-  def insufficient_materials?(player)
+  # Insufficient material checking has not yet been implemented.
+  # Players must (currently) request and agree to a draw or wait for a fifty-move rule invocation.
+  def insufficient_material?(player)
     return false
   end
   
-  private
+  # Threefold repetition tracking and checking have not been implemented.
+  # Players must request and agree to a draw or wait for a fifty-move rule invocation.
+  def threefold_repetition?
+    return false
+  end
   
-  ###########################
-  public
+  ########
+  #private
+  ########
+  
+  # Returns -- :move, :blocked, :illegal, :besieged, :exposed
+  def verify_move_legality(player, move)
+    origin, destination = move.positions
+    move_outcome = if blocked_move?(player, destination) then :blocked
+                    elsif illegal_move?(origin, destination) then if can_en_passant?(origin, destination) then :move
+                                                                    elsif is_castle_move?(origin, destination) then if can_castle?(origin, destination) then :move
+                                                                                                                      else :besieged end
+                                                                    else :illegal end
+                    else :move end
+    move_outcome = case move_outcome when :move then if in_check?(player, make_projection_model(move)) then :exposed
+                                                       else :move end
+                                      else move_outcome end
+  end
+  
+  def blocked_move?(player, destination)
+    square = get_square(destination, make_model)
+    blocked = player == square.player
+  end
+  
+  def illegal_move?(origin, destination) # destination in move list?
+    piece = get_piece(origin, board)
+    moves = piece.get_all_moves(board).map { |move| move = move.notation }
+    illegal = !moves.include?(destination.notation)
+  end
+  
+  def can_en_passant?(origin, destination, board = make_model)
+    can = destination.notation == @en_passant_destination.notation && \
+          get_piece(origin, board).can_en_passant?(make_model, @en_passant_destination)
+  end
+  
+  def is_castle_move?(origin, destination)
+    board = make_model
+    king, rook = get_square(origin, board), get_square(get_castle_rook_position(origin, destination), board)
+    o_file, o_rank = origin.index
+    d_file, d_rank = destination.index
+    castle = king.type == :king && rook.type == :rook && king.player == rook.player && \
+             (o_file - d_file).abs == 2 && is_unmoved_at?(origin) && is_unmoved_at?(destination)
+  end
+  
+  def can_castle?(origin, destination, board = make_model)
+    player = get_square(origin).player
+    rook_origin = get_castle_rook_position(origin, destination)
+    o_file, o_rank = origin.index
+    r_file, r_rank = rook_origin.index
+    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
+    rook_destination = Position.new([rd_file, r_rank])
+    can = list_to_notation(get_piece(rook_origin, board).get_moves(board)).include?(rook_destination.notation) && \
+          !under_attack?(player, origin, board) && !under_attack?(player, destination, board) && !under_attack?(player, rook_destination, board)
+  end
+  
+  def is_kingside?(origin, destination)
+    o_file, o_rank = origin.index
+    d_file, d_rank = destination.index
+    kingside = o_file > d_file
+  end
+  
+  def get_castle_rook_position(origin, destination)
+    o_file, o_rank = origin.index
+    r_file = if is_kingside?(origin, destination) then WIDTH - 1 else 0 end
+    position = Position.new(r_file, o_rank)
+  end
+  
+  # Compatible with projection models one move ahead.
+  def in_check?(player, board = make_model)
+    king = Position.new
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
+        king = Position.new([f, r]) if square.player == player && square.type == :king
+      end
+    end
+    check = under_attack?(player, king, board)
+  end
+  
+  def under_attack?(player, pos, board)
+    attack = under_en_passant_attack?(player, pos, board) || list_to_notation(get_enemy_captures(player, board)).include?(pos.notation)
+  end
+  
+  def under_en_passant_attack?(player, pos, board)
+    file, rank = pos.index
+    right, left = if player == :white then Position.new([file + 1, rank + 1]), Position.new([file - 1, rank + 1])
+                                       else Position.new([file + 1, rank - 1]), Position.new([file - 1, rank - 1])
+    attackable = can_en_passant?(right, pos, board) || can_en_passant?(left, pos, board)
+  end
+  
+  def are_safe_moves?(player, moves, origin, board)
+    safe = false
+    moves.each do |pos|
+      destination = Position.new(pos)
+      board = make_projection_model(Move.new("#{origin.notation}#{destination.notation}"))
+      safe = true if !in_check?(player, board)
+    end
+    safe
+  end
+  
+  def get_enemy_captures(player, board)
+    captures = []
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
+        if square.type != :none && square.player != :none && square.player != player
+          piece = make_pieces_at(square.player, square.type, Position.new([f, r]))
+          captures << piece.get_captures(board)
+        end
+      end
+    end
+    captures.flatten
+  end
+  
+  def project_en_passant(move, board)
+    origin, destination = move.positions
+    if can_en_passant?(origin, destination, board)
+      file, rank = @en_passant_capture.index
+      board[file][rank] = Square.new
+    end
+    board
+  end
+  
+  def project_castle(move, board)
+    origin, destination = move.positions
+    if can_castle?(origin, destination, board) then board = model_castle(origin, destination, board) end
+    board
+  end
+  
+  def model_castle(origin, destination, board)
+    o_file, o_rank = origin.index
+    d_file, d_rank = destination.index
+    r_file, r_rank = get_castle_rook_position(origin, destination).index
+    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
+    board[o_file][o_rank], board[d_file][d_rank] = board[d_file][d_rank], board[o_file][o_rank]
+    board[r_file][r_rank], board[rd_file, r_rank] = board[rd_file, r_rank], board[r_file][r_rank]
+    board
+  end
+  
+  def clean_up_after_special_moves(move)
+    origin, destination = move.positions
+    case get_piece(origin).type
+    when :pawn
+      @fifty_move_counter = 0
+      complete_en_passant(move) if destination = @en_passant_destination
+      record_double_step(move) if is_unmoved_at?(origin)
+    when :king
+      complete_castle(move) if can_castle?(move)
+    end
+  end
+  
+  def record_double_step(move)
+    origin, destination = move.positions
+    o_file, o_rank = origin.index
+    d_file, d_rank = destination.index
+    if (d_rank - o_rank).abs == 2
+      player = get_piece(origin).player
+      @en_passant_capture = Position.new(destination.notation)
+      @en_passant_destination = if player == :white then Position.new([d_file, d_rank - 1])
+                                                     else Position.new([d_file, d_rank + 1]) end
+      @new_en_passant = true
+    end
+  end
+  
+  def complete_en_passant(move)
+    kill_piece(@en_passant_capture)
+    @en_passant_destination, @en_passant_capture = Position.new, Position.new
+  end
+  
+  def complete_castle(move)
+    origin, destination = move.positions
+    o_file, o_rank = origin.index
+    d_file, d_rank = destination.index
+    r_file, r_rank = get_castle_rook_position(origin, destination).index
+    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
+    rook_index = get_piece_index(Position.new([r_file, o_rank]))
+    rook_destination = Position.new([rd_file, d_rank])
+    @pieces[rook_index].move_to(rook_destination)
+    @unmoved_piece_positions.delete(Position.new([r_file][r_rank]).notation)
+  end
   
   def make_white_pieces
     pieces = []
@@ -156,7 +299,7 @@ class Chessboard
     pieces << make_pieces_at(:white, :king, "e1")
     pieces
   end
-    
+  
   def make_black_pieces
     pieces = []
     pieces << make_pieces_at(:black, :pawn, "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7")
@@ -171,25 +314,17 @@ class Chessboard
   def make_pieces_at(player, type, *pos)
     pieces = []
     case type
-    when :pawn
-      pos.each { |p| pieces << Pawn.new(player, p) }
-    when :rook
-      pos.each { |p| pieces << Rook.new(player, p) }
-    when :knight
-      pos.each { |p| pieces << Knight.new(player, p) }
-    when :bishop
-      pos.each { |p| pieces << Bishop.new(player, p) }
-    when :queen
-      pos.each { |p| pieces << Queen.new(player, p) }
-    when :king
-      pos.each { |p| pieces << King.new(player, p) }
-    else
-      pos.each { pieces << Piece.new(player, p) }
-    end
-    pieces
+    when :pawn then pos.each { |p| pieces << Pawn.new(player, p) }
+    when :rook then pos.each { |p| pieces << Rook.new(player, p) }
+    when :knight then pos.each { |p| pieces << Knight.new(player, p) }
+    when :bishop then pos.each { |p| pieces << Bishop.new(player, p) }
+    when :queen then pos.each { |p| pieces << Queen.new(player, p) }
+    when :king then pos.each { |p| pieces << King.new(player, p) }
+    else pos.each { pieces << Piece.new(player, p) } end
+    pieces.flatten
   end
   
-  # Models allow for move legality checks to e done without manipulating pieces.
+  # Models let you do move legality checks without manipulating the board.
   def make_model # This prints the board the wrong way around?
     board = Array.new(WIDTH){ Array.new(HEIGHT, Square.new) }
     @pieces.each do |piece|
@@ -199,209 +334,59 @@ class Chessboard
     board
   end
   
-  # Allows for move simulation to determine if moves put one in check.
-  # Because it can't track possible future en passants,
-  #  it cannot perfectly verify future move legality.
+  # Simulates future moves for "will this put me in check?" tests.
+  # It can't track future en passants, so can't perfectly predict future move legality.
   def make_projection_model(move)
     model = make_model
     origin, destination = move.positions
     piece = get_piece(origin, model)
-    model = project_en_passant(move, model) if piece.type == :pawn
-    model = project_castle(move, model) if piece.type == :king
+    model = if piece.type == :pawn then project_en_passant(move, model)
+            elsif piece.type == :king then project_castle(move, model)
+            else model end
     o_file, o_rank = origin.index
     d_file, d_rank = destination.index
-    model[d_file][d_rank] = model[o_file][o_rank]
-    model[o_file][o_rank] = Square.new
+    model[d_file][d_rank], model[o_file][o_rank] = model[o_file][o_rank], Square.new
     model
   end
   
-  #######################################################
-  # Does this still return verified for illegal captures?
-  def verify_move_legality(move, player, board = make_model)
-    origin, destination = move.positions
-    o_piece = get_piece(origin, board)
-    d_piece = get_piece(destination, board)
-    moves = o_piece.get_all_moves(board)
-    moves = moves.map { |move| move = move.notation }
-    outcome = :blocked if d_piece.player == player
-    outcome ||= :illegal if !moves.include?(destination.notation)
-    outcome ||= :verified
-    outcome
+  def is_unmoved_at?(pos)
+    unmoved = list_to_notation(@unmoved_piece_positions).include?(pos.notation)
   end
   
-  def verify_piece(piece, player)
-    outcome = :empty if piece.type == :none
-    outcome ||= :occupied if piece.player != player
-    outcome ||= :verified
+  def list_to_notation(list)
+    list.map { |pos| pos = pos.notation }
   end
   
-  def verify_en_passant(move, board = make_model)
-    origin, destination = move.positions
-    outcome = :illegal
-    if destination.notation == @en_passant_destination.notation && \
-       get_piece(origin, board).can_en_passant?(board, @en_passant_destination) then outcome = :verified
-    end
-    outcome
+  def get_piece(pos, board)
+    square = get_square(pos, board)
+    piece = make_pieces_at(square.player, square.type, pos)
   end
   
-  ##################################################
-  # This method ought be broken into helper methods.
-  # Note: King has no #can_castle? method to refer to.
-  #       This is because only Pieces can't do #in_check? tests.
-  # Note: If refactoring, consider moving #in_check? to Piece.
-  #       Doing so would make move verification testing easier.
-  def verify_castle(move, board = make_model)
-    origin, destination = move.positions
-    o_file, o_rank = origin.index
-    king = board[o_file][o_rank]
-    # Check if the moving piece is a King.
-    continue = king.type == :king
-    if continue
-      d_file, d_rank = destination.index
-      # Check if the destination is +/- 2 from the King.
-      continue = o_rank == d_rank && (o_file == d_file - 2 || o_file == d_file + 2)
-      if continue
-        d_file < o_file ? direction = :left : direction = :right
-        r_file, r_rank = direction == :left ? [0, o_rank] : [WIDTH - 1, o_rank]
-        rook = board[r_file][r_rank]
-        player = king.player
-         # Check the Rook to move exists and is owned by the player.
-        continue = rook.type == :rook && rook.player == player
-        if continue
-          king_pos = origin
-          rook_pos = Position.new([r_file, r_rank])
-          # Check the King and Rook haven't ever moved.
-          continue = unmoved_piece?(king_pos) && unmoved_piece?(rook_pos)
-          if continue
-            t_file, t_rank = direction == :left ? [o_file - 1, o_rank] : [o_file + 1, o_rank]
-            rookward_pos = Position.new([t_file, t_rank])
-            mock_rook = Rook.new(player, rook_pos.notation)
-            rook_moves = mock_rook.get_moves(board)
-            # Check the squares between the King and Rook and empty.
-            continue == rook_moves.include?(rookward_pos.notation)
-            if continue
-              # Check the King isn't currently in check.
-              continue == !under_attack?(player, board, king_pos)
-              if continue
-                exposed = under_attack?(player, board, rookward_pos)
-                exposed = under_attack?(player, board, destination) if !exposed
-                # Verify if the King will pass through any squares that would put it in check.
-                outcome = :verified if !exposed
-              end
-            end
-          end
-        end
-      end
-    end
-    outcome ||= :besieged
+  def get_square(pos, board)
+    file, rank = pos.index
+    square = board[file][rank]
   end
   
-  def unmoved_piece?(pos)
-    unmoved = false
-    @unmoved_piece_positions.each { |p| unmoved = true if p.notation == pos.notation }
-    unmoved
+  def get_piece_index(pos)
+    index = nil
+    @pieces.each_with_index { |piece, i| index = i if piece.pos.notation == pos.notation }
+    index
   end
   
-  def in_check?(player, board = make_model)
-    king_pos = Position.new
-    board.each_with_index do |file, i|
-      file.each_with_index do |square, j|
-        king_pos = Position.new([i, j]) if square.player == player && square.type == :king
-      end
-    end
-    check = under_attack?(player, board, king_pos)
+  def remove_piece(pos)
+    @pieces.delete_at(get_piece_index(pos))
   end
   
-  def under_attack?(player, board, pos)
-    return true if under_en_passant_attack?(player, board, pos)
-    captures = []
-    board.each_with_index do |file, f|
-      file.each_with_index do |square, r|
-        if square.player != :none && square.player != player
-          piece = make_dummy_piece(square.player, Position.new([f, r]), square.type)
-          captures << piece.get_captures(board).map { |c| c = c.notation }
-        end
-      end
-    end
-    captures.flatten.include?(pos.notation)
+  def kill_piece(pos)
+    remove_piece(pos)
+    @fifty_move_counter = 0
   end
   
-  def under_en_passant_attack?(player, board, pos)
-    if pos.notation == @en_passant_destination.notation
-      file, rank = pos.index
-      right, left = board[file + 1][rank + 1], board[file - 1][rank + 1] if player == :white
-      right, left = board[file + 1][rank - 1], board[file - 1][rank - 1] if player == :black
-      attack = true if right.type == :pawn && right.player != player
-      attack = true if left.type == :pawn && left.player != player
-    end
-    attack ||= false
-  end
-  
-  def project_en_passant(move, model)
-    if verify_en_passant(move, model) == :verified
-      file, rank = @en_passant_capture.index
-      model[file][rank] = Square.new
-    end
-    model
-  end
-  
-  def project_castle(move, model)
-    if verify_castle(move, model) == :verified
-      origin, destination = move.positions
-      o_file, o_rank = origin.index
-      d_file, d_rank = destination.index
-      if d_file < o_file
-        player = model[0][d_rank].player
-        model[0][d_rank] = Square.new
-        model[d_file + 1][d_rank] = Square.new(player, :rook)
-      else
-        player = model[WIDTH - 1][d_rank].player
-        model[WIDTH - 1][d_rank] = Square.new
-        model[d_file - 1][d_rank] = Square.new(player, :rook)
-      end
-    end
-    model    
-  end
-
-  def record_double_step(move)
-    origin, destination = move.positions
-    o_file, o_rank = origin.index
-    d_file, d_rank = destination.index
-    if (d_rank - o_rank).abs == 2
-      piece = get_piece(origin)
-      @en_passant_capture = Position.new([d_file, d_rank])
-      @en_passant_destination = Position.new([d_file, d_rank - 1]) if piece.player == :white
-      @en_passant_destination = Position.new([d_file, d_rank + 1]) if piece.player == :black
-      @new_en_passant = true
-    end
-  end
-  
-  def clean_up_en_passant(move)
-    kill_piece(@en_passant_capture)
-    @en_passant_destination, @en_passant_capture = Position.new, Position.new
-  end
-  
-  def clean_up_castle(move)
-    origin, destination = move.positions
-    o_file, o_rank = origin.index
-    d_file, d_rank = destination.index
-    d_file < o_file ? direction = :left : direction = :right
-    if direction == :left
-      rook_index = get_piece_index(Position.new([0, o_rank]))
-      rook_pos = Position.new([d_file + 1, d_rank])
-    elsif direction == :right
-      rook_index = get_piece_index(Position.new([WIDTH - 1, o_rank]))
-      rook_pos = Position.new([d_file - 1, d_rank])
-    end
-    @pieces[rook_index].move_to(rook_pos)
-    @unmoved_piece_positions.delete(rook_pos.notation)
-  end
-  
-  def clean_up_tracking_variables(move)
+  def update_tracking(move)
     origin, destination = move.positions
     @unmoved_piece_positions.delete(origin.notation)
     @unmoved_piece_positions.delete(destination.notation)
-    @en_passant_destination, @en_passant_capture = Position.new, Position.new unless @new_en_passant
+    unless @new_en_passant then @en_passant_destination, @en_passant_capture = Position.new, Position.new end
   end
   
   def print_rank(board, rank)
@@ -422,64 +407,15 @@ class Chessboard
   
   def get_character_for(square)
     index = CHARACTERS[0[0]].index(square.type)
-    character = index ? playerize_character(square.player, index) : " "
+    character = if index then get_playerized_character(square.player, index) else " " end
   end
   
-  def playerize_character(player, index)
-    list = CHARACTERS[1] if player == :white
-    list = CHARACTERS[2] if player == :black
+  def get_playerized_character(player, index)
+    list = if player == :white then CHARACTERS[1]
+                                else CHARACTERS[2] end
     character = list[index]
-  end
-  
-  # This only returns real pieces.
-  # If it could read pieces from models,
-  #  #verify_move could be made to work with future move projections.
-  def get_piece(pos, board = nil)
-    piece = Piece.new
-    @pieces.each { |p| piece = p if p.pos.notation == pos.notation }
-    piece
-  end
-  
-  def make_dummy_piece(player, pos, type)
-    pos = pos.notation
-    piece = case type
-    when :pawn
-      Pawn.new(player, pos)
-    when :rook
-      Rook.new(player, pos)
-    when :knight
-      Knight.new(player, pos)
-    when :bishop
-      Bishop.new(player, pos)
-    when :queen
-      Queen.new(player, pos)
-    when :king
-      King.new(player, pos)
-    else
-      Piece.new(player, pos)
-    end
-    piece
-  end
-  
-  def get_piece_index(pos)
-    index = :none
-    @pieces.each_with_index { |piece, i| index = i if piece.pos.notation == pos.notation }
-    index
-  end
-
-  ###############################################################
-  def remove_piece(pos)
-    #@pieces.delete_at(get_piece_index(pos))
-    piece_to_remove = get_piece(pos)
-    index_to_remove = get_piece_index(pos)
-    @pieces.delete_at(index_to_remove)
-  end
-  
-  # Aliases #remove_pos (for in case a distinction is ever needed).
-  def kill_piece(pos)
-    @fifty = 0
-    remove_piece(pos)
   end
   
 end
 
+# End

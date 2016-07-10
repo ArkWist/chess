@@ -114,16 +114,31 @@ class Chessboard
   end
   
   def make_save_data
-    data += "en_passant_destination=#{@en_passant_destination.notation};\n"
-    data += "en_passant_capture=#{@en_passant_capture.notation};\n"
-    data += "new_en_passant=#{@new_en_passant};\n"
-    data += "fifty_move_counter=#{@fifty_move_counter};\n"
-    @pieces.each { |piece| data += "piece=player:#{piece.player},pos:#{piece.pos.notation},type:#{type};\n" }
-    @unmoved_piece_positions.each { |pos| data += "unmoved=#{pos.notation};\n" }
+    data += "ep_destination=#{@en_passant_destination.notation}\n" unless @en_passant_destination.notation == :none
+    data += "ep_capture=#{@en_passant_capture.notation}\n" unless @en_passant_capture.notation == :none
+    data += "new_ep=#{@new_en_passant}\n"
+    data += "fifty=#{@fifty_move_counter}\n"
+    @pieces.each { |piece| data += "piece=player:#{piece.player},type:#{type},pos:#{piece.pos.notation}\n" }
+    @unmoved_piece_positions.each { |pos| data += "unmoved=#{pos.notation}\n" }
     data
   end
   
-  def load_save_data(data)
+  def reset_for_load
+    @en_passant_destination = Position.new()
+    @en_passant_capture = Position.new
+    @new_en_passant = false
+    @fifty_move_counter = 0
+    @pieces, @unmoved_piece_positions = [], []
+  end
+  
+  def load_line(line)
+    case SaveDataReader.read_variable(line)
+    when "ep_destination" then @en_passant_destination = Position.new(SaveDataReader.read_value(line))
+    when "ep_capture" then @en_passant_capture = Position.new(SaveDataReader.read_value(line))
+    when "new_ep" then @new_en_passant = SaveDataReader.read_value(line) == "true"
+    when "fifty" then @fifty_move_counter = Integer(SaveDataReader.read_value(line))
+    when "piece" then load_piece_data(SaveDataReader.read_value(line))
+    when "unmoved" then @unmoved_piece_positions << Position.new(SaveDataReader.read_value(line))
   end
   
   ########
@@ -429,6 +444,16 @@ class Chessboard
     list = if player == :white then CHARACTERS[1]
                                 else CHARACTERS[2] end
     character = list[index]
+  end
+  
+  def load_piece_data(line)
+    line.partition(",").each do |part|
+      case SaveDataReader.read_sub_variable(part)
+      when "player" then player = SaveDataReader.read_sub_value(line).to_sym
+      when "type" then type = SaveDataReader.read_sub_value(line).to_sym
+      when "pos" then pos = Position.new(SaveDataReader.read_sub_value(line)) end
+    end
+    @pieces << make_pieces_at(player, type, pos)
   end
   
 end

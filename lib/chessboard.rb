@@ -99,6 +99,7 @@ class Chessboard
     @fifty_move_counter >= 100
   end
   
+################################################################
   # Insufficient material checking has not yet been implemented.
   # Players must (currently) request and agree to a draw or wait for a fifty-move rule invocation.
   def insufficient_material?(player)

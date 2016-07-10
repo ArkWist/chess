@@ -1,3 +1,6 @@
+# lib/positions.rb
+
+
 class Position
   attr_reader :index, :notation
   
@@ -66,7 +69,7 @@ class Move
     origin, destination = move[0..1], move[2..3]
   end
   
-  # This is mirrored by #is_raw_move? (which is only a boolean check) in Chess.
+  # Mirrored in Chess::is_raw_move? (as a boolean check).
   def normalize(move)
     move.downcase.gsub(/[, ]+/, "")
   end
@@ -82,3 +85,4 @@ class Square
   end
 end
 
+# End

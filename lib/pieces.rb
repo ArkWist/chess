@@ -1,6 +1,6 @@
-# If refactoring, consider making Piece a module.
-# This will clear up complicating supers.
-# Note: This means Chessboard must be checked it doesn't use generic Pieces.
+# lib/pieces.rb
+
+
 class Piece
   attr_reader :player, :pos, :type
 
@@ -27,6 +27,11 @@ class Piece
   
   def move_to(destination)
     @pos = destination
+  end
+  
+  # This is overriden in Pawn::can_en_passant?
+  def can_en_passant?(en_passant, board)
+    can = false
   end
   
   private
@@ -98,9 +103,9 @@ class Pawn < Piece
     @type = :pawn
   end
   
-  def can_en_passant?(board, en_passant)
+  def can_en_passant?(en_passant, board)
     can = false
-    make_en_passant_list(board).each { |move| can = move.notation == en_passant.notation unless can }
+    make_en_passant_list(board).flatten.each { |move| can = move.notation == en_passant.notation unless can }
     can
   end
   
@@ -116,7 +121,7 @@ class Pawn < Piece
   
   def make_en_passant_list(board)
     moves = path_moves(board, :ne, 1) << path_moves(board, :nw, 1)
-    moves.flatten
+    moves
   end
   
   def starting_rank?(board)
@@ -266,14 +271,15 @@ class King < Piece
   # This cannot confirm castle legality.
   # Only outside methods can check if the King and Rook have moved.
   # Note: Castling is illegal if either has ever moved.
-  def make_castle_list(board)
-    moves = []
-    left = path_moves(board, :w, 2)
-    right = path_moves(board, :e, 2)
-    moves << left[-1] if left.length == 2
-    moves << right[-1] if right.length == 2
-    moves.flatten
-  end
+  #def make_castle_list(board)
+  #  moves = []
+  #  left = path_moves(board, :w, 2)
+  #  right = path_moves(board, :e, 2)
+  #  moves << left[-1] if left.length == 2
+  #  moves << right[-1] if right.length == 2
+  #  moves.flatten
+  #end
   
 end
 
+# End

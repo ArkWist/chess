@@ -104,6 +104,13 @@ class Chessboard
   # Insufficient material checking has not yet been implemented.
   # Players must (currently) request and agree to a draw or wait for a fifty-move rule invocation.
   def insufficient_material?(player)
+    white_pieces = make_type_list_for(:white)
+    black_pieces = make_type_list_for(:black)
+    #King vs King
+    #King vs King & Bishop
+    #King vs King & Bishops (Bishops same color)
+    #King vs King & Knight
+    #King & Bishop(s) vs King & Bishop(s) (all Bishops same color)
     return false
   end
   

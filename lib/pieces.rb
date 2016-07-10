@@ -268,18 +268,6 @@ class King < Piece
             << path_captures(board, :sw, 1) << path_captures(board, :nw, 1)
   end
   
-  # This cannot confirm castle legality.
-  # Only outside methods can check if the King and Rook have moved.
-  # Note: Castling is illegal if either has ever moved.
-  #def make_castle_list(board)
-  #  moves = []
-  #  left = path_moves(board, :w, 2)
-  #  right = path_moves(board, :e, 2)
-  #  moves << left[-1] if left.length == 2
-  #  moves << right[-1] if right.length == 2
-  #  moves.flatten
-  #end
-  
 end
 
 # End

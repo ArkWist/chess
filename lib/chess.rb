@@ -1,3 +1,5 @@
+# lib/chess.rb
+
 require_relative "chessboard"
 require_relative "pieces"
 require_relative "positions"
@@ -38,11 +40,19 @@ class Chess
     game_over
   end
   
+  # This return a number of symbols representing the outcome of attempting the turn.
+  # Outcomes -- commands -- :load, :no_load, :fail_load
+  #                         :save, :no_save, :fail_save
+  #                         :draw, :no_draw, :quit
+  #             moves ----- :move, :no_move
+  #                         :check, :checkmate, :stalemate
+  #                         :draw
+  # Note: Other move outcomes are handled by #try_move and converted to the above. 
   def try_turn
     print "\nPlayer #{@player.to_s.capitalize}'s command: "
     input = gets.chomp
-    outcome = if is_raw_command?(input) then try_command(input) # :load, :no_load, :fail_load, :save, :no_save, :fail_save, :draw, :no_draw, :quit
-              elsif is_raw_move?(input) then try_move(input) # :empty, :blocked, :occupied, :illegal, :besieged, :exposed, :check, :checkmate, :stalemate, :draw, :no_draw
+    outcome = if is_raw_command?(input) then try_command(input)
+              elsif is_raw_move?(input) then try_move(input)
               else :unknown_input end
   end
   
@@ -69,12 +79,12 @@ class Chess
   end
   
   def try_move(input)
-    move_outcome = @board.verify_move(Move.new(input), @player)
-    case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected_move { "is illegal" } #(:no_piece rather than :empty ->> fix in Chessboard)
-                      when :beseiged then report_rejected_move { "puts your king through check" }
+    move_outcome = @board.verify_move(@player, Move.new(input))
+    case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected_move { "is illegal" }
+                      when :besieged then report_rejected_move { "puts your king through check" }
                       when :exposed then report_rejected_move { "puts you in check" }
                       when :move then move_outcome = complete_move(Move.new(input)) end # Should return :move instead of :verified
-    move = case move_outcome when :empty, :blocked, :occupied, :illegal, :beseiged, :exposed then :no_move else move_outcome end
+    move = case move_outcome when :empty, :blocked, :occupied, :illegal, :besieged, :exposed then :no_move else move_outcome end
   end
   
   def complete_move(move)
@@ -85,8 +95,9 @@ class Chess
                    elsif stalemate? then :stalemate
                    elsif fifty_moves? then try_fifty_move_draw
                    elsif insufficient_material? then try_insufficient_material_draw
-                   elsif threefold? then try_threefold_draw
+                   elsif threefold_repetition? then try_threefold_draw
                    else :move end
+    move_outcome = case move_outcome when :no_draw then :move else move_outcome end
   end
   
   def handle_promote(move)
@@ -119,8 +130,8 @@ class Chess
     insufficient = @board.insufficient_material?
   end
   
-  def threefold?
-    threefold = @board.threefold?
+  def threefold_repetition?
+    threefold = @board.threefold_repetition?
   end
   
   def try_fifty_move_draw
@@ -199,23 +210,16 @@ end
 
 =begin
 ##################
-
   def try_save
     # Check if can save
     save = if ask_permission(next_player) { "saving" } then :save else :no_save end
   end
-
   def try_load
     # Check if can load
     load = if ask_permission(next_player) { "loading" } then :load else :no_load end
   end
   
 #################
-
-
-
-
-
 def save(right, wrong, mercy, answer)
   filename = get_filename
   File.open(filename, "w") do |file|
@@ -226,23 +230,17 @@ def save(right, wrong, mercy, answer)
   end
   puts "#{filename} saved."
 end
-
 def get_filename
   print "Input filename: "
   filename = gets.chomp.downcase + ".sav"
 end
-
 def save_var(line)
   line.split("=").at(
 end
-
 def sav_value(line)
   line.split("=").at(1)
 end
-
-
 ####################
-
 print "Load save game? (y/n): "
 if gets.chomp.downcase == "y"
   filename = get_filename
@@ -263,6 +261,7 @@ if gets.chomp.downcase == "y"
   else
   puts "#{filename} does not exist."
 end
-
 #######################
 =end
+
+# End

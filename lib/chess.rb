@@ -19,7 +19,9 @@ class Chess
     play
   end
   
-  private
+  ########
+  #private
+  ########
 
   def next_player
     player = if @player == :white then :black else :white end
@@ -41,8 +43,8 @@ class Chess
   end
   
   # This return a number of symbols representing the outcome of attempting the turn.
-  # Outcomes -- commands -- :load, :no_load, :fail_load
-  #                         :save, :no_save, :fail_save
+  # Outcomes -- commands -- :load, :no_load
+  #                         :save, :no_save
   #                         :draw, :no_draw, :quit
   #             moves ----- :move, :no_move
   #                         :check, :checkmate, :stalemate
@@ -65,13 +67,18 @@ class Chess
   end
   
   def try_save
-    # Check if can save
-    save = if ask_permission(next_player) { "saving" } then :save else :no_save end
+    slot = ask_file_slot { "save" }
+    save = if slot_exists?(slot) then ask_permission(@player) { "overwrite slot #{slot}" } end
+    save = if save then ask_permission(next_player) { "saving slot #{slot}" } else save end
+    if save then complete_save(slot) end
+    save = if save then :save else :no_save end
   end
 
   def try_load
-    # Check if can load
-    load = if ask_permission(next_player) { "loading" } then :load else :no_load end
+    slot = ask_file_slot { "load" }
+    load = if slot_exists?(slot) then ask_permission(next_player) { "loading slot #{slot}" } else report_rejected_slot { "#{slot}" } end
+    load = if load then prepare_load(slot) end
+    load = if load then :load else :no_load end
   end
   
   def try_draw(player = next_player)
@@ -160,12 +167,67 @@ class Chess
     puts "Rejected! That move #{yield}."
   end
   
+  def report_rejected_slot
+    puts "Rejected! No such slot #{yield}."
+  end
+  
   def handle_game_result(game_result)
     case game_result when :load then complete_load
                       when :quit then puts "\nPlayer #{@player} has surrendered."
                       when :draw then puts "\nGame is a draw."
                       when :checkmate, :stalemate then puts "\nPlayer #{next_player} is victorious." end
   end
+  
+  def ask_file_slot(&block)
+    print "\nChoose a slot to #{yield}. (0-9): "
+    input = gets.chomp
+    slot = Integer(input) rescue false
+    slot = if slot && slot.between?(0, 9) then slot else ask_file_slot(&block) end
+  end
+  
+  def get_filename(slot)
+    filename = "chess_save_slot_#{slot}.sav"
+  end
+  
+  def slot_exists?(slot)
+    File.exist?(get_filename(slot))
+  end
+  
+  def complete_save(slot)
+    File.open(get_filename(slot), "w") do |file|
+    #file.puts "right=#{right}"
+    #file.puts "wrong=#{wrong}"
+    #file.puts "mercy=#{mercy}"
+    #file.puts "answer=#{answer}"
+    end
+    ##
+    # player, pieces, unmoved pieces, en passant variables
+  end
+    puts "Saved"
+  end
+  
+  def prepare_load(slot)
+    File.readlines(get_filename(slot)) do |line|
+    #case save_var(line)
+    #when right
+    #  right = save_value(line)
+    #when wrong
+    #  wrong = save_value(line)
+    #when mercy
+    #  mercy = save_value(line)
+    #when answer
+    #  answer = save_value(line)
+    end
+    # No puts
+  end
+  
+  #def save_var(line)
+  #  line.split("=").at(
+  #end
+  
+  #def sav_value(line)
+  #  line.split("=").at(1)
+  #end
   
   def complete_load
     puts "/nLoading saved game..."

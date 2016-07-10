@@ -5,12 +5,32 @@ require_relative "pieces"
 require_relative "positions"
 
 
+module SaveDataReader
+
+  def read_variable(line)
+    line.split("=").at(0)
+  end
+  
+  def read_value(line)
+    line.split("=").at(1)
+  end
+  
+  def read_sub_variable
+  end
+  
+  def read_sub_value
+  end
+
+end
+
+
+
 class Chess
+  include SaveDataReader
   COMMANDS = [:save, :load, :draw, :quit, :resign]
   
   def initialize
     @board = Chessboard.new
-    @last_player = :black
     @player = :white
     #start_match
   end
@@ -194,20 +214,18 @@ class Chess
   end
   
   def complete_save(slot)
-    File.open(get_filename(slot), "w") do |file|
-    #file.puts "right=#{right}"
-    #file.puts "wrong=#{wrong}"
-    #file.puts "mercy=#{mercy}"
-    #file.puts "answer=#{answer}"
-    end
-    ##
-    # player, pieces, unmoved pieces, en passant variables
-  end
-    puts "Saved"
+    File.open(get_filename(slot), "w") { |file| file.put "player=#{@player};\n" + @board.make_save_data }
+    puts "Saved to #{get_filename(slot)}."
   end
   
   def prepare_load(slot)
-    File.readlines(get_filename(slot)) do |line|
+    #File.readlines(get_filename(slot)) do |line|
+    #  case SaveDataReader.save_variable(line)
+    #  when "player" then @player = SaveDataReader.save_value(line)
+    #  
+    #  end
+    #end
+    
     #case save_var(line)
     #when right
     #  right = save_value(line)
@@ -220,14 +238,6 @@ class Chess
     end
     # No puts
   end
-  
-  #def save_var(line)
-  #  line.split("=").at(
-  #end
-  
-  #def sav_value(line)
-  #  line.split("=").at(1)
-  #end
   
   def complete_load
     puts "/nLoading saved game..."
@@ -297,7 +307,7 @@ def get_filename
   filename = gets.chomp.downcase + ".sav"
 end
 def save_var(line)
-  line.split("=").at(
+  line.split("=").at(0)
 end
 def sav_value(line)
   line.split("=").at(1)

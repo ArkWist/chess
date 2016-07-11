@@ -1,6 +1,5 @@
 # lib/chessboard.rb
 
-
 class Chessboard
   include SaveDataReader
   HEIGHT, WIDTH = 8, 8
@@ -100,18 +99,9 @@ class Chessboard
     @fifty_move_counter >= 100
   end
   
-  ##############################################################
-  # Insufficient material checking has not yet been implemented.
-  # Players must (currently) request and agree to a draw or wait for a fifty-move rule invocation.
   def insufficient_material?(player)
-    white_pieces = make_type_list_for(:white)
-    black_pieces = make_type_list_for(:black)
-    #King vs King
-    #King vs King & Bishop
-    #King vs King & Bishops (Bishops same color)
-    #King vs King & Knight
-    #King & Bishop(s) vs King & Bishop(s) (all Bishops same color)
-    return false
+    type_list = make_type_list.reject { |type| type == :king }
+    insufficient = only_kings?(type_list) || only_kings_and_bishops?(type_list) || only_kings_and_knight?(type_list)
   end
   
   # Threefold repetition tracking and checking have not been implemented.
@@ -324,6 +314,33 @@ class Chessboard
     rook_destination = Position.new([rd_file, d_rank])
     @pieces[rook_index].move_to(rook_destination)
     @unmoved_piece_positions.delete(Position.new([r_file][r_rank]).notation)
+  end
+  
+  def make_type_list
+    types = []
+    @pieces.each { |piece| types << piece.type }
+  end
+  
+  def only_kings?(type_list)
+    only = type_list.empty?
+  end
+  
+  def only_kings_and_bishops?(type_list)
+    only = type_list.all? { |type| type == :bishop } && on_same_color?(:bishop)
+  end
+  
+  def only_kings_and_knight(type_list)
+    only = type_list.length == 1 && type_list[0] == :knight
+  end
+  
+  def on_same_color?(type)
+    bishops, colors = [], []
+    @pieces.each { |piece| if piece.type == :bishop then squares << piece end }
+    bishops.each do |bishop|
+      file, index = bishop.pos.index
+      colors << if (file + index).even? then :dark else :light end
+    end
+    same = colors.all? { |color| color == colors[0] }
   end
   
   def make_white_pieces

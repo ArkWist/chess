@@ -196,11 +196,11 @@ class Chessboard
   end
   
   def can_castle?(origin, destination, board = make_model)
-    player = get_square(origin).player
+    player = get_square(origin, board).player
     rook_origin = get_castle_rook_position(origin, destination)
     o_file, o_rank = origin.index
     r_file, r_rank = rook_origin.index
-    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
+    rd_file = if is_kingside?(origin, destination) then o_file + 1 else o_file - 1 end
     rook_destination = Position.new([rd_file, r_rank])
     can = list_to_notation(get_piece(rook_origin, board).get_moves(board)).include?(rook_destination.notation) && \
           !under_attack?(player, origin, board) && !under_attack?(player, destination, board) && \
@@ -210,13 +210,13 @@ class Chessboard
   def is_kingside?(origin, destination)
     o_file, o_rank = origin.index
     d_file, d_rank = destination.index
-    kingside = o_file > d_file
+    kingside = o_file < d_file
   end
   
   def get_castle_rook_position(origin, destination)
     o_file, o_rank = origin.index
     r_file = if is_kingside?(origin, destination) then WIDTH - 1 else 0 end
-    position = Position.new(r_file, o_rank)
+    position = Position.new([r_file, o_rank])
   end
   
   def under_attack?(player, pos, board)
@@ -264,17 +264,12 @@ class Chessboard
   
   def project_castle(move, board)
     origin, destination = move.positions
-    if can_castle?(origin, destination, board) then board = model_castle(origin, destination, board) end
-    board
-  end
-  
-  def model_castle(origin, destination, board)
-    o_file, o_rank = origin.index
-    d_file, d_rank = destination.index
-    r_file, r_rank = get_castle_rook_position(origin, destination).index
-    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
-    board[o_file][o_rank], board[d_file][d_rank] = board[d_file][d_rank], board[o_file][o_rank]
-    board[r_file][r_rank], board[rd_file, r_rank] = board[rd_file, r_rank], board[r_file][r_rank]
+    if can_castle?(origin, destination, board)
+      o_file, o_rank = origin.index
+      r_file, r_rank = get_castle_rook_position(origin, destination).index
+      rd_file = if is_kingside?(origin, destination) then o_file + 1 else o_file - 1 end
+      board[rd_file][r_rank], board[r_file][r_rank] = board[r_file][r_rank], Square.new
+    end
     board
   end
   
@@ -286,7 +281,7 @@ class Chessboard
       complete_en_passant(move) if destination.notation == @en_passant_destination.notation
       record_double_step(move) if is_unmoved_at?(origin)
     when :king
-      complete_castle(move) if can_castle?(move)
+      complete_castle(move) if can_castle?(origin, destination)
     end
   end
   
@@ -311,11 +306,10 @@ class Chessboard
   def complete_castle(move)
     origin, destination = move.positions
     o_file, o_rank = origin.index
-    d_file, d_rank = destination.index
     r_file, r_rank = get_castle_rook_position(origin, destination).index
-    rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
+    rd_file = if is_kingside?(origin, destination) then o_file + 1 else o_file - 1 end
     rook_index = get_piece_index(Position.new([r_file, o_rank]))
-    rook_destination = Position.new([rd_file, d_rank])
+    rook_destination = Position.new([rd_file, o_rank])
     @pieces[rook_index].move_to(rook_destination)
     @unmoved_piece_positions.delete(Position.new([r_file][r_rank]).notation)
   end

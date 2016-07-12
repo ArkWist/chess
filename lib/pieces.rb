@@ -1,6 +1,5 @@
 # lib/pieces.rb
 
-
 class Piece
   attr_reader :player, :pos, :type
 

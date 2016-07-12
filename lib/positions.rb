@@ -1,6 +1,5 @@
 # lib/positions.rb
 
-
 class Position
   attr_reader :index, :notation
   

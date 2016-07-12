@@ -65,6 +65,17 @@ class Chessboard
     @pieces << piece
   end
   
+  # Compatible with projection models one move ahead.
+  def in_check?(player, board = make_model)
+    king = Position.new
+    board.each_with_index do |file, f|
+      file.each_with_index do |square, r|
+        king = Position.new([f, r]) if square.player == player && square.type == :king
+      end
+    end
+    check = under_attack?(player, king, board)
+  end
+  
   def checkmate?(player, board = make_model)
     return true if in_check?(player, board)
     checkmate = true
@@ -120,7 +131,7 @@ class Chessboard
     data
   end
   
-  def reset_for_load
+  def reset_board
     @en_passant_destination = Position.new()
     @en_passant_capture = Position.new
     @new_en_passant = false
@@ -202,17 +213,6 @@ class Chessboard
     o_file, o_rank = origin.index
     r_file = if is_kingside?(origin, destination) then WIDTH - 1 else 0 end
     position = Position.new(r_file, o_rank)
-  end
-  
-  # Compatible with projection models one move ahead.
-  def in_check?(player, board = make_model)
-    king = Position.new
-    board.each_with_index do |file, f|
-      file.each_with_index do |square, r|
-        king = Position.new([f, r]) if square.player == player && square.type == :king
-      end
-    end
-    check = under_attack?(player, king, board)
   end
   
   def under_attack?(player, pos, board)
@@ -329,7 +329,7 @@ class Chessboard
     only = type_list.all? { |type| type == :bishop } && on_same_color?(:bishop)
   end
   
-  def only_kings_and_knight(type_list)
+  def only_kings_and_knight?(type_list)
     only = type_list.length == 1 && type_list[0] == :knight
   end
   

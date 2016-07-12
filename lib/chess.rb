@@ -64,27 +64,21 @@ class Chess
   end
   
   # This return a number of symbols representing the outcome of attempting the turn.
-  # Outcomes -- commands -- :load, :no_load
-  #                         :save, :no_save
-  #                         :draw, :no_draw, :quit
-  #             moves ----- :move, :no_move
-  #                         :check, :checkmate, :stalemate
-  #                         :draw
-  # Note: Other move outcomes are handled by #try_move and converted to the above. 
+  # Other move outcomes (eg. :besieged) are converted by #try_move to those listed below. 
   def try_turn
     print "\nPlayer #{@player.to_s.capitalize}'s command: "
     input = gets.chomp
-    outcome = if is_raw_command?(input) then try_command(input)
-              elsif is_raw_move?(input) then try_move(input)
+    outcome = if is_raw_command?(input) then try_command(input) # Returns :(no_)load, :(no_)save, :(no_)draw, :quit
+              elsif is_raw_move?(input) then try_move(input)    # Returns :(no_)move, :check(mate), :stalemate, :draw
               else :unknown_input end
   end
   
   def try_command(input)
     command_outcome = case input.downcase.to_sym
-                      when :save then try_save # :save, :no_save
-                      when :load then try_load # :load, :no_load
-                      when :draw then try_draw # :draw, :no_draw
-                      when :quit, :resign then :quit end # :quit
+                      when :save then try_save # Returns :save, :no_save
+                      when :load then try_load # Returns :load, :no_load
+                      when :draw then try_draw # Returns :draw, :no_draw
+                      when :quit, :resign then :quit end # Returns :quit
   end
   
   def try_save
@@ -111,15 +105,15 @@ class Chess
     case move_outcome when :empty, :blocked, :occupied, :illegal then report_rejected_move { "is illegal" }
                       when :besieged then report_rejected_move { "puts your king through check" }
                       when :exposed then report_rejected_move { "puts you in check" }
-                      when :move then move_outcome = complete_move(Move.new(input)) end # Should return :move instead of :verified
+                      when :move then move_outcome = complete_move(Move.new(input)) end
     move = case move_outcome when :empty, :blocked, :occupied, :illegal, :besieged, :exposed then :no_move else move_outcome end
   end
   
   def complete_move(move)
     @board.do_move(move)
     handle_promote(move)
-    @player = next_turn
-    move_outcome = if checkmate? then :checkmate
+    @player = next_player
+    move_outcome = if in_check? then if checkmate? then :checkmate else :check end
                    elsif stalemate? then :stalemate
                    elsif fifty_moves? then try_fifty_move_draw
                    elsif insufficient_material? then try_insufficient_material_draw
@@ -142,8 +136,16 @@ class Chess
                                 else ask_promote end
   end
   
+  def in_check?
+    check = @board.in_check?(@player)
+    puts "\nCheck." if check
+    check
+  end
+  
   def checkmate?
     checkmate = @board.checkmate?(@player)
+    puts "\nCheckmate." if checkmate
+    checkmate
   end
   
   def stalemate?
@@ -220,7 +222,7 @@ class Chess
   end
   
   def prepare_load(slot)
-    @board.reset_for_load
+    @board.reset_board
     File.readlines(get_filename(slot)) do |line|
       case SaveDataReader.read_variable(line)
       when "player" then @player = SaveDataReader.read_value(line)

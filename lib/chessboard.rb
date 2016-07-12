@@ -1,7 +1,9 @@
 # lib/chessboard.rb
 
 class Chessboard
+  require_relative "savedata"
   include SaveDataReader
+  
   HEIGHT, WIDTH = 8, 8
   CHARACTERS = [[:pawn, :rook, :knight, :bishop, :queen, :king], \
                [ "P",   "R",   "N",     "B",     "Q",    "K"],   \
@@ -58,9 +60,9 @@ class Chessboard
     origin, destination = move.positions
     player = get_piece(destination).player
     case type when :queen then piece = Queen.new(player, destination.notation)
-               when :bishop then piece = Bishop.new(player, destination.notation)
-               when :rook then piece = Rook.new(player, destination.notation)
-               when :knight then piece = Knight.new(player, destination.notation) end
+              when :bishop then piece = Bishop.new(player, destination.notation)
+              when :rook then piece = Rook.new(player, destination.notation)
+              when :knight then piece = Knight.new(player, destination.notation) end
     remove_piece(destination)
     @pieces << piece
   end
@@ -147,6 +149,7 @@ class Chessboard
     when "fifty" then @fifty_move_counter = Integer(SaveDataReader.read_value(line))
     when "piece" then load_piece_data(SaveDataReader.read_value(line))
     when "unmoved" then @unmoved_piece_positions << Position.new(SaveDataReader.read_value(line))
+    end
   end
   
   ########
@@ -157,14 +160,14 @@ class Chessboard
   def verify_move_legality(player, move)
     origin, destination = move.positions
     move_outcome = if blocked_move?(player, destination) then :blocked
-                    elsif illegal_move?(origin, destination) then if can_en_passant?(origin, destination) then :move
-                                                                    elsif is_castle_move?(origin, destination) then if can_castle?(origin, destination) then :move
-                                                                                                                      else :besieged end
-                                                                    else :illegal end
-                    else :move end
+                   elsif illegal_move?(origin, destination) then if can_en_passant?(origin, destination) then :move
+                                                                 elsif is_castle_move?(origin, destination) then if can_castle?(origin, destination) then :move
+                                                                                                                 else :besieged end
+                                                                 else :illegal end
+                   else :move end
     move_outcome = case move_outcome when :move then if in_check?(player, make_projection_model(move)) then :exposed
-                                                       else :move end
-                                      else move_outcome end
+                                                     else :move end
+                                     else move_outcome end
   end
   
   def blocked_move?(player, destination)
@@ -172,7 +175,7 @@ class Chessboard
     blocked = player == square.player
   end
   
-  def illegal_move?(origin, destination) # destination in move list?
+  def illegal_move?(origin, destination)
     piece = get_piece(origin, board)
     moves = piece.get_all_moves(board).map { |move| move = move.notation }
     illegal = !moves.include?(destination.notation)
@@ -200,7 +203,8 @@ class Chessboard
     rd_file = if is_kingside?(origin, destination) then d_file - 1 else d_file + 1 end
     rook_destination = Position.new([rd_file, r_rank])
     can = list_to_notation(get_piece(rook_origin, board).get_moves(board)).include?(rook_destination.notation) && \
-          !under_attack?(player, origin, board) && !under_attack?(player, destination, board) && !under_attack?(player, rook_destination, board)
+          !under_attack?(player, origin, board) && !under_attack?(player, destination, board) && \
+          !under_attack?(player, rook_destination, board)
   end
   
   def is_kingside?(origin, destination)
@@ -221,8 +225,8 @@ class Chessboard
   
   def under_en_passant_attack?(player, pos, board)
     file, rank = pos.index
-    right, left = if player == :white then Position.new([file + 1, rank + 1]), Position.new([file - 1, rank + 1])
-                                       else Position.new([file + 1, rank - 1]), Position.new([file - 1, rank - 1])
+    if player == :white then right, left = Position.new([file + 1, rank + 1]), Position.new([file - 1, rank + 1])
+                        else right, left = Position.new([file + 1, rank - 1]), Position.new([file - 1, rank - 1]) end
     attackable = can_en_passant?(right, pos, board) || can_en_passant?(left, pos, board)
   end
   
@@ -294,7 +298,7 @@ class Chessboard
       player = get_piece(origin).player
       @en_passant_capture = Position.new(destination.notation)
       @en_passant_destination = if player == :white then Position.new([d_file, d_rank - 1])
-                                                     else Position.new([d_file, d_rank + 1]) end
+                                                    else Position.new([d_file, d_rank + 1]) end
       @new_en_passant = true
     end
   end
@@ -335,7 +339,7 @@ class Chessboard
   
   def on_same_color?(type)
     bishops, colors = [], []
-    @pieces.each { |piece| if piece.type == :bishop then squares << piece end }
+    @pieces.each { |piece| if piece.type == :bishop then bishops << piece end }
     bishops.each do |bishop|
       file, index = bishop.pos.index
       colors << if (file + index).even? then :dark else :light end
@@ -466,7 +470,7 @@ class Chessboard
   
   def get_playerized_character(player, index)
     list = if player == :white then CHARACTERS[1]
-                                else CHARACTERS[2] end
+                               else CHARACTERS[2] end
     character = list[index]
   end
   

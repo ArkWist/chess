@@ -3,28 +3,7 @@
 require_relative "chessboard"
 require_relative "pieces"
 require_relative "positions"
-
-
-module SaveDataReader
-
-  def read_variable(line)
-    line.split("=").at(0)
-  end
-  
-  def read_value(line)
-    line.split("=").at(1)
-  end
-  
-  def read_sub_variable
-    line.split(":").at(0)
-  end
-  
-  def read_sub_value
-    line.split(":").at(1)
-  end
-
-end
-
+require_relative "savedata"
 
 class Chess
   include SaveDataReader
@@ -33,7 +12,7 @@ class Chess
   def initialize
     @board = Chessboard.new
     @player = :white
-    #start_match
+    start_match
   end
   
   def start_match
@@ -130,7 +109,7 @@ class Chess
     print "\nPlayer #{@player}, promote your Pawn to what piece? (q/b/r/n): "
     input = gets.chomp
     case inputs.downcase.to_sym when :queen, :q then @board.do_promotion(move, :queen)
-                                when :bishop, :b, then @board.do_promotion(move, :bishop)
+                                when :bishop, :b then @board.do_promotion(move, :bishop)
                                 when :rook, :r then @board.do_promotion(move, :rook)
                                 when :knight, :n then @board.do_promotion(move, :knight)
                                 else ask_promote end

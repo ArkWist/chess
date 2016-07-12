@@ -118,7 +118,7 @@ class Chess
   
   def in_check?
     check = @board.in_check?(@player)
-    puts "\nCheck." if check
+    puts "\nCheck." if check && !checkmate?
     check
   end
   

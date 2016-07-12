@@ -45,7 +45,7 @@ class Chessboard
     @new_en_passant = false
     @fifty_move_counter += 1
     clean_up_after_special_moves(move)
-    kill_piece(destination) if capture_index
+    kill_piece(destination) if capture
     @pieces[get_piece_index(origin)].move_to(destination)
     update_tracking(move)
   end
@@ -69,13 +69,13 @@ class Chessboard
   
   # Compatible with projection models one move ahead.
   def in_check?(player, board = make_model)
-    king = Position.new
+    king_pos = Position.new
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
-        king = Position.new([f, r]) if square.player == player && square.type == :king
+        king_pos = Position.new([f, r]) if square.player == player && square.type == :king
       end
     end
-    check = under_attack?(player, king, board)
+    check = under_attack?(player, king_pos, board)
   end
   
   def checkmate?(player, board = make_model)
@@ -84,7 +84,7 @@ class Chessboard
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
         if checkmate && square.player == player
-          piece = make_pieces_at(square.player, square.type, Position.new([file, rank]).notation)
+          piece = make_pieces_at(square.player, square.type, Position.new([file, rank]).notation).first
           moves = list_to_notation(piece.get_all_moves(board))
           test_origin = Position.new([f, r])
           checkmate = false if are_safe_moves?(player, moves, test_origin, board)
@@ -99,7 +99,7 @@ class Chessboard
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
         if square.player == player
-          piece = make_pieces_at(square.player, square.type, Position.new([file, rank]).notation)
+          piece = make_pieces_at(square.player, square.type, Position.new([f, r]).notation).first
           moves = list_to_notation(piece.get_all_moves(board))
           stalemate = false if stalemate && moves.flatten.length > 0
         end
@@ -112,7 +112,7 @@ class Chessboard
     @fifty_move_counter >= 100
   end
   
-  def insufficient_material?(player)
+  def insufficient_material?
     type_list = make_type_list.reject { |type| type == :king }
     insufficient = only_kings?(type_list) || only_kings_and_bishops?(type_list) || only_kings_and_knight?(type_list)
   end
@@ -175,7 +175,7 @@ class Chessboard
     blocked = player == square.player
   end
   
-  def illegal_move?(origin, destination)
+  def illegal_move?(origin, destination, board = make_model)
     piece = get_piece(origin, board)
     moves = piece.get_all_moves(board).map { |move| move = move.notation }
     illegal = !moves.include?(destination.notation)
@@ -183,7 +183,7 @@ class Chessboard
   
   def can_en_passant?(origin, destination, board = make_model)
     can = destination.notation == @en_passant_destination.notation && \
-          get_piece(origin, board).can_en_passant?(make_model, @en_passant_destination)
+          get_piece(origin, board).can_en_passant?(board, @en_passant_destination)
   end
   
   def is_castle_move?(origin, destination)
@@ -245,7 +245,7 @@ class Chessboard
     board.each_with_index do |file, f|
       file.each_with_index do |square, r|
         if square.type != :none && square.player != :none && square.player != player
-          piece = make_pieces_at(square.player, square.type, Position.new([f, r]))
+          piece = make_pieces_at(square.player, square.type, Position.new([f, r]).notation).first
           captures << piece.get_captures(board)
         end
       end
@@ -283,7 +283,7 @@ class Chessboard
     case get_piece(origin).type
     when :pawn
       @fifty_move_counter = 0
-      complete_en_passant(move) if destination = @en_passant_destination
+      complete_en_passant(move) if destination.notation == @en_passant_destination.notation
       record_double_step(move) if is_unmoved_at?(origin)
     when :king
       complete_castle(move) if can_castle?(move)
@@ -371,14 +371,13 @@ class Chessboard
   
   def make_pieces_at(player, type, *pos)
     pieces = []
-    case type
-    when :pawn then pos.each { |p| pieces << Pawn.new(player, p) }
-    when :rook then pos.each { |p| pieces << Rook.new(player, p) }
-    when :knight then pos.each { |p| pieces << Knight.new(player, p) }
-    when :bishop then pos.each { |p| pieces << Bishop.new(player, p) }
-    when :queen then pos.each { |p| pieces << Queen.new(player, p) }
-    when :king then pos.each { |p| pieces << King.new(player, p) }
-    else pos.each { pieces << Piece.new(player, p) } end
+    case type when :pawn then pos.each { |p| pieces << Pawn.new(player, p) }
+              when :rook then pos.each { |p| pieces << Rook.new(player, p) }
+              when :knight then pos.each { |p| pieces << Knight.new(player, p) }
+              when :bishop then pos.each { |p| pieces << Bishop.new(player, p) }
+              when :queen then pos.each { |p| pieces << Queen.new(player, p) }
+              when :king then pos.each { |p| pieces << King.new(player, p) }
+              else pos.each { pieces << Piece.new(player, p) } end
     pieces.flatten
   end
   
@@ -415,9 +414,9 @@ class Chessboard
     list.map { |pos| pos = pos.notation }
   end
   
-  def get_piece(pos, board)
+  def get_piece(pos, board = make_model)
     square = get_square(pos, board)
-    piece = make_pieces_at(square.player, square.type, pos)
+    piece = make_pieces_at(square.player, square.type, pos.notation).first
   end
   
   def get_square(pos, board)
@@ -432,7 +431,8 @@ class Chessboard
   end
   
   def remove_piece(pos)
-    @pieces.delete_at(get_piece_index(pos))
+    index = get_piece_index(pos)
+    @pieces.delete_at(index) unless index.nil?
   end
   
   def kill_piece(pos)

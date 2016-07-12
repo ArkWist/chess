@@ -103,7 +103,7 @@ class Pawn < Piece
     @type = :pawn
   end
   
-  def can_en_passant?(en_passant, board)
+  def can_en_passant?(board, en_passant)
     can = false
     make_en_passant_list(board).flatten.each { |move| can = move.notation == en_passant.notation unless can }
     can
@@ -121,7 +121,6 @@ class Pawn < Piece
   
   def make_en_passant_list(board)
     moves = path_moves(board, :ne, 1) << path_moves(board, :nw, 1)
-    moves
   end
   
   def starting_rank?(board)

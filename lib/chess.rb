@@ -12,7 +12,7 @@ class Chess
   def initialize
     @board = Chessboard.new
     @player = :white
-    start_match
+    #start_match
   end
   
   def start_match
@@ -85,6 +85,7 @@ class Chess
                       when :besieged then report_rejected_move { "puts your king through check" }
                       when :exposed then report_rejected_move { "puts you in check" }
                       when :move then move_outcome = complete_move(Move.new(input)) end
+    print_board if move_outcome == :move
     move = case move_outcome when :empty, :blocked, :occupied, :illegal, :besieged, :exposed then :no_move else move_outcome end
   end
   
@@ -246,7 +247,7 @@ end
 
 
 # Program start
-#chess_game = Chess.new
-#chess_game.start_match
+chess_game = Chess.new
+chess_game.start_match
 
 # End

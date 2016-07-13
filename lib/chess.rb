@@ -62,7 +62,7 @@ class Chess
   
   def try_save
     slot = ask_file_slot { "save" }
-    save = if slot_exists?(slot) then ask_permission(@player) { "overwrite slot #{slot}" } end
+    save = if slot_exists?(slot) then ask_permission(@player) { "overwrite slot #{slot}" } else true end
     save = if save then ask_permission(next_player) { "saving slot #{slot}" } else save end
     if save then complete_save(slot) end
     save = if save then :save else :no_save end
@@ -70,8 +70,8 @@ class Chess
 
   def try_load
     slot = ask_file_slot { "load" }
-    load = if slot_exists?(slot) then ask_permission(next_player) { "loading slot #{slot}" } else report_rejected_slot { "#{slot}" } end
-    load = if load then prepare_load(slot) end
+    load = if slot_exists?(slot) then ask_permission(next_player) { "loading slot #{slot}" } else false end
+    if load then prepare_load(slot) else report_rejected_slot { "#{slot}" } end
     load = if load then :load else :no_load end
   end
   
@@ -158,7 +158,7 @@ class Chess
   end
   
   def ask_permission(player, &block)
-    print "\nPlayer #{player}, do you agree to #{yield}? (y/n): "
+    print "Player #{player}, do you agree to #{yield}? (y/n): "
     input = gets.chomp
     consent = case input.downcase.to_sym
               when :y then true
@@ -176,13 +176,13 @@ class Chess
   
   def handle_game_result(game_result)
     case game_result when :load then complete_load
-                      when :quit then puts "\nPlayer #{@player} has surrendered."
-                      when :draw then puts "\nGame is a draw."
-                      when :checkmate, :stalemate then puts "\nPlayer #{next_player} is victorious." end
+                     when :quit then puts "\nPlayer #{@player} has surrendered."
+                     when :draw then puts "\nGame is a draw."
+                     when :checkmate, :stalemate then puts "\nPlayer #{next_player} is victorious." end
   end
   
   def ask_file_slot(&block)
-    print "\nChoose a slot to #{yield}. (0-9): "
+    print "Choose a slot to #{yield}. (0-9): "
     input = gets.chomp
     slot = Integer(input) rescue false
     slot = if slot && slot.between?(0, 9) then slot else ask_file_slot(&block) end
@@ -197,13 +197,14 @@ class Chess
   end
   
   def complete_save(slot)
-    File.open(get_filename(slot), "w") { |file| file.put "player=#{@player};\n" + @board.make_save_data }
+    File.open(get_filename(slot), "w") { |file| file.puts "player=#{@player}\n" + @board.make_save_data }
     puts "Saved to #{get_filename(slot)}."
   end
   
   def prepare_load(slot)
     @board.reset_board
     File.readlines(get_filename(slot)) do |line|
+      puts "chess line: #{line}"
       case SaveDataReader.read_variable(line)
       when "player" then @player = SaveDataReader.read_value(line)
       when "ep_destination", "ep_capture", "new_ep", "fifty", "piece", "unmoved" then @board.load_line(line) end
@@ -211,7 +212,8 @@ class Chess
   end
   
   def complete_load
-    puts "/nLoading saved game..."
+    puts "\nLoading saved game..."
+    print_board
     manage_match
   end
   

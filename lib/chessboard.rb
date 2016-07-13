@@ -124,11 +124,12 @@ class Chessboard
   end
   
   def make_save_data
+    data = ""
     data += "ep_destination=#{@en_passant_destination.notation}\n" unless @en_passant_destination.notation == :none
     data += "ep_capture=#{@en_passant_capture.notation}\n" unless @en_passant_capture.notation == :none
-    data += "new_ep=#{@new_en_passant}\n"
+    data += if @new_en_passant then "new_ep=true\n" else "new_ep=false\n" end
     data += "fifty=#{@fifty_move_counter}\n"
-    @pieces.each { |piece| data += "piece=player:#{piece.player},type:#{type},pos:#{piece.pos.notation}\n" }
+    @pieces.each { |piece| data += "piece=player:#{piece.player},type:#{piece.type},pos:#{piece.pos.notation}\n" }
     @unmoved_piece_positions.each { |pos| data += "unmoved=#{pos.notation}\n" }
     data
   end
@@ -142,6 +143,7 @@ class Chessboard
   end
   
   def load_line(line)
+    puts "LINE: #{line}"
     case SaveDataReader.read_variable(line)
     when "ep_destination" then @en_passant_destination = Position.new(SaveDataReader.read_value(line))
     when "ep_capture" then @en_passant_capture = Position.new(SaveDataReader.read_value(line))

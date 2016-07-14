@@ -205,7 +205,7 @@ class Chess
     @board.reset_board
     File.readlines(get_filename(slot)).each do |line|
       case SaveDataReader.read_variable(line)
-      when "player" then @player = SaveDataReader.read_value(line).chomp
+      when "player" then @player = SaveDataReader.read_value(line).chomp.to_sym
       when "ep_destination", "ep_capture", "new_ep", "fifty", "piece", "unmoved" then @board.load_line(line) end
     end
   end

@@ -2,19 +2,19 @@
 
 module SaveDataReader
 
-  def read_variable(line)
+  def SaveDataReader.read_variable(line)
     line.split("=").at(0)
   end
   
-  def read_value(line)
+  def SaveDataReader.read_value(line)
     line.split("=").at(1)
   end
   
-  def read_sub_variable
+  def SaveDataReader.read_sub_variable
     line.split(":").at(0)
   end
   
-  def read_sub_value
+  def SaveDataReader.read_sub_value
     line.split(":").at(1)
   end
 end

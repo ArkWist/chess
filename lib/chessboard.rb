@@ -470,14 +470,14 @@ class Chessboard
   end
   
   def load_piece_data(line)
-    line.partition(",").each do |part|
-      puts "PART: #{part}"
+    player, type, pos = nil, nil, nil
+    line.split(",").each do |part|
       case SaveDataReader.read_sub_variable(part)
       when "player" then player = SaveDataReader.read_sub_value(part).to_sym
       when "type" then type = SaveDataReader.read_sub_value(part).to_sym
-      when "pos" then pos = Position.new(SaveDataReader.read_sub_value(part)) end
+      when "pos" then pos = SaveDataReader.read_sub_value(part) end
     end
-    @pieces << make_pieces_at(player, type, pos)
+    @pieces << make_pieces_at(player, type, pos).first
   end
   
 end

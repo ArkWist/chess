@@ -10,12 +10,12 @@ module SaveDataReader
     line.split("=").at(1)
   end
   
-  def SaveDataReader.read_sub_variable
-    line.split(":").at(0)
+  def SaveDataReader.read_sub_variable(part)
+    part.split(":").at(0)
   end
   
-  def SaveDataReader.read_sub_value
-    line.split(":").at(1)
+  def SaveDataReader.read_sub_value(part)
+    part.split(":").at(1)
   end
 end
 

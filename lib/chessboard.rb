@@ -143,7 +143,6 @@ class Chessboard
   end
   
   def load_line(line)
-    puts "LINE: #{line}"
     case SaveDataReader.read_variable(line)
     when "ep_destination" then @en_passant_destination = Position.new(SaveDataReader.read_value(line))
     when "ep_capture" then @en_passant_capture = Position.new(SaveDataReader.read_value(line))
@@ -472,10 +471,11 @@ class Chessboard
   
   def load_piece_data(line)
     line.partition(",").each do |part|
+      puts "PART: #{part}"
       case SaveDataReader.read_sub_variable(part)
-      when "player" then player = SaveDataReader.read_sub_value(line).to_sym
-      when "type" then type = SaveDataReader.read_sub_value(line).to_sym
-      when "pos" then pos = Position.new(SaveDataReader.read_sub_value(line)) end
+      when "player" then player = SaveDataReader.read_sub_value(part).to_sym
+      when "type" then type = SaveDataReader.read_sub_value(part).to_sym
+      when "pos" then pos = Position.new(SaveDataReader.read_sub_value(part)) end
     end
     @pieces << make_pieces_at(player, type, pos)
   end

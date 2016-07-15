@@ -35,31 +35,13 @@ end
 describe Chessboard do
   let(:b) { Chessboard.new }
 
-# Move legality checks
-# Normal move
-# Double-step
-# Capture
-# En passant
-# Castle
-# Check
-# Checkmate
-# Stalemate
-# Fifty-move-rule
-# Insufficient material
-# Quit
-# Draw
-# Save
-# Load
-
 # Chessboard methods
-=begin
-promote?(move)
-do_promotion(move, type)
-stalemate?
-fifty_moves?
-insufficient_material?
-threefold_repetition?
-=end
+#promote?(move)
+#do_promotion(move, type)
+#stalemate?
+#fifty_moves?
+#insufficient_material?
+#threefold_repetition?
 
 end
 
@@ -67,17 +49,15 @@ describe Chess do
   let(:c) { Chess.new }
   
 # Chess methods
-=begin
-handle_promote(move)
-ask_promote
-stalemate?
-fifty_moves?
-insufficient_material?
-threefold_repetition?
-try_fifty_move_draw
-try_insufficient_material_draw
-try_threefold_draw
-=end
+#handle_promote(move)
+#ask_promote
+#stalemate?
+#fifty_moves?
+#insufficient_material?
+#threefold_repetition?
+#try_fifty_move_draw
+#try_insufficient_material_draw
+#try_threefold_draw
 
 end
   

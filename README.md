@@ -58,13 +58,13 @@ The format is the same for captures and special moves (eg. en passant and castli
 
 The game ends automatically in the case of:
 * [x] [Checkmate](https://en.wikipedia.org/wiki/Glossary_of_chess#Checkmate)
-* [x] [Stalemate](https://en.wikipedia.org/wiki/Glossary_of_chess#Stalemate)
+* [ ] [Stalemate](https://en.wikipedia.org/wiki/Glossary_of_chess#Stalemate)
 * [x] [Fifty-move rule](https://en.wikipedia.org/wiki/Glossary_of_chess#Fifty-move_rule)
 * [ ] [Insufficient material](https://en.wikipedia.org/wiki/Glossary_of_chess#Insufficient_material)
 
 The game otherwise ends in the case of:
-* [ ] [Draw by agreement](https://en.wikipedia.org/wiki/Glossary_of_chess#Draw_by_agreement)
-* [ ] [Resignation](https://en.wikipedia.org/wiki/Glossary_of_chess#Resign)
+* [x] [Draw by agreement](https://en.wikipedia.org/wiki/Glossary_of_chess#Draw_by_agreement)
+* [x] [Resignation](https://en.wikipedia.org/wiki/Glossary_of_chess#Resign)
 * [ ] ~~[Threefold repetition](https://en.wikipedia.org/wiki/Glossary_of_chess#Threefold_repetition)~~ (instead use "draw by agreement")
 
 Only checkmate and resignation end with a victor.

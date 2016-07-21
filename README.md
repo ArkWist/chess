@@ -56,13 +56,13 @@ The format is the same for captures and special moves (eg. en passant and castli
 
 ### Game Finish
 
-The game ends automatically in the case of:
+The game ends automatically in the case of
 * [x] [Checkmate](https://en.wikipedia.org/wiki/Glossary_of_chess#Checkmate)
 * [ ] [Stalemate](https://en.wikipedia.org/wiki/Glossary_of_chess#Stalemate)
 * [x] [Fifty-move rule](https://en.wikipedia.org/wiki/Glossary_of_chess#Fifty-move_rule)
 * [ ] [Insufficient material](https://en.wikipedia.org/wiki/Glossary_of_chess#Insufficient_material)
 
-or otherwise in the case of:
+or otherwise in the case of
 * [x] [Draw by agreement](https://en.wikipedia.org/wiki/Glossary_of_chess#Draw_by_agreement)
 * [x] [Resignation](https://en.wikipedia.org/wiki/Glossary_of_chess#Resign)
 * [ ] ~~[Threefold repetition](https://en.wikipedia.org/wiki/Glossary_of_chess#Threefold_repetition)~~ (instead use "draw by agreement")
@@ -71,14 +71,11 @@ Only checkmate and resignation end with a victor.
 
 ### Commands
 
-Before making a move, a player may:
-
+Before making a move, a player may
 * `save` the current game
 * `load` a previously saved game state
 * `quit` or `resign`
 * Request a `draw`
-
-Note: Only `quit` / `resign` don't require the opponent's agreement.
 
 ## About
 

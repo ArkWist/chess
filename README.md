@@ -18,7 +18,7 @@ The game should start once loaded.
 
 This game implements the basic rules* of the [FIDE Laws of Chess](http://www.fide.com/component/handbook/?id=171&view=article). If you're not familiar with the rules of chess, [Wikipedia's summary](https://en.wikipedia.org/wiki/Rules_of_chess) of the topic is very approachable.
 
-\* With one exception: the game doesn't ask to draw if an identical position has appeared three or more times.
+\* Exception: Threefold repetitions aren't automatically recognized.
 
 ### Pieces
 
@@ -79,6 +79,6 @@ Before making a move, a player may
 
 ## About
 
-The first write was the product of test-driven development. This (more robust) verion was shaped through unit testing.
+This program was finished in three major writes; the first through test-drive development, the second through unit testing, and the third to improve legibility.
 
 Written for [The Odin Project](http://www.theodinproject.com/). See **[Project: OOP with Ruby](http://www.theodinproject.com/ruby-programming/oop)** for more information.

@@ -62,7 +62,7 @@ The game ends automatically in the case of:
 * [x] [Fifty-move rule](https://en.wikipedia.org/wiki/Glossary_of_chess#Fifty-move_rule)
 * [ ] [Insufficient material](https://en.wikipedia.org/wiki/Glossary_of_chess#Insufficient_material)
 
-The game otherwise ends in the case of:
+or otherwise in the case of:
 * [x] [Draw by agreement](https://en.wikipedia.org/wiki/Glossary_of_chess#Draw_by_agreement)
 * [x] [Resignation](https://en.wikipedia.org/wiki/Glossary_of_chess#Resign)
 * [ ] ~~[Threefold repetition](https://en.wikipedia.org/wiki/Glossary_of_chess#Threefold_repetition)~~ (instead use "draw by agreement")
@@ -71,12 +71,12 @@ Only checkmate and resignation end with a victor.
 
 ### Commands
 
-Before making a move, a player may invoke the following commands.
+Before making a move, a player may:
 
-* `save` -- Saves the current game
-* `load` -- Loads the previously saved game
-* `quit` or `resign` -- Resigns from the game
-* `draw` -- Draws the game
+* `save` the current game
+* `load` a previously saved game state
+* `quit` or `resign`
+* Request a `draw`
 
 Note: Only `quit` / `resign` don't require the opponent's agreement.
 

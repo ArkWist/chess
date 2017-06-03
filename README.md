@@ -4,7 +4,7 @@ A [FIDE Laws of Chess](http://www.fide.com/component/handbook/?id=171&view=artic
 
 ## How to start
 
-From the command list:
+From the command line:
   * Enter `$ ruby lib/chess.rb` from the root directory
   
 From the IRB:
